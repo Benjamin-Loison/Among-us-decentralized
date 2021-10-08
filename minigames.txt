@@ -1,3 +1,4 @@
+https://among-us.fandom.com/wiki/
 normal:
 - fix wiring : must click on wire of correspondings color
 - swipe card : swipe card from wallet to draw frame
