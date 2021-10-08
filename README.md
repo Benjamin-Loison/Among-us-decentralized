@@ -1,1 +1,24 @@
 # Among-us-decentralized
+
+Among Us
+
+C++ Qt or SDL2
+
+crossplatform
+
+a little proof-of-concept que Qt est adapté: faire un "personnage" qui se déplace sur "un fond"
+
+- map/persons (assets from native game for instance)
+- menu (main menu and "meetings")
+- network: peer-to-peer with secret (visibility) - using OpenSSL for cryptography
+- vocal chat during "meetings" (not priority)
+- "mini-games"
+
+realtime game similar to (C++ Qt decentralized...) https://github.com/Benjamin-Loison/Travian-blockchained
+
+-----------
+
+could make a foxhole like too or something similar (view from top on 2D scene) but not really known, likewise we already got assets for Among Us project
+
+next week: deeper presentation
+
