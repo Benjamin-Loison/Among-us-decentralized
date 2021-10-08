@@ -7,11 +7,13 @@ crossplatform
 
 a little proof-of-concept que Qt est adapté: faire un "personnage" qui se déplace sur "un fond"
 
-- map/persons (assets from native game for instance)
+- map/persons (assets from native game for instance) - https://github.com/Perfare/AssetStudio
 - menu (main menu and "meetings")
 - network: peer-to-peer with secret (visibility) - using OpenSSL for cryptography
-- vocal chat during "meetings" (not priority)
 - "mini-games"
+
+- vocal chat during "meetings" (not priority)
+- extra anti cheat (not priority)
 
 realtime game similar to (C++ Qt decentralized...) https://github.com/Benjamin-Loison/Travian-blockchained
 
