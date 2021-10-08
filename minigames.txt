@@ -1,0 +1,20 @@
+https://among-us.fandom.com/wiki/ aller dans elements puis tasks
+normal:
+- fix wiring : must click on wire of correspondings color
+- swipe card : swipe card from wallet to draw frame
+- Enter Id code : swipe id to see code and tap code
+- insert keys : self-descriptive
+- scan boarding pass : drag and wait until it becomes green
+short:
+- clean vent : tiping or clicking on the waste
+- Upload data : move first place 8.7s, move second place 8.7s, play warm cold
+- Submit scan : wait 10 seconds to prove innocence (maybe not do)
+- make burger : click to see and hide order, make burger with 5 ingredient
+- divert power : switch power up,tapping to complete the task in an other given location
+- garbage : pull and hold levier until no garbage, pull an other levier
+- unlock manifolds : clicking on the 10 number in the right order
+long :
+- unlock safe : enter 3 numbers, rotate 3 times
+- fix weather node : solve 6 maze on different locations
+- start reactor : replicate patter of up to 5 squares
+- clean asteroids : click on 20 asteroids
