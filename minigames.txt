@@ -1,4 +1,4 @@
-https://among-us.fandom.com/wiki/
+https://among-us.fandom.com/wiki/ aller dans elements puis tasks
 normal:
 - fix wiring : must click on wire of correspondings color
 - swipe card : swipe card from wallet to draw frame
