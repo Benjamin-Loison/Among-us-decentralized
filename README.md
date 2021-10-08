@@ -1,4 +1,4 @@
-# Among-us-decentralized
+# Among us decentralized
 Among Us
 
 C++ Qt or SDL2
