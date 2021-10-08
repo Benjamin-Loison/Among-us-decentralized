@@ -1,5 +1,4 @@
 # Among-us-decentralized
-
 Among Us
 
 C++ Qt or SDL2
@@ -22,3 +21,12 @@ could make a foxhole like too or something similar (view from top on 2D scene) b
 
 next week: deeper presentation
 
+
+*-------------
+
+Qt approprié - Victor
+assets (Windows) choisir
+mini-games: lesquels (from native game for instance) - Baptiste
+cryptography - 
+
+https://openclassrooms.com/fr/courses/1894236-programmez-avec-le-langage-c/1898935-initiez-vous-a-qt
