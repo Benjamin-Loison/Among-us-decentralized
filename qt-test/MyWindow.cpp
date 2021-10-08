@@ -19,5 +19,5 @@ MyWindow::MyWindow() : QWidget() {
     QObject::connect(m_slider, SIGNAL(valueChanged(int)), m_progress, SLOT(setValue(int)));
     QObject::connect(m_button, SIGNAL(clicked()), qApp, SLOT(quit()));
 
-    m_image = new QImage("outline_search_black_24dp.png");
+    m_image = new QPixmap("outline_search_black_24dp.png");
 }
