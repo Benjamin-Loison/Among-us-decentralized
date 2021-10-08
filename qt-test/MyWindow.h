@@ -8,18 +8,24 @@
 #include <QSlider>
 #include <QProgressBar>
 #include <QPixmap>
+#include <QLabel>
+#include <QTimer>
+#include <QDebug>
 
 class MyWindow: public QWidget
 {
     Q_OBJECT
 public:
     MyWindow();
+    void tick();
 
 private:
     QPushButton *m_button;
     QLCDNumber *m_lcd;
     QProgressBar *m_progress;
     QSlider *m_slider;
-    QPixmap *m_image;
+    QLabel *m_image;
+    QTimer *m_timer;
+    int m_tick;
 };
 #endif // MYWINDOW_H
