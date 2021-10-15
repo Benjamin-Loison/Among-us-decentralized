@@ -5,11 +5,11 @@
 #include <QLabel>
 #include <QPainter>
 #include <QMediaPlayer>
-#include <QFileInfo>
 
-#include "qLabelKeys.h"
+#include "QLabelKeys.h"
 
 QMediaPlayer* player;
+QLabelKeys* qLabelKeys;
 
 int main(int argc, char *argv[])
 {
@@ -22,19 +22,10 @@ int main(int argc, char *argv[])
             qInfo("languageFile couldn't be loaded !");*/
     // QSettings like TravianBlockchained
     player = new QMediaPlayer;
-    QLabelKeys* qLabel = new QLabelKeys;
-    qLabel->installEventFilter(qLabel);
+    qLabelKeys = new QLabelKeys;
+    qLabelKeys->installEventFilter(qLabelKeys);
 
-    qLabel->showMaximized();
+    qLabelKeys->showMaximized();
 
     return app.exec();
-}
-
-void playSound(QString soundFile)
-{
-    QUrl qUrl = QUrl::fromLocalFile(QFileInfo(assetsFolder + soundFile).absoluteFilePath());
-
-    player->setMedia(qUrl);
-    player->setVolume(100);
-    player->play(); // run in a separate thread
 }

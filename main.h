@@ -2,7 +2,10 @@
 #define MAIN_H
 
 #include <QString>
+#include <QMediaPlayer>
+#include "QLabelKeys.h"
 
-void playSound(QString soundFile);
+extern QMediaPlayer* player;
+extern QLabelKeys* qLabelKeys;
 
 #endif

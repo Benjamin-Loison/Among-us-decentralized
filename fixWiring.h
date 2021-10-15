@@ -2,6 +2,7 @@
 #define FIXWIRING_H
 
 #include <QLabel>
+#include <QMouseEvent>
 
 #define FIX_WIRING_LEFT_X 4
 #define FIX_WIRING_RIGHT_X 470
@@ -21,7 +22,8 @@ extern quint8 links[COLORS_NUMBER];
 quint16 getYForWiring(quint8 nodesIndex);
 quint8 getIndex(WiringColor color);
 void fillWire(QPainter* painter, quint8 start),
-     fillFixWire(QPainter* painter, quint8 start, quint16 y, quint16 x);
+     fillFixWire(QPainter* painter, quint8 start, quint16 y, quint16 x),
+     onMouseEvent(QMouseEvent* mouseEvent);
 extern WiringColor lefts[COLORS_NUMBER],
                    rights[COLORS_NUMBER];
 
