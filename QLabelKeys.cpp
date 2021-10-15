@@ -1,11 +1,13 @@
 #include "QLabelKeys.h"
 #include "main.h"
+#include <algorithm>
+using namespace std;
 
 QLabelKeys::QLabelKeys(QLabel* parent) : QLabel(parent), qLabel(nullptr)
 {
     setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
     setWindowTitle("Among Us decentralized");
-
+    windowPixmap = new QPixmap(size());
     x = 50;
     y = 0;
     display();
@@ -21,10 +23,10 @@ void QLabelKeys::display()
                            {QColor(193, 17, 17), QColor(120, 8, 57)},
                            {QColor(62, 71, 78), QColor(30, 30, 38)},
                            {QColor(244, 244, 86), QColor(194, 134, 34)}};
-    QPixmap* qPixmap = getQPixmap("player.png"),
-           * qBackgroundPixmap = getQPixmap("mapCrop.png"); // "The Skeld"
+    playerPixmap = getQPixmap("player.png");
+    backgroundPixmap = getQPixmap("mapCrop.png"); // "The Skeld"
 
-    QImage tmp = qPixmap->toImage();
+    QImage tmp = playerPixmap->toImage();
     quint8 colorsIndex = 2; // s'accorder sur de l'aléatoire en début de partie serait bien où bijection pseudo (s'il y en a un) au skin ?
 
     for(quint16 y = 0; y < tmp.height(); y++)
@@ -39,19 +41,65 @@ void QLabelKeys::display()
         }
     }
 
-    *qPixmap = QPixmap::fromImage(tmp);
+    *playerPixmap = QPixmap::fromImage(tmp);
+    setAlignment(Qt::AlignLeft | Qt::AlignTop);
+}
 
-    QPainter* painter = new QPainter(qBackgroundPixmap);
-    painter->drawPixmap(x, y, *qPixmap);
+void QLabelKeys::redraw() {
+    qDebug() << "Current window size:" << size();
+    qDebug() << "x: " << x << " -- y: " << y;
 
-    painter->end();
-    setPixmap(*qBackgroundPixmap);
+    QPixmap* oldPixmap = windowPixmap;
+    windowPixmap = new QPixmap(size());
+    QPainter* painter = new QPainter(windowPixmap);
+    int winWidth = size().width(), winHeight = size().height();
+    int backWidth = backgroundPixmap->size().width(), backHeight = backgroundPixmap->size().height();
+    bool isLeftBorder = x <= winWidth/2, isRightBorder = backWidth >= winWidth && x >= backWidth - winWidth/2;
+    bool isTopBorder = y <= winHeight/2, isBottomBorder = backHeight >= winHeight && y >= backHeight - winHeight/2;
+    int leftBackground, topBackground;
+    if(isLeftBorder)
+        leftBackground = 0;
+    else if(isRightBorder)
+        leftBackground = -(backWidth-winWidth);
+    else
+        leftBackground = -(x-winWidth/2);
+    if(isTopBorder)
+        topBackground = 0;
+    else if(isBottomBorder)
+        topBackground = -(backHeight-winHeight);
+    else
+        topBackground = -(y-winHeight/2);
+    painter->drawPixmap(leftBackground, topBackground, *backgroundPixmap);
+    QSize playerSize = playerPixmap->size();
+    int xPlayerWin, yPlayerWin;
+    if(isLeftBorder)
+        xPlayerWin = x;
+    else if(isRightBorder)
+        xPlayerWin = winWidth - (backWidth - x);
+    else
+        xPlayerWin = winWidth/2;
+    if(isTopBorder)
+        yPlayerWin = y;
+    else if(isBottomBorder)
+        yPlayerWin = winHeight - (backHeight - y);
+    else
+        yPlayerWin = winHeight/2;
+    painter->drawPixmap(xPlayerWin-playerSize.width()/2, yPlayerWin-playerSize.height()/2, *playerPixmap);
+
+    delete painter;
+    setPixmap(*windowPixmap);
+    delete oldPixmap;
     if(qLabel != nullptr && layout() == nullptr)
     {
         QHBoxLayout* hBox = new QHBoxLayout;
         hBox->addWidget(qLabel); // crash here ?
         setLayout(hBox);
     }
+}
+
+void QLabelKeys::resizeEvent(QResizeEvent* ev) {
+    redraw();
+    QLabel::resizeEvent(ev);
 }
 
 bool QLabelKeys::eventFilter(QObject* obj, QEvent* event)
@@ -64,16 +112,16 @@ bool QLabelKeys::eventFilter(QObject* obj, QEvent* event)
         switch(key->key())
         {
             case Qt::Key_Down:
-                y++;
+                y+=10;
                 break;
             case Qt::Key_Up:
-                y--;
+                y-=10;
                 break;
             case Qt::Key_Left:
-                x--;
+                x-=10;
                 break;
             case Qt::Key_Right:
-                x++;
+                x+=10;
                 break;
             // https://nerdschalk.com/among-us-keyboard-controls/
             case Qt::Key_E:
@@ -92,7 +140,7 @@ bool QLabelKeys::eventFilter(QObject* obj, QEvent* event)
                 break;
         }
 
-        display();
+        redraw();
 
         return true;
     }

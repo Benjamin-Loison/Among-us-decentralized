@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     player = new QMediaPlayer;
     qLabelKeys = new QLabelKeys;
     qLabelKeys->installEventFilter(qLabelKeys);
-
+    qLabelKeys->setMinimumSize(640, 480);
     qLabelKeys->showMaximized();
 
     return app.exec();

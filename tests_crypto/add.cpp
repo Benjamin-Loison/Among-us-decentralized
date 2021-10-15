@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
     secret_key.Decrypt(p3,c1);
     std::cout << p3[0] <<std::endl;
     gettimeofday(&b,0);
-    cout << (b.tv_usec - a.tv_usec);
+    cout << (b.tv_usec - a.tv_usec) << endl;
     return 0;
 
 }

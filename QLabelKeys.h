@@ -17,11 +17,16 @@ class QLabelKeys : public QLabel
     Q_OBJECT
 
     private:
-        quint8 x, y;
+        quint16 x, y;
+        QPixmap* playerPixmap;
+        QPixmap* backgroundPixmap;
+        QPixmap* windowPixmap;
 
     public:
         QLabel* qLabel;
         void display();
+        void redraw();
+        void resizeEvent(QResizeEvent* ev);
         QLabelKeys(QLabel* parent = 0);
 
     protected:
