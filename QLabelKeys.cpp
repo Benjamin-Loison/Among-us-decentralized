@@ -49,7 +49,7 @@ void QLabelKeys::display()
     if(qLabel != nullptr && layout() == nullptr)
     {
         QHBoxLayout* hBox = new QHBoxLayout;
-        hBox->addWidget(qLabel);
+        hBox->addWidget(qLabel); // crash here ?
         setLayout(hBox);
     }
 }
@@ -79,10 +79,12 @@ bool QLabelKeys::eventFilter(QObject* obj, QEvent* event)
             case Qt::Key_E:
                 if(qLabel == nullptr)
                 {
+                    currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
                     qLabel = getFixWiring();
                 }
                 else
                 {
+                    currentInGameGUI = IN_GAME_GUI_NONE;
                     //qLabel = new QLabel;
                     //qLabel->clear();
                     //free(qLabel);
@@ -100,7 +102,8 @@ bool QLabelKeys::eventFilter(QObject* obj, QEvent* event)
 
         if(qLabel != nullptr)
         {
-            onMouseEvent(mouseEvent);
+            if(currentInGameGUI == IN_GAME_GUI_FIX_WIRING)
+                onMouseEventFixWiring(mouseEvent);
         }
         return true;
     }

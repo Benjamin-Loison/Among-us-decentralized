@@ -5,11 +5,12 @@
 #include <QLabel>
 #include <QPainter>
 #include <QMediaPlayer>
-
+#include "main.h"
 #include "QLabelKeys.h"
 
 QMediaPlayer* player;
 QLabelKeys* qLabelKeys;
+InGameGUI currentInGameGUI = IN_GAME_GUI_NONE;
 
 int main(int argc, char *argv[])
 {

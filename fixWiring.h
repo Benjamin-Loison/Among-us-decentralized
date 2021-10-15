@@ -23,7 +23,7 @@ quint16 getYForWiring(quint8 nodesIndex);
 quint8 getIndex(WiringColor color);
 void fillWire(QPainter* painter, quint8 start),
      fillFixWire(QPainter* painter, quint8 start, quint16 y, quint16 x),
-     onMouseEvent(QMouseEvent* mouseEvent);
+     onMouseEventFixWiring(QMouseEvent* mouseEvent);
 extern WiringColor lefts[COLORS_NUMBER],
                    rights[COLORS_NUMBER];
 

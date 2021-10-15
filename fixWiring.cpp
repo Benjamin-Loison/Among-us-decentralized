@@ -153,7 +153,7 @@ QLabel* getFixWiring()
     return qFrame;
 }
 
-void onMouseEvent(QMouseEvent* mouseEvent)
+void onMouseEventFixWiring(QMouseEvent* mouseEvent)
 {
     QLabel* qImage = new QLabel;
     quint8 range = qFloor(FIX_WIRING_DELTA_Y / 2);

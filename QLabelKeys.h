@@ -22,7 +22,6 @@ class QLabelKeys : public QLabel
     public:
         QLabel* qLabel;
         void display();
-
         QLabelKeys(QLabel* parent = 0);
 
     protected:
