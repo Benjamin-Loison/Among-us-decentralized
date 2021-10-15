@@ -5,6 +5,7 @@
 #include <QFileInfo>
 #include <QDateTime>
 #include <QHBoxLayout>
+#include <QtMath>
 #include "fixWiring.h"
 #include "main.h"
 #include "qPlus.h"
@@ -128,7 +129,7 @@ QPair<QPixmap*, QPainter*> getFixWiringPixmapPainter()
 
 QLabel* getFixWiring()
 {
-    qInfo("a");
+    //qInfo("a");
     playSound("Fix_Wiring_task_open_sound.ogg");
     QLabel* qFrame = new QLabel,
           * qLabel = new QLabel;
@@ -150,4 +151,100 @@ QLabel* getFixWiring()
     qLabel->setPixmap(*qBackgroundPixmap);
 
     return qFrame;
+}
+
+void onMouseEventFixWiring(QMouseEvent* mouseEvent)
+{
+    QLabel* qImage = new QLabel;
+    quint8 range = qFloor(FIX_WIRING_DELTA_Y / 2);
+    QPair<QPixmap*, QPainter*> pixmapPainter = getFixWiringPixmapPainter();
+    QPixmap* qBackgroundPixmap = pixmapPainter.first;
+    QSize pixmapSize = qBackgroundPixmap->size(),
+          windowSize = qLabelKeys->size();
+    QPainter* painter = pixmapPainter.second;
+    QPoint position = mouseEvent->pos();
+    quint16 mouseY = position.y() - (windowSize.height() - pixmapSize.height()) / 2,
+            mouseX = position.x() - (windowSize.width() - pixmapSize.width()) / 2;
+
+    bool isFixing = false;
+    quint8 fixingIndex = 0;
+    for(qint8 nodesIndex = 0; nodesIndex < COLORS_NUMBER; nodesIndex++)
+    {
+        quint8 link = links[nodesIndex];
+        if(link == COLOR_FIXING)
+        {
+            isFixing = true;
+            fixingIndex = nodesIndex;
+            break;
+        }
+    }
+
+    if(isFixing)
+    {
+        for(qint8 nodesIndex = 0; nodesIndex < COLORS_NUMBER; nodesIndex++)
+        {
+            quint16 middleX = FIX_WIRING_RIGHT_X + FIX_WIRING_WIDTH / 2,
+                    middleY = getYForWiring(nodesIndex);
+            double d = distance(middleX, middleY, mouseX, mouseY);
+            if(d <= range)
+            {
+                links[fixingIndex] = nodesIndex;
+                playSound("Fix_Wiring_connect_wire_sound_" + QString::number(QRandomGenerator::global()->bounded(3) + 1) + ".ogg");
+                break;
+            }
+        }
+    }
+
+    for(qint8 nodesIndex = 0; nodesIndex < COLORS_NUMBER; nodesIndex++)
+    {
+        quint8 link = links[nodesIndex];
+        if(link < COLOR_UNDEFINED)
+        {
+            fillWire(painter, nodesIndex);
+        }
+        else if(link == COLOR_FIXING)
+        {
+            fillFixWire(painter, nodesIndex, mouseY, mouseX);
+        }
+        else if(!isFixing)
+        {
+            quint16 middleX = FIX_WIRING_LEFT_X + FIX_WIRING_WIDTH / 2,
+                    middleY = getYForWiring(nodesIndex);
+            double d = distance(middleX, middleY, mouseX, mouseY);
+            if(d <= range)
+            {
+                links[nodesIndex] = COLOR_FIXING;
+                nodesIndex--;
+            }
+        }
+    }
+
+    painter->end();
+
+    qImage->setPixmap(*qBackgroundPixmap);
+    QHBoxLayout* hbox = (QHBoxLayout*)qLabelKeys->qLabel->layout();
+    hbox->takeAt(1);
+    hbox->takeAt(1);
+    hbox->addWidget(qImage);
+    hbox->addStretch();
+    /* sometimes this happen when launching (maybe due to huge image)
+     * 21:47:13: The program has unexpectedly finished.
+        21:47:13: The process was ended forcefully.
+        */
+
+    bool everythingMatch = true;
+    for(qint8 nodesIndex = 0; nodesIndex < COLORS_NUMBER; nodesIndex++)
+    {
+        quint8 link = links[nodesIndex],
+               right = getIndex(rights[link]);
+        if(lefts[nodesIndex] != right)
+        {
+            everythingMatch = false;
+            break;
+        }
+    }
+    if(everythingMatch)
+    {
+        playSound("Fix_Wiring_task_close_sound.ogg");
+    }
 }
