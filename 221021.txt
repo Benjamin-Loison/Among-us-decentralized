@@ -1,0 +1,4 @@
+Paul: algorithme qui détermine rapidement si deux couples de coordonnées chiffrés sont à une distance inférieure à x
+Victor: apparition du personnage au point d'apparition, déplacement du personnage et du fond de carte, vitesse suffisante de déplacement, fixe fuite de mémoire
+Baptiste: faire une task (astéroïdes a priori)
+Benjamin: collisions (fond de carte binaire), network "bande d'amis" connexion à partir d'IP - échange de messages de base
