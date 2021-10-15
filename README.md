@@ -34,3 +34,4 @@ cryptography -
 https://openclassrooms.com/fr/courses/1894236-programmez-avec-le-langage-c/1898935-initiez-vous-a-qt
 
 knowing approximatively what number of pixels per second a user can walk is necessary for anti-cheat also (and making users walk at the same speed)
+https://among-us.fandom.com/wiki/Player_speed - not very useful
