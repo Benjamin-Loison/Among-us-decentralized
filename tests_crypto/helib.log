@@ -1,0 +1,53 @@
+[ 14:22:51 ] WARNING: KS-noise-ratio=53.230502
+[ 15:09:17 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:09:18 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:09:18 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:10:24 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:12:32 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:23:26 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:23:27 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:23:27 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:24:03 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:24:04 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:24:04 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:24:45 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:24:45 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:24:45 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:25:52 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:25:52 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:25:52 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:27:17 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:27:17 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:27:17 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:27:18 ] WARNING: Ctxt::bringToSet called with capacity=-5.970193, likely decryption error
+[ 15:28:04 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:28:05 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:28:05 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:28:05 ] WARNING: Ctxt::bringToSet called with capacity=-5.957400, likely decryption error
+[ 15:29:49 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:29:49 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:29:49 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:29:50 ] WARNING: Ctxt::bringToSet called with capacity=-5.974101, likely decryption error
+[ 15:33:02 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:33:02 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:33:02 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:35:09 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:35:10 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:35:10 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:36:23 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:36:23 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:36:23 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:41:57 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:41:58 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:41:58 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:41:58 ] WARNING: Ctxt::bringToSet called with capacity=-6.204262, likely decryption error
+[ 15:52:48 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:52:49 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:52:49 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:53:54 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:53:54 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:53:54 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:55:14 ] WARNING: ctxtPrimeSize: non-optimal targetSize
+[ 15:55:14 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:55:14 ] WARNING: CheckPrimes: non-FFT prime in smallPrimes
+[ 15:56:47 ] WARNING: ctxtPrimeSize: non-optimal targetSize
