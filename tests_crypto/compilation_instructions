@@ -1,0 +1,3 @@
+g++ 'fichier'.cpp -lhelib -lpthread -lntl -std=c++17
+
+Il faut peut être spécifier le chemin vers helib avec -L
