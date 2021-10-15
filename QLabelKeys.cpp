@@ -1,7 +1,7 @@
 #include "QLabelKeys.h"
 #include "main.h"
 
-QLabelKeys::QLabelKeys(QLabel* parent) : QLabel(parent)
+QLabelKeys::QLabelKeys(QLabel* parent) : QLabel(parent), qLabel(nullptr)
 {
     setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
     setWindowTitle("Among Us decentralized");
