@@ -18,7 +18,6 @@ realtime game similar to (C++ Qt decentralized...) https://github.com/Benjamin-L
 
 -----------
 
-knowing approximatively what number of pixels per second a user can walk is necessary for anti-cheat also (and making users walk at the same speed)
-https://among-us.fandom.com/wiki/Player_speed - not very useful
+5.1 s pour faire upper engine vers cafetaria (arrêt table) en "frotant" le mur du bas 2 431 pixels d'après ma mesure relativement précise donc une vitesse de 476.666 pixels par seconde
 
 make some tests (by a human for tasks for instance but precise a procedure)
