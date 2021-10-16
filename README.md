@@ -18,6 +18,6 @@ realtime game similar to (C++ Qt decentralized...) https://github.com/Benjamin-L
 
 -----------
 
-5.1 s pour faire upper engine vers cafetaria (arrêt table) en "frotant" le mur du bas 2 431 pixels d'après ma mesure relativement précise donc une vitesse de 476.666 pixels par seconde
+5.1 s pour faire upper engine vers cafetaria (arrêt table) en "frotant" le mur du bas 2 431 pixels d'après ma mesure relativement précise donc une vitesse de 477 pixels par seconde
 
 make some tests (by a human for tasks for instance but precise a procedure)
