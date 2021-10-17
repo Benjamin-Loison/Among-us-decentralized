@@ -57,7 +57,33 @@ void QLabelKeys::display()
 }
 
 void QLabelKeys::displayAt(QPixmap *pixmap, int centerx, int centery) {
+    int w = pixmap->size().width(), h = pixmap->size().height();
+    int top = topBackground + centery - h/2, left = leftBackground + centerx - w/2;
+    if(top >= size().height() || top+h <= 0 || left >= size().width() || left+w <= 0)
+        return; // pixmap is out of screen
+    QPainter painter(windowPixmap);
+    painter.drawPixmap(left, top, *pixmap);
+}
 
+void QLabelKeys::setCenterBorderLimit(int x, int y) {
+    QPainter painter(windowPixmap);
+    int winWidth = size().width(), winHeight = size().height();
+    int backWidth = backgroundPixmap->size().width(), backHeight = backgroundPixmap->size().height();
+    if(backWidth <= winWidth) // Center horizontally
+        leftBackground = (winWidth-backWidth)/2;
+    else {
+        leftBackground = winWidth/2-x;
+        leftBackground = max(leftBackground, winWidth - backWidth); // clip at right border
+        leftBackground = min(leftBackground, 0); // clip at left border
+    }
+    if(backHeight <= winHeight)
+        topBackground = (winHeight-backHeight)/2;
+    else {
+        topBackground = winHeight/2-y;
+        topBackground = max(topBackground, winHeight - backHeight); // clip at bottom border
+        topBackground = min(topBackground, 0); // clip at top border
+    }
+    painter.drawPixmap(leftBackground, topBackground, *backgroundPixmap);
 }
 
 void QLabelKeys::redraw() {
@@ -86,42 +112,8 @@ void QLabelKeys::redraw() {
 
     QPixmap* oldPixmap = windowPixmap;
     windowPixmap = new QPixmap(size());
-    QPainter* painter = new QPainter(windowPixmap);
-    int winWidth = size().width(), winHeight = size().height();
-    int backWidth = backgroundPixmap->size().width(), backHeight = backgroundPixmap->size().height();
-    bool isLeftBorder = x <= winWidth/2, isRightBorder = backWidth >= winWidth && x >= backWidth - winWidth/2;
-    bool isTopBorder = y <= winHeight/2, isBottomBorder = backHeight >= winHeight && y >= backHeight - winHeight/2;
-    int leftBackground, topBackground;
-    if(isLeftBorder)
-        leftBackground = 0;
-    else if(isRightBorder)
-        leftBackground = -(backWidth-winWidth);
-    else
-        leftBackground = -(x-winWidth/2);
-    if(isTopBorder)
-        topBackground = 0;
-    else if(isBottomBorder)
-        topBackground = -(backHeight-winHeight);
-    else
-        topBackground = -(y-winHeight/2);
-    painter->drawPixmap(leftBackground, topBackground, *backgroundPixmap);
-    QSize playerSize = playerPixmap->size();
-    int xPlayerWin, yPlayerWin;
-    if(isLeftBorder)
-        xPlayerWin = x;
-    else if(isRightBorder)
-        xPlayerWin = winWidth - (backWidth - x);
-    else
-        xPlayerWin = winWidth/2;
-    if(isTopBorder)
-        yPlayerWin = y;
-    else if(isBottomBorder)
-        yPlayerWin = winHeight - (backHeight - y);
-    else
-        yPlayerWin = winHeight/2;
-    painter->drawPixmap(xPlayerWin-playerSize.width()/2, yPlayerWin-playerSize.height()/2, *playerPixmap);
-
-    delete painter;
+    setCenterBorderLimit(x, y);
+    displayAt(playerPixmap, x, y);
     setPixmap(*windowPixmap);
     delete oldPixmap;
     if(qLabel != nullptr && layout() == nullptr)

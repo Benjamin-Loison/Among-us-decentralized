@@ -21,7 +21,7 @@ class QLabelKeys : public QLabel
 
     private:
         quint16 x, y;
-        quint16 topBackground, leftBackground;
+        int topBackground, leftBackground;
         QPixmap* playerPixmap;
         QPixmap* backgroundPixmap;
         QPixmap* windowPixmap;
