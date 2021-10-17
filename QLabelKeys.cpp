@@ -16,7 +16,7 @@ QLabelKeys::QLabelKeys(QLabel* parent) : QLabel(parent), qLabel(nullptr)
     y = 0;
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &QLabelKeys::redraw);
-    timer->start(1000/30);
+    timer->start(1000/FPS);
     isPressed[Qt::Key_Up] = false;
     isPressed[Qt::Key_Down] = false;
     isPressed[Qt::Key_Left] = false;
