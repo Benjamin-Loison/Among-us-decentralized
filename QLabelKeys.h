@@ -10,6 +10,7 @@
 #include <QtMath>
 #include <QRandomGenerator>
 #include <QTimer>
+#include <QElapsedTimer>
 #include "fixWiring.h"
 #include "qPlus.h"
 
@@ -26,7 +27,9 @@ class QLabelKeys : public QLabel
         QPixmap* backgroundPixmap;
         QPixmap* windowPixmap;
         QTimer* timer;
+        QElapsedTimer* elapsedTimer;
         QMap<int, bool> isPressed;
+        qint64 lastUpdate;
 
     public:
         QLabel* qLabel;

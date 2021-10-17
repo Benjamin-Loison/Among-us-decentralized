@@ -4,8 +4,6 @@
 using namespace std;
 
 const int MOVEMENT_SPEED_SEC = 477;
-const int MOVEMENT_SPEED_FRAME = MOVEMENT_SPEED_SEC/FPS;
-const int MOVEMENT_SPEED_DIAG = (int)( (qreal) MOVEMENT_SPEED_SEC / qSqrt(2) / FPS );
 
 QLabelKeys::QLabelKeys(QLabel* parent) : QLabel(parent), qLabel(nullptr)
 {
@@ -17,6 +15,9 @@ QLabelKeys::QLabelKeys(QLabel* parent) : QLabel(parent), qLabel(nullptr)
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &QLabelKeys::redraw);
     timer->start(1000/FPS);
+    elapsedTimer = new QElapsedTimer();
+    elapsedTimer->start();
+    lastUpdate = 0;
     isPressed[Qt::Key_Up] = false;
     isPressed[Qt::Key_Down] = false;
     isPressed[Qt::Key_Left] = false;
@@ -88,14 +89,17 @@ void QLabelKeys::setCenterBorderLimit(int x, int y) {
 
 void QLabelKeys::redraw() {
     // Movement
+    qint64 now = elapsedTimer->elapsed();
+    qint64 elapsed = now - lastUpdate;
+    lastUpdate = now;
     if(currentInGameGUI == IN_GAME_GUI_NONE) {
         bool moveVert = isPressed[Qt::Key_Up] != isPressed[Qt::Key_Down];
         bool moveHoriz = isPressed[Qt::Key_Left] != isPressed[Qt::Key_Right];
         int delta;
         if(moveVert && moveHoriz)
-            delta = MOVEMENT_SPEED_DIAG;
+            delta = elapsed * MOVEMENT_SPEED_SEC / 1414; // 1000*sqrt(2)
         else
-            delta = MOVEMENT_SPEED_FRAME;
+            delta = elapsed * MOVEMENT_SPEED_SEC / 1000;
         if(moveVert) {
             if(isPressed[Qt::Key_Up])
                 y -= delta;
