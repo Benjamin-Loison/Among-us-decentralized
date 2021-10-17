@@ -131,9 +131,9 @@ QLabel* getFixWiring()
 {
     //qInfo("a");
     playSound("Fix_Wiring_task_open_sound.ogg");
-    QLabel* qFrame = new QLabel,
-          * qLabel = new QLabel;
-    QHBoxLayout* hbox = new QHBoxLayout;
+    QLabel* qFrame = new QLabel;
+    QHBoxLayout* hbox = new QHBoxLayout(qFrame);
+    QLabel* qLabel = new QLabel(qFrame);
     hbox->addStretch();
     hbox->addWidget(qLabel);
     hbox->addStretch();

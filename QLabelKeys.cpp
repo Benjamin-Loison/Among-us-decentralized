@@ -134,9 +134,9 @@ void QLabelKeys::redraw() {
     delete oldPixmap;
     if(qLabel != nullptr && layout() == nullptr)
     {
-        QHBoxLayout* hBox = new QHBoxLayout;
-        hBox->addWidget(qLabel); // crash here ?
-        setLayout(hBox);
+        currLayout = new QHBoxLayout;
+        currLayout->addWidget(qLabel); // crash here ?
+        setLayout(currLayout);
     }
 }
 
@@ -172,6 +172,10 @@ bool QLabelKeys::eventFilter(QObject* obj, QEvent* event)
                     else
                     {
                         currentInGameGUI = IN_GAME_GUI_NONE;
+                        setLayout(nullptr);
+                        delete currLayout;
+                        delete qLabel;
+                        qLabel = nullptr;
                         //qLabel = new QLabel;
                         //qLabel->clear();
                         //free(qLabel);

@@ -30,6 +30,7 @@ class QLabelKeys : public QLabel
         QElapsedTimer* elapsedTimer;
         QMap<int, bool> isPressed;
         qint64 lastUpdate;
+        QHBoxLayout* currLayout;
 
     public:
         QLabel* qLabel;
