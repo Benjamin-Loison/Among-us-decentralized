@@ -25,6 +25,8 @@ class QLabelKeys : public QLabel
         int topBackground, leftBackground;
         QPixmap* playerPixmap;
         QPixmap* backgroundPixmap;
+        QPixmap* collisionPixmap;
+        QImage collisionImage;
         QPixmap* windowPixmap;
         QTimer* timer;
         QElapsedTimer* elapsedTimer;
@@ -37,6 +39,7 @@ class QLabelKeys : public QLabel
         void display();
         void displayAt(QPixmap *pixmap, int centerx, int centery);
         void setCenterBorderLimit(int x, int y);
+        bool isCollision(quint16 x, quint16 y);
         void resizeEvent(QResizeEvent* ev);
         QLabelKeys(QLabel* parent = 0);
 

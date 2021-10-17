@@ -25,6 +25,10 @@ QLabelKeys::QLabelKeys(QLabel* parent) : QLabel(parent), qLabel(nullptr)
     display();
 }
 
+bool QLabelKeys::isCollision(quint16 x, quint16 y) {
+    return collisionImage.pixelColor(x, y) == QColor(255, 0, 0);
+}
+
 void QLabelKeys::display()
 {
     QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
@@ -37,6 +41,17 @@ void QLabelKeys::display()
                            {QColor(244, 244, 86), QColor(194, 134, 34)}};
     playerPixmap = getQPixmap("player.png");
     backgroundPixmap = getQPixmap("mapCrop.png"); // "The Skeld"
+    collisionPixmap = getQPixmap("mapCropCollision.png");
+    collisionImage = collisionPixmap->toImage();
+
+    if(isCollision(x,y)) {
+        bool found = false;
+        for(x = 0; x < backgroundPixmap->size().width() && !found; x++)
+            for(y = 0; y < backgroundPixmap->size().height() && !found; y++)
+                if(!isCollision(x,y))
+                    found = true;
+
+    }
 
     QImage tmp = playerPixmap->toImage();
     quint8 colorsIndex = 2; // s'accorder sur de l'aléatoire en début de partie serait bien où bijection pseudo (s'il y en a un) au skin ?
@@ -100,36 +115,45 @@ void QLabelKeys::redraw() {
             delta = elapsed * MOVEMENT_SPEED_SEC / 1414; // 1000*sqrt(2)
         else
             delta = elapsed * MOVEMENT_SPEED_SEC / 1000;
+        qint16 nx = x, ny = y;
         if(moveVert) {
             if(isPressed[Qt::Key_Up]) {
                 if(y >= delta)
-                    y -= delta;
+                    ny = y - delta;
                 else
-                    y = 0;
+                    ny = 0;
             }
             else if(y + delta < backgroundPixmap->size().height())
-                y += delta;
+                ny = y + delta;
             else
-                y = backgroundPixmap->size().height()-1;
+                ny = backgroundPixmap->size().height()-1;
         }
         if(moveHoriz) {
             if(isPressed[Qt::Key_Left]) {
                 if(x >= delta)
-                    x -= delta;
+                    nx = x - delta;
                 else
-                    x = 0;
+                    nx = 0;
             }
             else if(x + delta < backgroundPixmap->size().width())
-                x += delta;
+                nx = x + delta;
             else
-                x = backgroundPixmap->size().width();
+                nx = backgroundPixmap->size().width();
         }
+        if(!isCollision(nx, ny)) {
+            x = nx;
+            y = ny;
+        }
+        else if(!isCollision(x, ny))
+            y = ny;
+        else if(!isCollision(nx, y))
+            x = nx;
     }
 
     QPixmap* oldPixmap = windowPixmap;
     windowPixmap = new QPixmap(size());
-    setCenterBorderLimit(x, y);
-    displayAt(playerPixmap, x, y);
+    setCenterBorderLimit(x, y-playerPixmap->size().height()/2);
+    displayAt(playerPixmap, x, y-playerPixmap->size().height()/2);
     setPixmap(*windowPixmap);
     delete oldPixmap;
 }
