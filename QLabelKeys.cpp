@@ -3,6 +3,10 @@
 #include <algorithm>
 using namespace std;
 
+const int MOVEMENT_SPEED_SEC = 477;
+const int MOVEMENT_SPEED_FRAME = MOVEMENT_SPEED_SEC/FPS;
+const int MOVEMENT_SPEED_DIAG = (int)( (qreal) MOVEMENT_SPEED_SEC / qSqrt(2) / FPS );
+
 QLabelKeys::QLabelKeys(QLabel* parent) : QLabel(parent), qLabel(nullptr)
 {
     setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
@@ -10,6 +14,13 @@ QLabelKeys::QLabelKeys(QLabel* parent) : QLabel(parent), qLabel(nullptr)
     windowPixmap = new QPixmap(size());
     x = 50;
     y = 0;
+    timer = new QTimer();
+    connect(timer, &QTimer::timeout, this, &QLabelKeys::redraw);
+    timer->start(1000/30);
+    isPressed[Qt::Key_Up] = false;
+    isPressed[Qt::Key_Down] = false;
+    isPressed[Qt::Key_Left] = false;
+    isPressed[Qt::Key_Right] = false;
     display();
 }
 
@@ -45,9 +56,33 @@ void QLabelKeys::display()
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
+void QLabelKeys::displayAt(QPixmap *pixmap, int centerx, int centery) {
+
+}
+
 void QLabelKeys::redraw() {
-    qDebug() << "Current window size:" << size();
-    qDebug() << "x: " << x << " -- y: " << y;
+    // Movement
+    if(currentInGameGUI == IN_GAME_GUI_NONE) {
+        bool moveVert = isPressed[Qt::Key_Up] != isPressed[Qt::Key_Down];
+        bool moveHoriz = isPressed[Qt::Key_Left] != isPressed[Qt::Key_Right];
+        int delta;
+        if(moveVert && moveHoriz)
+            delta = MOVEMENT_SPEED_DIAG;
+        else
+            delta = MOVEMENT_SPEED_FRAME;
+        if(moveVert) {
+            if(isPressed[Qt::Key_Up])
+                y -= delta;
+            else
+                y += delta;
+        }
+        if(moveHoriz) {
+            if(isPressed[Qt::Key_Left])
+                x -= delta;
+            else
+                x += delta;
+        }
+    }
 
     QPixmap* oldPixmap = windowPixmap;
     windowPixmap = new QPixmap(size());
@@ -109,40 +144,58 @@ bool QLabelKeys::eventFilter(QObject* obj, QEvent* event)
     if(event->type() == QEvent::KeyPress)
     {
         QKeyEvent* key = static_cast<QKeyEvent*>(event);
-        switch(key->key())
-        {
-            case Qt::Key_Down:
-                y+=10;
-                break;
-            case Qt::Key_Up:
-                y-=10;
-                break;
-            case Qt::Key_Left:
-                x-=10;
-                break;
-            case Qt::Key_Right:
-                x+=10;
-                break;
-            // https://nerdschalk.com/among-us-keyboard-controls/
-            case Qt::Key_E:
-                if(qLabel == nullptr)
-                {
-                    currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
-                    qLabel = getFixWiring();
-                }
-                else
-                {
-                    currentInGameGUI = IN_GAME_GUI_NONE;
-                    //qLabel = new QLabel;
-                    //qLabel->clear();
-                    //free(qLabel);
-                }
-                break;
+        if(!(key->isAutoRepeat())) {
+            int keycode = key->key();
+            switch(keycode)
+            {
+                case Qt::Key_Down:
+                case Qt::Key_Up:
+                case Qt::Key_Left:
+                case Qt::Key_Right:
+                    isPressed[keycode] = true;
+                    break;
+                // https://nerdschalk.com/among-us-keyboard-controls/
+                case Qt::Key_E:
+                    if(qLabel == nullptr)
+                    {
+                        currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
+                        qLabel = getFixWiring();
+                    }
+                    else
+                    {
+                        currentInGameGUI = IN_GAME_GUI_NONE;
+                        //qLabel = new QLabel;
+                        //qLabel->clear();
+                        //free(qLabel);
+                    }
+                    break;
+                default:
+                    return false;
+            }
+            return true;
         }
-
-        redraw();
-
-        return true;
+        else
+            return false;
+    }
+    else if(event->type() == QEvent::KeyRelease) {
+        QKeyEvent* key = static_cast<QKeyEvent*>(event);
+        if(!key->isAutoRepeat()) {
+            int keycode = key->key();
+            switch(keycode)
+            {
+                case Qt::Key_Down:
+                case Qt::Key_Up:
+                case Qt::Key_Left:
+                case Qt::Key_Right:
+                    isPressed[keycode] = false;
+                    break;
+                default:
+                    return false;
+            }
+            return true;
+        }
+        else
+            return false;
     }
     else if(event->type() == QEvent::MouseMove)
     {
