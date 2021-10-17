@@ -132,12 +132,6 @@ void QLabelKeys::redraw() {
     displayAt(playerPixmap, x, y);
     setPixmap(*windowPixmap);
     delete oldPixmap;
-    if(qLabel != nullptr && layout() == nullptr)
-    {
-        currLayout = new QHBoxLayout;
-        currLayout->addWidget(qLabel); // crash here ?
-        setLayout(currLayout);
-    }
 }
 
 void QLabelKeys::resizeEvent(QResizeEvent* ev) {
@@ -168,11 +162,13 @@ bool QLabelKeys::eventFilter(QObject* obj, QEvent* event)
                     {
                         currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
                         qLabel = getFixWiring();
+                        currLayout = new QHBoxLayout;
+                        currLayout->addWidget(qLabel);
+                        setLayout(currLayout);
                     }
                     else
                     {
                         currentInGameGUI = IN_GAME_GUI_NONE;
-                        setLayout(nullptr);
                         delete currLayout;
                         delete qLabel;
                         qLabel = nullptr;
