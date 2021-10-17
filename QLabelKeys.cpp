@@ -101,16 +101,28 @@ void QLabelKeys::redraw() {
         else
             delta = elapsed * MOVEMENT_SPEED_SEC / 1000;
         if(moveVert) {
-            if(isPressed[Qt::Key_Up])
-                y -= delta;
-            else
+            if(isPressed[Qt::Key_Up]) {
+                if(y >= delta)
+                    y -= delta;
+                else
+                    y = 0;
+            }
+            else if(y + delta < backgroundPixmap->size().height())
                 y += delta;
+            else
+                y = backgroundPixmap->size().height()-1;
         }
         if(moveHoriz) {
-            if(isPressed[Qt::Key_Left])
-                x -= delta;
-            else
+            if(isPressed[Qt::Key_Left]) {
+                if(x >= delta)
+                    x -= delta;
+                else
+                    x = 0;
+            }
+            else if(x + delta < backgroundPixmap->size().width())
                 x += delta;
+            else
+                x = backgroundPixmap->size().width();
         }
     }
 
