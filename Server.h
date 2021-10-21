@@ -1,8 +1,10 @@
-#ifndef DEF_NETWORK_H
-#define DEF_NETWORK_H
+#ifndef DEF_SERVER_H
+#define DEF_SERVER_H
 
 #include <QtWidgets>
 #include <QtNetwork>
+
+#define SERVER_PORT 10821
 
 class Server : public QWidget
 {
