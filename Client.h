@@ -10,9 +10,9 @@ class Client : public QWidget
 
     public:
         Client();
+        void sendToServer(QString messageToSend);
 
     private slots:
-        void sendToServer();
         void dataReceived();
         void socketError(QAbstractSocket::SocketError error);
 
