@@ -1,32 +1,33 @@
 #include "Client.h"
+#include "Server.h"
 
 Client::Client()
 {
     socket = new QTcpSocket(this);
     connect(socket, SIGNAL(readyRead()), this, SLOT(dataReceived()));
-    connect(socket, SIGNAL(connected()), this, SLOT(connecte()));
-    connect(socket, SIGNAL(disconnected()), this, SLOT(deconnecte()));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
+    //connect(socket, SIGNAL(connected()), this, SLOT(connecte()));
+    //connect(socket, SIGNAL(disconnected()), this, SLOT(deconnecte()));
+    //connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
 
     messageSize = 0;
 
     socket->abort(); // On désactive les connexions précédentes s'il y en a
-    socket->connectToHost("90.127.197.24", 23090); // On se connecte au serveur demandé
+    // Orange is so bad port opening doesn't work anymore but DMZ does :'(
+    socket->connectToHost("2a01:cb00:774:4300:a4ba:9926:7e3a:b6c1"/*"192.168.1.45"*//*"localhost"*//*"90.127.197.24"*//*"2a01:cb00:774:4300:531:8a76:deda:2b53"*//*a secret domain name*/, SERVER_PORT); // On se connecte au serveur demandé
 }
 
 // Envoi d'un message au serveur
-void Client::sendToServer()
+void Client::sendToServer(QString messageToSend)
 {
     QByteArray paquet;
     QDataStream out(&paquet, QIODevice::WriteOnly);
 
     // On prépare le paquet à envoyer
-    QString messageAEnvoyer = "hello world";
 
-    out << (quint16) 0;
-    out << messageAEnvoyer;
+    out << (quint16)0;
+    out << messageToSend;
     out.device()->seek(0);
-    out << (quint16) (paquet.size() - sizeof(quint16));
+    out << (quint16)(paquet.size() - sizeof(quint16));
 
     socket->write(paquet); // On envoie le paquet
 }
@@ -53,13 +54,13 @@ void Client::dataReceived()
     QString receivedMessage;
     in >> receivedMessage;
 
-    qInfo(("received: " + receivedMessage).toStdString().c_str());
+    qInfo(("client received: " + receivedMessage).toStdString().c_str());
 
     // On remet la taille du message à 0 pour pouvoir recevoir de futurs messages
     messageSize = 0;
 }
 
-void Client::socketError(QAbstractSocket::SocketError error)
+void Client::socketError(QAbstractSocket::SocketError error) // not used
 {
     switch(error)
     {
