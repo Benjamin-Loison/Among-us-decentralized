@@ -21,3 +21,5 @@ realtime game similar to (C++ Qt decentralized...) https://github.com/Benjamin-L
 5.1 s pour faire upper engine vers cafetaria (arrêt table) en "frotant" le mur du bas 2 431 pixels d'après ma mesure relativement précise donc une vitesse de 477 pixels par seconde
 
 make some tests (by a human for tasks for instance but precise a procedure)
+
+faire une option (booléenne dans le code par exemple) pour ne pas utiliser tout ce qui touche à QMediaPlayer qui pose parfois problème chez Benjamin par exemple.
