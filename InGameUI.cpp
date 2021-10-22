@@ -6,8 +6,16 @@ using namespace std;
 const int MOVEMENT_SPEED_SEC = 477;
 const int X_SPAWN = 5500;
 const int Y_SPAWN = 1100;
+const QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
+           colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
+                           {QColor(20, 156, 20), QColor(8, 99, 64)},
+                           {QColor(17, 43, 192), QColor(8, 19, 131)},
+                           {QColor(102, 67, 27), QColor(87, 35, 21)},
+                           {QColor(193, 17, 17), QColor(120, 8, 57)},
+                           {QColor(62, 71, 78), QColor(30, 30, 38)},
+                           {QColor(244, 244, 86), QColor(194, 134, 34)}};
 
-InGameUI::InGameUI(QLabel* parent) : QLabel(parent), qLabel(nullptr)
+InGameUI::InGameUI(QString nickname, QLabel* parent) : QLabel(parent), currPlayer(Player(X_SPAWN, Y_SPAWN, nickname, colors[1][0], colors[1][1])), qLabel(nullptr)
 {
     setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
     setWindowTitle("Among Us decentralized");
@@ -15,9 +23,8 @@ InGameUI::InGameUI(QLabel* parent) : QLabel(parent), qLabel(nullptr)
 
 void InGameUI::initialize()
 {
+    otherPlayers.push_back(Player(X_SPAWN, Y_SPAWN, "Test player", colors[0][0], colors[0][1]));
     windowPixmap = new QPixmap(size());
-    x = 5500;
-    y = 1100;
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &InGameUI::redraw);
     timer->start(1000/FPS);
@@ -28,8 +35,6 @@ void InGameUI::initialize()
     isPressed[Qt::Key_Down] = false;
     isPressed[Qt::Key_Left] = false;
     isPressed[Qt::Key_Right] = false;
-    playerFacingLeft = false;
-    nickname = "Player";
     initDisplay();
 }
 
@@ -39,45 +44,18 @@ bool InGameUI::isCollision(quint16 x, quint16 y) {
 
 void InGameUI::initDisplay()
 {
-    QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
-           colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
-                           {QColor(20, 156, 20), QColor(8, 99, 64)},
-                           {QColor(17, 43, 192), QColor(8, 19, 131)},
-                           {QColor(102, 67, 27), QColor(87, 35, 21)},
-                           {QColor(193, 17, 17), QColor(120, 8, 57)},
-                           {QColor(62, 71, 78), QColor(30, 30, 38)},
-                           {QColor(244, 244, 86), QColor(194, 134, 34)}};
-    playerPixmap = getQPixmap("player.png");
     backgroundPixmap = getQPixmap("mapCrop.png"); // "The Skeld"
     collisionPixmap = getQPixmap("mapCropCollision.png");
     collisionImage = collisionPixmap->toImage();
 
-    if(isCollision(x,y)) {
+    if(isCollision(currPlayer.x, currPlayer.y)) {
         bool found = false;
-        for(x = 0; x < backgroundPixmap->size().width() && !found; x++)
-            for(y = 0; y < backgroundPixmap->size().height() && !found; y++)
-                if(!isCollision(x,y))
+        for(currPlayer.x = 0; currPlayer.x < backgroundPixmap->size().width() && !found; currPlayer.x++)
+            for(currPlayer.y = 0; currPlayer.y < backgroundPixmap->size().height() && !found; currPlayer.y++)
+                if(!isCollision(currPlayer.x,currPlayer.y))
                     found = true;
 
     }
-
-    QImage tmp = playerPixmap->toImage();
-    quint8 colorsIndex = 2; // s'accorder sur de l'aléatoire en début de partie serait bien où bijection pseudo (s'il y en a un) au skin ?
-
-    for(quint16 y = 0; y < tmp.height(); y++)
-    {
-        for(quint16 x = 0; x < tmp.width(); x++)
-        {
-            for(quint8 originalColorsIndex = 0; originalColorsIndex < 2; originalColorsIndex++)
-            {
-                if(tmp.pixelColor(x, y) == originalColors[originalColorsIndex])
-                    tmp.setPixelColor(x, y, colors[colorsIndex][originalColorsIndex]);
-            }
-        }
-    }
-
-    *playerPixmap = QPixmap::fromImage(tmp);
-    flippedPlayerPixmap = new QPixmap(playerPixmap->transformed(QTransform().scale(-1,1)));
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
@@ -125,46 +103,46 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz) {
         delta = elapsed * MOVEMENT_SPEED_SEC / 1414; // 1000*sqrt(2)
     else
         delta = elapsed * MOVEMENT_SPEED_SEC / 1000;
-    qint16 nx = x, ny = y;
+    qint16 nx = currPlayer.x, ny = currPlayer.y;
     if(dirVert == -1) {
-            if(y >= delta)
-                ny = y - delta;
-            else if(y > 0)
-                y = 0;
+            if(currPlayer.y >= delta)
+                ny = currPlayer.y - delta;
+            else if(currPlayer.y > 0)
+                currPlayer.y = 0;
             else
                 return false;
     }
     else if(dirVert == 1) {
-        if(y + delta < backgroundPixmap->size().height())
-            ny = y + delta;
-        else if(y < backgroundPixmap->size().height()-1)
+        if(currPlayer.y + delta < backgroundPixmap->size().height())
+            ny = currPlayer.y + delta;
+        else if(currPlayer.y < backgroundPixmap->size().height()-1)
             ny = backgroundPixmap->size().height()-1;
         else
             return false;
     }
     if(dirHoriz == -1) {
-        if(x >= delta)
-            nx = x - delta;
-        else if(x > 0)
+        if(currPlayer.x >= delta)
+            nx = currPlayer.x - delta;
+        else if(currPlayer.x > 0)
             nx = 0;
         else
             return false;
     }
     else if(dirHoriz == 1) {
-        if(x + delta < backgroundPixmap->size().width())
-            nx = x + delta;
-        else if(x < backgroundPixmap->size().width()-1)
+        if(currPlayer.x + delta < backgroundPixmap->size().width())
+            nx = currPlayer.x + delta;
+        else if(currPlayer.x < backgroundPixmap->size().width()-1)
             nx = backgroundPixmap->size().width();
         else
             return false;
     }
     if(!isCollision(nx, ny)) {
-        if(nx < x)
-            playerFacingLeft = true;
-        else if(nx > x)
-            playerFacingLeft = false;
-        x = nx;
-        y = ny;
+        if(nx < currPlayer.x)
+            currPlayer.playerFacingLeft = true;
+        else if(nx > currPlayer.x)
+            currPlayer.playerFacingLeft = false;
+        currPlayer.x = nx;
+        currPlayer.y = ny;
 
         return true;
     }
@@ -172,8 +150,8 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz) {
         return false;
 }
 
-void InGameUI::displayPlayer(QPixmap* playerPixmap, QString nickname, int playerx, int playery, QPainter* painter = nullptr) {
-    displayAt(playerPixmap, playerx, playery-playerPixmap->size().height()/2, painter);
+void InGameUI::displayPlayer(Player &player, QPainter* painter = nullptr) {
+    displayAt(player.playerFacingLeft ? player.flippedPixmap : player.playerPixmap, player.x, player.y-player.playerPixmap->size().height()/2, painter);
     QPainter* newPainter;
     if(painter)
         newPainter = painter;
@@ -181,13 +159,13 @@ void InGameUI::displayPlayer(QPixmap* playerPixmap, QString nickname, int player
         newPainter = new QPainter(windowPixmap);
     int fontSizePt = 23;
     newPainter->setFont(QFont("Liberation Sans", fontSizePt));
-    QRect textRect(leftBackground + playerx, topBackground + playery - playerPixmap->size().height() - fontSizePt - 5, 1, fontSizePt);
+    QRect textRect(leftBackground + player.x, topBackground + player.y - player.playerPixmap->size().height() - fontSizePt - 5, 1, fontSizePt);
     QRect boundingRect;
     QPen oldPen = newPainter->pen();
     newPainter->setPen(Qt::white);
-    newPainter->drawText(textRect, Qt::TextDontClip | Qt::TextSingleLine | Qt::AlignCenter, nickname, &boundingRect);
+    newPainter->drawText(textRect, Qt::TextDontClip | Qt::TextSingleLine | Qt::AlignCenter, player.nickname, &boundingRect);
     newPainter->fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
-    newPainter->drawText(textRect, Qt::TextDontClip | Qt::TextSingleLine | Qt::AlignCenter, nickname, &boundingRect);
+    newPainter->drawText(textRect, Qt::TextDontClip | Qt::TextSingleLine | Qt::AlignCenter, player.nickname, &boundingRect);
     newPainter->setPen(oldPen);
     if(!painter)
         delete newPainter;
@@ -222,11 +200,11 @@ void InGameUI::redraw() {
     QPixmap* oldPixmap = windowPixmap;
     windowPixmap = new QPixmap(size());
     QPainter painter(windowPixmap);
-    setCenterBorderLimit(x, y-playerPixmap->size().height()/2, &painter);
+    setCenterBorderLimit(currPlayer.x, currPlayer.y-currPlayer.playerPixmap->size().height()/2, &painter);
     //displayAt(playerFacingLeft ? flippedPlayerPixmap : playerPixmap, x, y-playerPixmap->size().height()/2);
     // test
-    displayPlayer(playerPixmap, QString("Test player"), X_SPAWN, Y_SPAWN, &painter);
-    displayPlayer(playerFacingLeft ? flippedPlayerPixmap : playerPixmap, nickname, x, y, &painter);
+    displayPlayer(otherPlayers[0], &painter);
+    displayPlayer(currPlayer, &painter);
     setPixmap(*windowPixmap);
     delete oldPixmap;
 }

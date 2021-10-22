@@ -14,6 +14,7 @@
 #include <QElapsedTimer>
 #include "fixWiring.h"
 #include "qPlus.h"
+#include "Player.h"
 
 const int FPS = 30;
 
@@ -22,12 +23,14 @@ class InGameUI : public QLabel
     Q_OBJECT
 
     private:
-        quint16 x, y;
+        Player currPlayer;
+        QVector<Player> otherPlayers;
+        //quint16 x, y;
         int topBackground, leftBackground;
-        QPixmap* playerPixmap;
-        QPixmap* flippedPlayerPixmap;
-        bool playerFacingLeft;
-        QString nickname;
+        //QPixmap* playerPixmap;
+        //QPixmap* flippedPlayerPixmap;
+        //bool playerFacingLeft;
+        //QString nickname;
         QPixmap* backgroundPixmap;
         QPixmap* collisionPixmap;
         QImage collisionImage;
@@ -43,12 +46,12 @@ class InGameUI : public QLabel
         void initialize();
         void initDisplay();
         void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
-        void displayPlayer(QPixmap *playerPixmap, QString nickname, int centerx, int centery, QPainter* painter);
+        void displayPlayer(Player &player, QPainter* painter);
         bool performMovement(qint64 elapsed, int dirVert, int dirHoriz);
         void setCenterBorderLimit(int x, int y, QPainter* painter);
         bool isCollision(quint16 x, quint16 y);
         void resizeEvent(QResizeEvent* ev);
-        InGameUI(QLabel* parent = 0);
+        InGameUI(QString nickname, QLabel* parent = 0);
 
     public slots:
         void redraw();
