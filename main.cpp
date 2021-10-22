@@ -15,6 +15,7 @@ InGameUI* inGameUI;
 InGameGUI currentInGameGUI = IN_GAME_GUI_NONE;
 Server* server;
 Client* client;
+QString nickname, peerAddress;
 
 int main(int argc, char *argv[])
 {
@@ -22,14 +23,9 @@ int main(int argc, char *argv[])
     
     inGameUI = new InGameUI;
     
-    bool ok = false;
-    QString nickname = "";
-
-    while(!ok || nickname.isEmpty()) // could also check that this username isn't used
-    {
-        nickname = QInputDialog::getText(inGameUI, "Nickname", "Your nickname", QLineEdit::Normal, QString(), &ok);
-    }
-
+    nickname = getText("Nickname", "Your nickname");
+    peerAddress = getText("Peer address", "A peer address");
+    
     /*QString languageFile = "among_us_decentralized_fr";
         if(translator.load(languageFile))
             app.installTranslator(&translator);
