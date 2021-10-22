@@ -4,14 +4,16 @@
 using namespace std;
 
 const int MOVEMENT_SPEED_SEC = 477;
+const int X_SPAWN = 5500;
+const int Y_SPAWN = 1100;
 
 InGameUI::InGameUI(QLabel* parent) : QLabel(parent), qLabel(nullptr)
 {
     setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
     setWindowTitle("Among Us decentralized");
     windowPixmap = new QPixmap(size());
-    x = 50;
-    y = 0;
+    x = 5500;
+    y = 1100;
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &InGameUI::redraw);
     timer->start(1000/FPS);
@@ -23,14 +25,15 @@ InGameUI::InGameUI(QLabel* parent) : QLabel(parent), qLabel(nullptr)
     isPressed[Qt::Key_Left] = false;
     isPressed[Qt::Key_Right] = false;
     playerFacingLeft = false;
-    display();
+    nickname = "Player";
+    initDisplay();
 }
 
 bool InGameUI::isCollision(quint16 x, quint16 y) {
     return collisionImage.pixelColor(x, y) == QColor(255, 0, 0);
 }
 
-void InGameUI::display()
+void InGameUI::initDisplay()
 {
     QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
            colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
@@ -74,17 +77,23 @@ void InGameUI::display()
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
-void InGameUI::displayAt(QPixmap *pixmap, int centerx, int centery) {
+void InGameUI::displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter = nullptr) {
     int w = pixmap->size().width(), h = pixmap->size().height();
     int top = topBackground + centery - h/2, left = leftBackground + centerx - w/2;
     if(top >= size().height() || top+h <= 0 || left >= size().width() || left+w <= 0)
         return; // pixmap is out of screen
-    QPainter painter(windowPixmap);
-    painter.drawPixmap(left, top, *pixmap);
+    if(painter)
+        painter->drawPixmap(left, top, *pixmap);
+    else {
+        QPainter locPainter(windowPixmap);
+        locPainter.drawPixmap(left, top, *pixmap);
+    }
 }
 
-void InGameUI::setCenterBorderLimit(int x, int y) {
-    QPainter painter(windowPixmap);
+void InGameUI::setCenterBorderLimit(int x, int y, QPainter* painter = nullptr) {
+    bool destroyPainter = painter == nullptr;
+    if(destroyPainter)
+        painter = new QPainter(windowPixmap);
     int winWidth = size().width(), winHeight = size().height();
     int backWidth = backgroundPixmap->size().width(), backHeight = backgroundPixmap->size().height();
     if(backWidth <= winWidth) // Center horizontally
@@ -101,7 +110,9 @@ void InGameUI::setCenterBorderLimit(int x, int y) {
         topBackground = max(topBackground, winHeight - backHeight); // clip at bottom border
         topBackground = min(topBackground, 0); // clip at top border
     }
-    painter.drawPixmap(leftBackground, topBackground, *backgroundPixmap);
+    painter->drawPixmap(leftBackground, topBackground, *backgroundPixmap);
+    if(destroyPainter)
+        delete painter;
 }
 
 bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz) {
@@ -157,6 +168,27 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz) {
         return false;
 }
 
+void InGameUI::displayPlayer(QPixmap* playerPixmap, QString nickname, int playerx, int playery, QPainter* painter = nullptr) {
+    displayAt(playerPixmap, playerx, playery-playerPixmap->size().height()/2, painter);
+    QPainter* newPainter;
+    if(painter)
+        newPainter = painter;
+    else
+        newPainter = new QPainter(windowPixmap);
+    int fontSizePt = 23;
+    newPainter->setFont(QFont("Liberation Sans", fontSizePt));
+    QRect textRect(leftBackground + playerx, topBackground + playery - playerPixmap->size().height() - fontSizePt - 5, 1, fontSizePt);
+    QRect boundingRect;
+    QPen oldPen = newPainter->pen();
+    newPainter->setPen(Qt::white);
+    newPainter->drawText(textRect, Qt::TextDontClip | Qt::TextSingleLine | Qt::AlignCenter, nickname, &boundingRect);
+    newPainter->fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
+    newPainter->drawText(textRect, Qt::TextDontClip | Qt::TextSingleLine | Qt::AlignCenter, nickname, &boundingRect);
+    newPainter->setPen(oldPen);
+    if(!painter)
+        delete newPainter;
+}
+
 void InGameUI::redraw() {
     // Movement
     qint64 now = elapsedTimer->elapsed();
@@ -185,8 +217,12 @@ void InGameUI::redraw() {
 
     QPixmap* oldPixmap = windowPixmap;
     windowPixmap = new QPixmap(size());
-    setCenterBorderLimit(x, y-playerPixmap->size().height()/2);
-    displayAt(playerFacingLeft ? flippedPlayerPixmap : playerPixmap, x, y-playerPixmap->size().height()/2);
+    QPainter painter(windowPixmap);
+    setCenterBorderLimit(x, y-playerPixmap->size().height()/2, &painter);
+    //displayAt(playerFacingLeft ? flippedPlayerPixmap : playerPixmap, x, y-playerPixmap->size().height()/2);
+    // test
+    displayPlayer(playerPixmap, QString("Test player"), X_SPAWN, Y_SPAWN, &painter);
+    displayPlayer(playerFacingLeft ? flippedPlayerPixmap : playerPixmap, nickname, x, y, &painter);
     setPixmap(*windowPixmap);
     delete oldPixmap;
 }

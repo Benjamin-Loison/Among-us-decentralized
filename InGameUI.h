@@ -10,6 +10,7 @@
 #include <QtMath>
 #include <QRandomGenerator>
 #include <QTimer>
+#include <QString>
 #include <QElapsedTimer>
 #include "fixWiring.h"
 #include "qPlus.h"
@@ -26,6 +27,7 @@ class InGameUI : public QLabel
         QPixmap* playerPixmap;
         QPixmap* flippedPlayerPixmap;
         bool playerFacingLeft;
+        QString nickname;
         QPixmap* backgroundPixmap;
         QPixmap* collisionPixmap;
         QImage collisionImage;
@@ -38,10 +40,11 @@ class InGameUI : public QLabel
 
     public:
         QLabel* qLabel;
-        void display();
-        void displayAt(QPixmap *pixmap, int centerx, int centery);
+        void initDisplay();
+        void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
+        void displayPlayer(QPixmap *playerPixmap, QString nickname, int centerx, int centery, QPainter* painter);
         bool performMovement(qint64 elapsed, int dirVert, int dirHoriz);
-        void setCenterBorderLimit(int x, int y);
+        void setCenterBorderLimit(int x, int y, QPainter* painter);
         bool isCollision(quint16 x, quint16 y);
         void resizeEvent(QResizeEvent* ev);
         InGameUI(QLabel* parent = 0);
