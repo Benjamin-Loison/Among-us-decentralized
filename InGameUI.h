@@ -40,6 +40,7 @@ class InGameUI : public QLabel
 
     public:
         QLabel* qLabel;
+        void initialize();
         void initDisplay();
         void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
         void displayPlayer(QPixmap *playerPixmap, QString nickname, int centerx, int centery, QPainter* painter);
