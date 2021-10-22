@@ -6,7 +6,7 @@
 #include "InGameUI.h"
 
 extern QMediaPlayer* player;
-extern InGameUI* qLabelKeys;
+extern InGameUI* inGameUI;
 enum InGameGUI{IN_GAME_GUI_NONE, IN_GAME_GUI_FIX_WIRING};
 extern InGameGUI currentInGameGUI;
 
