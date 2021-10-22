@@ -11,6 +11,10 @@ InGameUI::InGameUI(QLabel* parent) : QLabel(parent), qLabel(nullptr)
 {
     setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
     setWindowTitle("Among Us decentralized");
+}
+
+void InGameUI::initialize()
+{
     windowPixmap = new QPixmap(size());
     x = 5500;
     y = 1100;
