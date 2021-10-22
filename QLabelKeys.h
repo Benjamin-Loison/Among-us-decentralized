@@ -38,6 +38,7 @@ class QLabelKeys : public QLabel
         QLabel* qLabel;
         void display();
         void displayAt(QPixmap *pixmap, int centerx, int centery);
+        bool performMovement(qint64 elapsed, int dirVert, int dirHoriz);
         void setCenterBorderLimit(int x, int y);
         bool isCollision(quint16 x, quint16 y);
         void resizeEvent(QResizeEvent* ev);

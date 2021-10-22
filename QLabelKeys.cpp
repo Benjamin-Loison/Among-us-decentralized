@@ -102,6 +102,54 @@ void QLabelKeys::setCenterBorderLimit(int x, int y) {
     painter.drawPixmap(leftBackground, topBackground, *backgroundPixmap);
 }
 
+bool QLabelKeys::performMovement(qint64 elapsed, int dirVert, int dirHoriz) {
+    int delta;
+    if(dirVert && dirHoriz)
+        delta = elapsed * MOVEMENT_SPEED_SEC / 1414; // 1000*sqrt(2)
+    else
+        delta = elapsed * MOVEMENT_SPEED_SEC / 1000;
+    qint16 nx = x, ny = y;
+    if(dirVert == -1) {
+            if(y >= delta)
+                ny = y - delta;
+            else if(y > 0)
+                y = 0;
+            else
+                return false;
+    }
+    else if(dirVert == 1) {
+        if(y + delta < backgroundPixmap->size().height())
+            ny = y + delta;
+        else if(y < backgroundPixmap->size().height()-1)
+            ny = backgroundPixmap->size().height()-1;
+        else
+            return false;
+    }
+    if(dirHoriz == -1) {
+        if(x >= delta)
+            nx = x - delta;
+        else if(x > 0)
+            nx = 0;
+        else
+            return false;
+    }
+    else if(dirHoriz == 1) {
+        if(x + delta < backgroundPixmap->size().width())
+            nx = x + delta;
+        else if(x < backgroundPixmap->size().width()-1)
+            nx = backgroundPixmap->size().width();
+        else
+            return false;
+    }
+    if(!isCollision(nx, ny)) {
+        x = nx;
+        y = ny;
+        return true;
+    }
+    else
+        return false;
+}
+
 void QLabelKeys::redraw() {
     // Movement
     qint64 now = elapsedTimer->elapsed();
@@ -110,7 +158,23 @@ void QLabelKeys::redraw() {
     if(currentInGameGUI == IN_GAME_GUI_NONE) {
         bool moveVert = isPressed[Qt::Key_Up] != isPressed[Qt::Key_Down];
         bool moveHoriz = isPressed[Qt::Key_Left] != isPressed[Qt::Key_Right];
-        int delta;
+        int dirVert = moveVert ? (isPressed[Qt::Key_Up] ? -1 : 1) : 0;
+        int dirHoriz = moveHoriz ? (isPressed[Qt::Key_Left] ? -1 : 1) : 0;
+        if(!performMovement(elapsed, dirVert, dirHoriz)) {
+            if(moveVert && moveHoriz) {
+                if(!performMovement(elapsed, dirVert, 0))
+                    performMovement(elapsed, 0, dirHoriz);
+            }
+            else if(moveVert) {
+                if(!performMovement(elapsed, dirVert, -1))
+                    performMovement(elapsed, dirVert, 1);
+            }
+            else {
+                if(!performMovement(elapsed, -1, dirHoriz))
+                    performMovement(elapsed, 1, dirHoriz);
+            }
+        }
+        /*int delta;
         if(moveVert && moveHoriz)
             delta = elapsed * MOVEMENT_SPEED_SEC / 1414; // 1000*sqrt(2)
         else
@@ -147,7 +211,7 @@ void QLabelKeys::redraw() {
         else if(!isCollision(x, ny))
             y = ny;
         else if(!isCollision(nx, y))
-            x = nx;
+            x = nx;*/
     }
 
     QPixmap* oldPixmap = windowPixmap;
