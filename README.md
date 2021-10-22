@@ -1,20 +1,33 @@
 # Among us decentralized
 
-C++ Qt
+Language: C++  
+Graphics library: Qt
 
-crossplateform
+Crossplatform
 
-a little proof-of-concept que Qt est adapté: faire un "personnage" qui se déplace sur "un fond"
+## Objectives
 
-- map/persons (assets from native game for instance) - https://github.com/Perfare/AssetStudio
-- menu (main menu and "meetings")
-- network: peer-to-peer with secret (visibility) - using OpenSSL/Helib for cryptography
-- tasks
+- [X] map/players (assets from native game for instance) - https://github.com/Perfare/AssetStudio
+- [X] Show the map
+- [X] Handle player movement
+- [ ] Maintain game state
+- [ ] Display other players
+- [ ] Display name tags
+- [ ] Menu (main menu and "meetings")
+- [ ] Network: peer-to-peer with secret (visibility) - using OpenSSL/Helib for cryptography
+- [ ] Tasks:
+    - [X] Fix Wiring (needs debugging)
+    - [ ] Other tasks
+    - [ ] Set places for tasks
+- [ ] vocal chat during "meetings" (not priority)
+- [ ] extra anti cheat (not priority)
 
-- vocal chat during "meetings" (not priority)
-- extra anti cheat (not priority)
+Realtime game similar to (C++ Qt decentralized...) https://github.com/Benjamin-Loison/Travian-blockchained
 
-realtime game similar to (C++ Qt decentralized...) https://github.com/Benjamin-Loison/Travian-blockchained
+## Building
+Requires Qt 5.12.11 (or probably any other recent version of Qt 5). To build, you can either:
+- open `AmongUsDecentralized.pro` in Qt Creator, then click "Build Project",
+- or, from a build directory, run `qmake path/to/AmongUsDecentralized.pro` then `make`.
 
 -----------
 
