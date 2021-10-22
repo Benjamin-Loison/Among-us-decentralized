@@ -1,7 +1,7 @@
 Partie "normale" (pas toutes les tâches):
 
 - Formation d'un réseau (menu pour faciliter la formation de celui-ci)
-- Apparition des joueurs (avec leur pseudonyme d'affiché) avec notamment un imposteur
+- Apparition des joueurs (avec leur pseudonyme d'affiché) avec notamment un imposteur et un brouillard au bout de quelques mètres
 - Réalisation des tâches aux endroits donnés
 - Possibilité de signaler un cadavre et faire un meeting (a priori sans chat, avec un système de votes)
 - Possible vérification cryptographique
