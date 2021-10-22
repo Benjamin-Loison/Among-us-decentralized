@@ -5,6 +5,8 @@
 #include <QMediaPlayer>
 #include <QFileInfo>
 #include <QUrl>
+#include <QMessageBox>
+#include <QInputDialog>
 #include "main.h"
 
 QString assetsFolder = "assets/";
@@ -26,4 +28,16 @@ void playSound(QString soundFile)
     player->setMedia(qUrl);
     player->setVolume(100);
     player->play(); // run in a separate thread
+}
+
+QString getText(QString title, QString label)
+{
+    bool ok = false;
+    QString text = "";
+
+    while(!ok || text.isEmpty()) // could also check that this username isn't used
+    {
+        text = QInputDialog::getText(qLabelKeys, title, label, QLineEdit::Normal, QString(), &ok);
+    }
+    return text;
 }
