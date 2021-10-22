@@ -3,6 +3,7 @@ QT += multimedia
 
 SOURCES += \
     InGameUI.cpp \
+    Player.cpp \
     fixWiring.cpp \
     main.cpp \
     qPlus.cpp \
@@ -11,6 +12,7 @@ SOURCES += \
 
 HEADERS += \
     InGameUI.h \
+    Player.h \
     fixWiring.h \
     main.h \
     qPlus.h \
