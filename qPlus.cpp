@@ -37,7 +37,7 @@ QString getText(QString title, QString label)
 
     while(!ok || text.isEmpty()) // could also check that this username isn't used
     {
-        text = QInputDialog::getText(qLabelKeys, title, label, QLineEdit::Normal, QString(), &ok);
+        text = QInputDialog::getText(inGameUI, title, label, QLineEdit::Normal, QString(), &ok);
     }
     return text;
 }
