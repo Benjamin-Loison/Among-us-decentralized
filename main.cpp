@@ -19,6 +19,16 @@ Client* client;
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    
+    inGameUI = new InGameUI;
+    
+    bool ok = false;
+    QString nickname = "";
+
+    while(!ok || nickname.isEmpty()) // could also check that this username isn't used
+    {
+        nickname = QInputDialog::getText(inGameUI, "Nickname", "Your nickname", QLineEdit::Normal, QString(), &ok);
+    }
 
     /*QString languageFile = "among_us_decentralized_fr";
         if(translator.load(languageFile))
@@ -39,7 +49,7 @@ int main(int argc, char *argv[])
         client = new Client;
     }
 
-    inGameUI = new InGameUI;
+    inGameUI->initialize();
     inGameUI->installEventFilter(inGameUI);
     inGameUI->setMinimumSize(640, 480);
     inGameUI->showMaximized();
