@@ -150,7 +150,7 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz) {
         return false;
 }
 
-void InGameUI::displayPlayer(Player &player, QPainter* painter = nullptr) {
+void InGameUI::displayPlayer(const Player &player, QPainter* painter = nullptr) {
     displayAt(player.playerFacingLeft ? player.flippedPixmap : player.playerPixmap, player.x, player.y-player.playerPixmap->size().height()/2, painter);
     QPainter* newPainter;
     if(painter)
@@ -202,9 +202,19 @@ void InGameUI::redraw() {
     QPainter painter(windowPixmap);
     setCenterBorderLimit(currPlayer.x, currPlayer.y-currPlayer.playerPixmap->size().height()/2, &painter);
     //displayAt(playerFacingLeft ? flippedPlayerPixmap : playerPixmap, x, y-playerPixmap->size().height()/2);
-    // test
-    displayPlayer(otherPlayers[0], &painter);
-    displayPlayer(currPlayer, &painter);
+    // Display players with ascending y, then ascending x
+    QVector<Player*> players;
+    players.push_back(&currPlayer);
+    for(Player& player: otherPlayers)
+        players.push_back(&player);
+    qSort(players.begin(), players.end(), [](const Player* a, const Player* b) {
+        if(a->y != b->y)
+            return a->y < b->y;
+        else
+            return a->x < b->x;
+    });
+    for(Player* player: players)
+        displayPlayer(*player, &painter);
     setPixmap(*windowPixmap);
     delete oldPixmap;
 }
