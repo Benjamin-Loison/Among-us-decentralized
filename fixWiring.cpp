@@ -160,7 +160,7 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
     QPair<QPixmap*, QPainter*> pixmapPainter = getFixWiringPixmapPainter();
     QPixmap* qBackgroundPixmap = pixmapPainter.first;
     QSize pixmapSize = qBackgroundPixmap->size(),
-          windowSize = qLabelKeys->size();
+          windowSize = inGameUI->size();
     QPainter* painter = pixmapPainter.second;
     QPoint position = mouseEvent->pos();
     quint16 mouseY = position.y() - (windowSize.height() - pixmapSize.height()) / 2,
@@ -222,7 +222,7 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
     painter->end();
 
     qImage->setPixmap(*qBackgroundPixmap);
-    QHBoxLayout* hbox = (QHBoxLayout*)qLabelKeys->qLabel->layout();
+    QHBoxLayout* hbox = (QHBoxLayout*)inGameUI->qLabel->layout();
     hbox->takeAt(1);
     hbox->takeAt(1);
     hbox->addWidget(qImage);

@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     }
 
     inGameUI = new InGameUI;
-    inGameUI->installEventFilter(qLabelKeys);
+    inGameUI->installEventFilter(inGameUI);
     inGameUI->setMinimumSize(640, 480);
     inGameUI->showMaximized();
 
