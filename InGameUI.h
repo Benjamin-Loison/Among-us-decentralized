@@ -24,6 +24,8 @@ class InGameUI : public QLabel
         quint16 x, y;
         int topBackground, leftBackground;
         QPixmap* playerPixmap;
+        QPixmap* flippedPlayerPixmap;
+        bool playerFacingLeft;
         QPixmap* backgroundPixmap;
         QPixmap* collisionPixmap;
         QImage collisionImage;

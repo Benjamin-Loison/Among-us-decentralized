@@ -22,6 +22,7 @@ InGameUI::InGameUI(QLabel* parent) : QLabel(parent), qLabel(nullptr)
     isPressed[Qt::Key_Down] = false;
     isPressed[Qt::Key_Left] = false;
     isPressed[Qt::Key_Right] = false;
+    playerFacingLeft = false;
     display();
 }
 
@@ -69,6 +70,7 @@ void InGameUI::display()
     }
 
     *playerPixmap = QPixmap::fromImage(tmp);
+    flippedPlayerPixmap = new QPixmap(playerPixmap->transformed(QTransform().scale(-1,1)));
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
@@ -142,8 +144,13 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz) {
             return false;
     }
     if(!isCollision(nx, ny)) {
+        if(nx < x)
+            playerFacingLeft = true;
+        else if(nx > x)
+            playerFacingLeft = false;
         x = nx;
         y = ny;
+
         return true;
     }
     else
@@ -179,7 +186,7 @@ void InGameUI::redraw() {
     QPixmap* oldPixmap = windowPixmap;
     windowPixmap = new QPixmap(size());
     setCenterBorderLimit(x, y-playerPixmap->size().height()/2);
-    displayAt(playerPixmap, x, y-playerPixmap->size().height()/2);
+    displayAt(playerFacingLeft ? flippedPlayerPixmap : playerPixmap, x, y-playerPixmap->size().height()/2);
     setPixmap(*windowPixmap);
     delete oldPixmap;
 }
