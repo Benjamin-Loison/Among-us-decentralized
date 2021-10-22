@@ -11,7 +11,7 @@
 #include "Client.h"
 
 QMediaPlayer* player;
-InGameUI* qLabelKeys;
+InGameUI* inGameUI;
 InGameGUI currentInGameGUI = IN_GAME_GUI_NONE;
 Server* server;
 Client* client;
@@ -39,10 +39,10 @@ int main(int argc, char *argv[])
         client = new Client;
     }
 
-    qLabelKeys = new InGameUI;
-    qLabelKeys->installEventFilter(qLabelKeys);
-    qLabelKeys->setMinimumSize(640, 480);
-    qLabelKeys->showMaximized();
+    inGameUI = new InGameUI;
+    inGameUI->installEventFilter(qLabelKeys);
+    inGameUI->setMinimumSize(640, 480);
+    inGameUI->showMaximized();
 
     return app.exec();
 }
