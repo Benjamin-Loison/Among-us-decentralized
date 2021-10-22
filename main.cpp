@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     }
 
     inGameUI->initialize();
-    inGameUI->installEventFilter(inGameUI);
+    app.installEventFilter(inGameUI);
     inGameUI->setMinimumSize(640, 480);
     inGameUI->showMaximized();
 

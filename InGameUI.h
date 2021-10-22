@@ -12,6 +12,7 @@
 #include <QTimer>
 #include <QString>
 #include <QElapsedTimer>
+#include <QPushButton>
 #include "fixWiring.h"
 #include "qPlus.h"
 #include "Player.h"
@@ -31,6 +32,7 @@ class InGameUI : public QLabel
         //QPixmap* flippedPlayerPixmap;
         //bool playerFacingLeft;
         //QString nickname;
+        bool everyoneReady;
         QPixmap* backgroundPixmap;
         QPixmap* collisionPixmap;
         QImage collisionImage;
@@ -40,6 +42,8 @@ class InGameUI : public QLabel
         QMap<int, bool> isPressed;
         qint64 lastUpdate;
         QHBoxLayout* currLayout;
+        QGridLayout* readyButtonLayout;
+        QPushButton* readyButton;
 
     public:
         QLabel* qLabel;
@@ -55,6 +59,7 @@ class InGameUI : public QLabel
 
     public slots:
         void redraw();
+        void onReadyClicked();
 
     protected:
         bool eventFilter(QObject* obj, QEvent* event);
