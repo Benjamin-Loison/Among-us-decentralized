@@ -21,6 +21,11 @@ QPixmap* getQPixmap(QString filePath)
     return new QPixmap(assetsFolder + filePath);
 }
 
+
+QPixmap* getQPixmap(quint16 width,quint16 height)
+{
+    return new QPixmap(width,height);
+}
 void playSound(QString soundFile)
 {
     QUrl qUrl = QUrl::fromLocalFile(QFileInfo(assetsFolder + soundFile).absoluteFilePath());
@@ -37,7 +42,7 @@ QString getText(QString title, QString label)
 
     while(!ok || text.isEmpty()) // could also check that this username isn't used
     {
-        text = QInputDialog::getText(qLabelKeys, title, label, QLineEdit::Normal, QString(), &ok);
+        text = QInputDialog::getText(inGameUI, title, label, QLineEdit::Normal, QString(), &ok);
     }
     return text;
 }
