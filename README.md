@@ -37,6 +37,7 @@ make some tests (by a human for tasks for instance but precise a procedure)
 
 faire une option (booléenne dans le code par exemple) pour ne pas utiliser tout ce qui touche à QMediaPlayer qui pose parfois problème chez Benjamin par exemple.
 
-Pour utiliser le multijoueur il est supposé que chaque joueur ait son port ouvert<!-- ou qu'à l'aide de l'UPnp se soit possible de l'ouvrir. -->
+Pour utiliser le multijoueur il est supposé que lorsque vous vous connecté à un autre joueur son port soit ouvert.
+<!-- Pour utiliser le multijoueur il est supposé que chaque joueur ait son port ouvert--><!-- ou qu'à l'aide de l'UPnp se soit possible de l'ouvrir. -->
 <!-- Pour utiliser le multijoueur il est supposé qu'au moins un joueur ait son port ouvert ou qu'à l'aide de l'UPnP se soit possible de l'ouvrir. -->
 <!-- avec l'IPv6 les ports sont ouverts par défaut ?! -->
