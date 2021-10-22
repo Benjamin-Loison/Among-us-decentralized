@@ -1,7 +1,8 @@
 #include "Player.h"
 #include "qPlus.h"
+#include <QDebug>
 
-Player::Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor color2): x(spawnX), y(spawnY), nickname(nickname) {
+Player::Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor color2): x(spawnX), y(spawnY), nickname(nickname), playerFacingLeft(false) {
     QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)};
     QColor colors[2] = {color1, color2};
     playerPixmap = getQPixmap("player.png");
@@ -22,4 +23,13 @@ Player::Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor c
 
     *playerPixmap = QPixmap::fromImage(tmp);
     flippedPixmap = new QPixmap(playerPixmap->transformed(QTransform().scale(-1,1)));
+}
+
+Player::Player(): x(0), y(0), nickname("Player"), playerPixmap(getQPixmap("player.png")), playerFacingLeft(false) {
+    flippedPixmap = new QPixmap(playerPixmap->transformed(QTransform().scale(-1,1)));
+}
+
+Player::~Player() {
+    /*delete playerPixmap;
+    delete flippedPixmap;*/
 }

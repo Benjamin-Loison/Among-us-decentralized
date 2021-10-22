@@ -21,10 +21,10 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     
-    inGameUI = new InGameUI;
     
     nickname = getText("Nickname", "Your nickname");
     peerAddress = getText("Peer address", "A peer address");
+    inGameUI = new InGameUI(nickname);
     
     /*QString languageFile = "among_us_decentralized_fr";
         if(translator.load(languageFile))
