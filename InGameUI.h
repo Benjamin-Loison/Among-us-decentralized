@@ -16,7 +16,7 @@
 
 const int FPS = 30;
 
-class QLabelKeys : public QLabel
+class InGameUI : public QLabel
 {
     Q_OBJECT
 
@@ -42,7 +42,7 @@ class QLabelKeys : public QLabel
         void setCenterBorderLimit(int x, int y);
         bool isCollision(quint16 x, quint16 y);
         void resizeEvent(QResizeEvent* ev);
-        QLabelKeys(QLabel* parent = 0);
+        InGameUI(QLabel* parent = 0);
 
     public slots:
         void redraw();

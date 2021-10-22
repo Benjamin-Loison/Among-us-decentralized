@@ -6,12 +6,12 @@
 #include <QPainter>
 #include <QMediaPlayer>
 #include "main.h"
-#include "QLabelKeys.h"
+#include "InGameUI.h"
 #include "Server.h"
 #include "Client.h"
 
 QMediaPlayer* player;
-QLabelKeys* qLabelKeys;
+InGameUI* qLabelKeys;
 InGameGUI currentInGameGUI = IN_GAME_GUI_NONE;
 Server* server;
 Client* client;
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
         client = new Client;
     }
 
-    qLabelKeys = new QLabelKeys;
+    qLabelKeys = new InGameUI;
     qLabelKeys->installEventFilter(qLabelKeys);
     qLabelKeys->setMinimumSize(640, 480);
     qLabelKeys->showMaximized();

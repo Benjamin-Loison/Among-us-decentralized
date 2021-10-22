@@ -1,11 +1,11 @@
-#include "QLabelKeys.h"
+#include "InGameUI.h"
 #include "main.h"
 #include <algorithm>
 using namespace std;
 
 const int MOVEMENT_SPEED_SEC = 477;
 
-QLabelKeys::QLabelKeys(QLabel* parent) : QLabel(parent), qLabel(nullptr)
+InGameUI::InGameUI(QLabel* parent) : QLabel(parent), qLabel(nullptr)
 {
     setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
     setWindowTitle("Among Us decentralized");
@@ -13,7 +13,7 @@ QLabelKeys::QLabelKeys(QLabel* parent) : QLabel(parent), qLabel(nullptr)
     x = 50;
     y = 0;
     timer = new QTimer();
-    connect(timer, &QTimer::timeout, this, &QLabelKeys::redraw);
+    connect(timer, &QTimer::timeout, this, &InGameUI::redraw);
     timer->start(1000/FPS);
     elapsedTimer = new QElapsedTimer();
     elapsedTimer->start();
@@ -25,11 +25,11 @@ QLabelKeys::QLabelKeys(QLabel* parent) : QLabel(parent), qLabel(nullptr)
     display();
 }
 
-bool QLabelKeys::isCollision(quint16 x, quint16 y) {
+bool InGameUI::isCollision(quint16 x, quint16 y) {
     return collisionImage.pixelColor(x, y) == QColor(255, 0, 0);
 }
 
-void QLabelKeys::display()
+void InGameUI::display()
 {
     QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
            colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
@@ -72,7 +72,7 @@ void QLabelKeys::display()
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
-void QLabelKeys::displayAt(QPixmap *pixmap, int centerx, int centery) {
+void InGameUI::displayAt(QPixmap *pixmap, int centerx, int centery) {
     int w = pixmap->size().width(), h = pixmap->size().height();
     int top = topBackground + centery - h/2, left = leftBackground + centerx - w/2;
     if(top >= size().height() || top+h <= 0 || left >= size().width() || left+w <= 0)
@@ -81,7 +81,7 @@ void QLabelKeys::displayAt(QPixmap *pixmap, int centerx, int centery) {
     painter.drawPixmap(left, top, *pixmap);
 }
 
-void QLabelKeys::setCenterBorderLimit(int x, int y) {
+void InGameUI::setCenterBorderLimit(int x, int y) {
     QPainter painter(windowPixmap);
     int winWidth = size().width(), winHeight = size().height();
     int backWidth = backgroundPixmap->size().width(), backHeight = backgroundPixmap->size().height();
@@ -102,7 +102,7 @@ void QLabelKeys::setCenterBorderLimit(int x, int y) {
     painter.drawPixmap(leftBackground, topBackground, *backgroundPixmap);
 }
 
-bool QLabelKeys::performMovement(qint64 elapsed, int dirVert, int dirHoriz) {
+bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz) {
     int delta;
     if(dirVert && dirHoriz)
         delta = elapsed * MOVEMENT_SPEED_SEC / 1414; // 1000*sqrt(2)
@@ -150,7 +150,7 @@ bool QLabelKeys::performMovement(qint64 elapsed, int dirVert, int dirHoriz) {
         return false;
 }
 
-void QLabelKeys::redraw() {
+void InGameUI::redraw() {
     // Movement
     qint64 now = elapsedTimer->elapsed();
     qint64 elapsed = now - lastUpdate;
@@ -184,12 +184,12 @@ void QLabelKeys::redraw() {
     delete oldPixmap;
 }
 
-void QLabelKeys::resizeEvent(QResizeEvent* ev) {
+void InGameUI::resizeEvent(QResizeEvent* ev) {
     redraw();
     QLabel::resizeEvent(ev);
 }
 
-bool QLabelKeys::eventFilter(QObject* obj, QEvent* event)
+bool InGameUI::eventFilter(QObject* obj, QEvent* event)
 {
     Q_UNUSED(obj)
 

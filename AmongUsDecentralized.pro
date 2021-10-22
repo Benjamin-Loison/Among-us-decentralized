@@ -2,7 +2,7 @@ QT += widgets
 QT += multimedia
 
 SOURCES += \
-    QLabelKeys.cpp \
+    InGameUI.cpp \
     fixWiring.cpp \
     main.cpp \
     qPlus.cpp \
@@ -10,7 +10,7 @@ SOURCES += \
     Client.cpp
 
 HEADERS += \
-    QLabelKeys.h \
+    InGameUI.h \
     fixWiring.h \
     main.h \
     qPlus.h \
