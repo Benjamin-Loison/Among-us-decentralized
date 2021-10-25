@@ -1,0 +1,10 @@
+Il est possible de chiffrer des complexes, probablement utiles pour travailler sur les distances
+
+Possibilité native d'écrire clés et messages sur un fichier json
+
+
+Autres données à chiffrer:
+-vote d'élimination
+-statut (mort, vivant, fait une tache...)
+-a complété une tache
+
