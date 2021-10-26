@@ -6,7 +6,7 @@ platform:
  - x64
 
 install:
- - dir C:\Qt\6.2.0\mingw81_64
+ - dir C:\Qt\6.2.0\mingw81_64\bin
  - qmake
  - make
 
