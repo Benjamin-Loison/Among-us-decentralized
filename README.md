@@ -1,6 +1,7 @@
 # Among us decentralized
 
 [![Travis Build Status](https://travis-ci.com/Benjamin-Loison/Among-us-decentralized.svg?branch=main)](https://app.travis-ci.com/Benjamin-Loison/Among-us-decentralized)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/Benjamin-Loison/Among-us-decentralized?branch=main&svg=true)](https://ci.appveyor.com/project/Benjamin-Loison/Among-us-decentralized)
 
 Language: C++  
 Graphics library: Qt
