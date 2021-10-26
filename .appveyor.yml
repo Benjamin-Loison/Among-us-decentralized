@@ -10,7 +10,7 @@ install:
  - set PATH=%PATH%;%QTDIR%\bin;C:\MinGW\bin
 build_script:
   - qmake
-  - mingw32-make
+  - mingw64-make
 
 artifacts:
  - path: AmongUsDecentralized
