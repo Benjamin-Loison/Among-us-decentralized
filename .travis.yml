@@ -3,12 +3,13 @@ dist: bionic
 compiler: g++
 sudo: required
 
-before_Install:
+before_install:
  - sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-bionic -y
  - sudo apt update
 install:
- - sudo apt install qt515base qt515svg qt515charts-no-lgpl qt515xmlpatterns qt515multimedia libgl-dev
+ - sudo apt install qt515base qt515svg qt515charts-no-lgpl qt515xmlpatterns qt515multimedia libgl-dev moreutils
  - source /opt/qt515/bin/qt515-env.sh
+ - head -n -19 AmongUsDecentralized.pro | sponge AmongUsDecentralized.pro
 script:
  - /opt/qt515/bin/qmake PREFIX=/usr
  - make
