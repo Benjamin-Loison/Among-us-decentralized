@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include <QHBoxLayout>
 #include <QtMath>
+#include <QPainterPath>
 #include "fixWiring.h"
 #include "main.h"
 #include "qPlus.h"
