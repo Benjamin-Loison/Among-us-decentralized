@@ -1,0 +1,17 @@
+image: Visual Studio 2019
+configuration:
+- Release
+
+platform:
+- x64
+
+install:
+  - curl --version
+
+build:
+  project: x64\VS2019\opus-tools.sln
+  parallel: false
+  verbosity: minimal
+
+artifacts:
+  - path: AmongUsDecentralized
