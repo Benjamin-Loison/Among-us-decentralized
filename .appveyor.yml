@@ -1,12 +1,13 @@
 image: Visual Studio 2019
 configuration:
-- Release
+ - Release
 
 platform:
-- x64
+ - x64
 
 install:
-  - curl --version
+ - qmake
+ - make
 
 build:
   project: x64\VS2019\opus-tools.sln
@@ -14,4 +15,4 @@ build:
   verbosity: minimal
 
 artifacts:
-  - path: AmongUsDecentralized
+ - path: AmongUsDecentralized
