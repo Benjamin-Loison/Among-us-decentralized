@@ -6,8 +6,7 @@ platform:
  - x64
 
 build_script:
- - ls $HOME/Qt/6.1.2/gcc_64/bin/
- - qmake
+ - $HOME/Qt/6.1.2/gcc_64/bin/qmake
  - mingw32-make
 
 artifacts:
