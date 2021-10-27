@@ -1,8 +1,5 @@
 image: Ubuntu2004
 
-platform:
- - x64
-
 install:
  - sudo apt install -y libgl-dev moreutils
  - head -n -19 AmongUsDecentralized.pro | sponge AmongUsDecentralized.pro
