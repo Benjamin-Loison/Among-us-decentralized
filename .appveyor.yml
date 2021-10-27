@@ -1,13 +1,10 @@
-image: Visual Studio 2019
+image: Ubuntu2004
 configuration:
  - Release
 
 platform:
  - x64
 
-install:
- - set QTDIR=C:\Qt\5.15.2\mingw81_64
- - set PATH=%PATH%;%QTDIR%\bin;C:\MinGW\bin
 build_script:
  - qmake
  - mingw32-make
