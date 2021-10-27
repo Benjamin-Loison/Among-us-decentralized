@@ -1,12 +1,11 @@
 image: Ubuntu2004
-configuration:
- - Release
 
 platform:
  - x64
 
 install:
- - sudo apt install -y libgl-dev
+ - sudo apt install -y libgl-dev moreutils
+ - head -n -19 AmongUsDecentralized.pro | sponge AmongUsDecentralized.pro
 
 build_script:
  - $HOME/Qt/5.15.2/gcc_64/bin/qmake
