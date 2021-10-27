@@ -6,8 +6,7 @@ platform:
  - x64
 
 install:
- - sudo apt update
- - sudo apt install libgl-dev
+ - sudo apt install -y libgl-dev
 
 build_script:
  - $HOME/Qt/5.15.2/gcc_64/bin/qmake
