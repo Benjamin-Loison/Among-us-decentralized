@@ -6,8 +6,8 @@ platform:
  - x64
 
 build_script:
- - $HOME/Qt/6.1.2/gcc_64/bin/qmake
- - mingw32-make
+ - $HOME/Qt/5.15.2/gcc_64/bin/qmake
+ - make
 
 artifacts:
  - path: AmongUsDecentralized
