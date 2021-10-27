@@ -10,6 +10,7 @@ install:
  - set PATH=%PATH%;%QTDIR%\bin;C:\MinGW\bin
 build_script:
   - qmake
+  - dir C:\Qt\5.15.2\mingw81_64\bin
   - mingw32-make
 
 artifacts:
