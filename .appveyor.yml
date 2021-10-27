@@ -6,6 +6,7 @@ platform:
  - x64
 
 build_script:
+ - ls $HOME/Qt/6.1.2/
  - qmake
  - mingw32-make
 
