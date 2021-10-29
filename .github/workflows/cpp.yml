@@ -21,8 +21,9 @@ jobs:
     #    modules: clang_64
     # is Qt already installed ?
     #- run: ls /usr/local/Cellar/
-    - run: ls /usr/local/opt/
+    #- run: ls /usr/local/opt/
     - run: brew install qt5
+    - run: ls /usr/local/opt/qt@5/
     - run: export PATH="/usr/local/opt/qt@5/bin:$PATH"
     - run: qmake
     - uses: actions/upload-artifact@v2
