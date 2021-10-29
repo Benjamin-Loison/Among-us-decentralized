@@ -1,11 +1,10 @@
 install:
-  - set PATH=%PATH%;C:\Qt\5.15.2\mingw81_32\bin;C:\Qt\Tools\mingw810_32\bin
+  - set PATH=%PATH%;C:\Qt\5.15.2\mingw81_32\bin
   - powershell "$file = 'AmongUsDecentralized.pro'; $content = Get-Content $file; $content[0..($content.length-20)]|Out-File $file -Encoding ascii"
   
 build_script:
   - qmake AmongUsDecentralized.pro
   - mingw32-make
-  - dir
 
 artifacts:
-  - path: AmongUsDecentralized.exe
+  - path: release/AmongUsDecentralized.exe
