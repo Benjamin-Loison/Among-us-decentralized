@@ -11,14 +11,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: tail -r AmongUsDecentralized.pro | sed '1,19d' AmongUsDecentralized.pro | tail -r > AmongUsDecentralized.pro
-    - uses: jurplel/install-qt-action@v2
+    #- uses: jurplel/install-qt-action@v2
     - run: qmake
-    - run: make > logs.txt
     - uses: actions/upload-artifact@v2
       with:
         name: Makefile
         path: Makefile
-    - uses: actions/upload-artifact@v2
-      with:
-        name: logs
-        path: logs.txt
+    - run: make
