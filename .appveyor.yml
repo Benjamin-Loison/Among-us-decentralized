@@ -23,9 +23,11 @@ install:
   - echo PATH=%PATH%
   - set RELEASE_PATH=appveyor\release
   - set TEST_PATH=appveyor\test
+  - copy AmongUsDecentralized.pro test.pro
   - powershell "$file = 'AmongUsDecentralized.pro'; $content = Get-Content $file; $content[0..($content.length-20)]|Out-File $file -Force"
-  #- wsl sudo apt install -y moreutils
-  #- wsl head -n -19 AmongUsDecentralized.pro | wsl sponge AmongUsDecentralized.pro
+  - wsl sudo apt install -y moreutils
+  - wsl head -n -19 test.pro | wsl sponge test.pro
+  - wsl md5sum test.pro AmongUsDecentralized.pro
   
 build_script:
   - dir C:\Qt
