@@ -23,9 +23,13 @@ jobs:
     #- run: ls /usr/local/Cellar/
     #- run: ls /usr/local/opt/
     - run: brew install qt5
-    - run: ls /usr/local/opt/qt@5/
-    - run: export PATH="/usr/local/opt/qt@5/bin:$PATH"
-    - run: qmake
+    #- run: ls /usr/local/opt/qt@5/
+    #- run: export PATH="/usr/local/opt/qt@5/bin:$PATH"
+    - run: echo 'export PATH="/usr/local/opt/qt@5/bin:$PATH"' >> /Users/runner/.bash_profile
+    - run: export LDFLAGS="-L/usr/local/opt/qt@5/lib"
+    - run: export CPPFLAGS="-I/usr/local/opt/qt@5/include"
+    - run: export PKG_CONFIG_PATH="/usr/local/opt/qt@5/lib/pkgconfig"
+    - run: /usr/local/opt/qt@5/qmake
     - uses: actions/upload-artifact@v2
       with:
         name: Makefile
