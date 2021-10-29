@@ -23,7 +23,9 @@ install:
   - echo PATH=%PATH%
   - set RELEASE_PATH=appveyor\release
   - set TEST_PATH=appveyor\test
+  - type AmongUsDecentralized.pro
   - powershell "$file = 'AmongUsDecentralized.pro'; $content = Get-Content $file; $content[0..($content.length-19)]|Out-File $file -Force"
+  - type AmongUsDecentralized.pro
   
 build_script:
   - dir C:\Qt
