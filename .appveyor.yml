@@ -1,7 +1,6 @@
 environment:
   global:
     qtdir5152: C:\Qt\5.15.2\mingw81_32
-    qtdirlatest: C:\Qt\latest\mingw81_32
 
 install:
   - set PATH=%PATH%;C:\Qt\5.15.2\mingw81_32\bin;C:\Qt\Tools\QtCreator\bin;C:\Qt\Tools\mingw810_32\bin
