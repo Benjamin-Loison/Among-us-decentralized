@@ -12,6 +12,7 @@ jobs:
     - uses: actions/checkout@v2
     - run: tail -r AmongUsDecentralized.pro | sed '1,19d' AmongUsDecentralized.pro | tail -r > AmongUsDecentralized.pro
     #- uses: jurplel/install-qt-action@v2
+    - run: cat AmongUsDecentralized.pro
     - run: qmake
     - uses: actions/upload-artifact@v2
       with:
