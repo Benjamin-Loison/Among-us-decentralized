@@ -15,6 +15,7 @@ jobs:
     - uses: WillBrennan/yaqti@2021.07.29
       with:
         version: 5.15.2
+        os: mac
     - run: qmake
     - uses: actions/upload-artifact@v2
       with:
