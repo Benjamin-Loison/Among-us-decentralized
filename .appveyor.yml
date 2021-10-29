@@ -24,7 +24,7 @@ install:
   - set RELEASE_PATH=appveyor\release
   - set TEST_PATH=appveyor\test
   - wsl sudo apt install -y moreutils
-  - wsl head -n -19 AmongUsDecentralized.pro | sponge AmongUsDecentralized.pro
+  - wsl head -n -19 AmongUsDecentralized.pro | wsl sponge AmongUsDecentralized.pro
 
 build_script:
   - dir C:\Qt
