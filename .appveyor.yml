@@ -23,7 +23,7 @@ install:
   - echo PATH=%PATH%
   - set RELEASE_PATH=appveyor\release
   - set TEST_PATH=appveyor\test
-  #- powershell "$file = 'AmongUsDecentralized.pro'; $content = Get-Content $file; $content[0..($content.length-19)]|Out-File $file -Force"
+  - powershell "$file = 'AmongUsDecentralized.pro'; $content = Get-Content $file; $content[0..($content.length-20)]|Out-File $file -Force"
   #- wsl sudo apt install -y moreutils
   #- wsl head -n -19 AmongUsDecentralized.pro | wsl sponge AmongUsDecentralized.pro
   
