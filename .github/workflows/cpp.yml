@@ -29,7 +29,8 @@ jobs:
     - run: export LDFLAGS="-L/usr/local/opt/qt@5/lib"
     - run: export CPPFLAGS="-I/usr/local/opt/qt@5/include"
     - run: export PKG_CONFIG_PATH="/usr/local/opt/qt@5/lib/pkgconfig"
-    - run: /usr/local/opt/qt@5/qmake
+    #- run: /usr/local/opt/qt@5/bin/qmake
+    - run: qmake
     - uses: actions/upload-artifact@v2
       with:
         name: Makefile
