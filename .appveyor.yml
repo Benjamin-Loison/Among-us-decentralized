@@ -3,6 +3,7 @@ install:
   - powershell "$file = 'AmongUsDecentralized.pro'; $content = Get-Content $file; $content[0..($content.length-20)]|Out-File $file -Encoding ascii"
   
 build_script:
+  - dir C:\Qt\5.15.2\
   - qmake AmongUsDecentralized.pro
   - mingw32-make
 
