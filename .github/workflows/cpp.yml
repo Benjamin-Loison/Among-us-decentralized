@@ -17,7 +17,7 @@ jobs:
         version: 5.15.2
         os: mac
         platform: desktop
-        modules: multimedia
+        #modules: multimedia
     - run: qmake
     - uses: actions/upload-artifact@v2
       with:
