@@ -13,6 +13,5 @@ install:
   - powershell "$file = 'AmongUsDecentralized.pro'; $content = Get-Content $file; $content[0..($content.length-20)]|Out-File $file -Encoding ascii"
   
 build_script:
-  - sed -i "s/CONFIG += c++11/QMAKE_CXXFLAGS += -std=gnu++0x/g" AmongUsDecentralized.pro
   - qmake AmongUsDecentralized.pro -r -spec %gpp% CONFIG+=ccache
   - mingw32-make
