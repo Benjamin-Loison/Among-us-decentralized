@@ -29,10 +29,12 @@ install:
   - wsl head -n -19 test.pro | wsl sponge test.pro
   - wsl md5sum test.pro AmongUsDecentralized.pro
   - echo START A
-  - type test.pro
+  #- type test.pro
+  - wsl cat -v test.pro
   - echo END A
   - echo START B
-  - type AmongUsDecentralized.pro
+  #- type AmongUsDecentralized.pro
+  - wsl cat -v AmongUsDecentralized.pro
   - echo END B
   
 build_script:
