@@ -32,10 +32,12 @@ install:
   #- type test.pro
   - wsl cat -v test.pro
   - echo END A
+  - wsl file test.pro
   - echo START B
   #- type AmongUsDecentralized.pro
   - wsl cat -v AmongUsDecentralized.pro
   - echo END B
+  - wsl file AmongUsDecentralized.pro
   
 build_script:
   - dir C:\Qt
