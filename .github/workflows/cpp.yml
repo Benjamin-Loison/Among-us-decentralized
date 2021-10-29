@@ -19,6 +19,7 @@ jobs:
     #    platform: desktop
     #    # ['clang_64', 'debug_info', 'qtcharts', 'qtdatavis3d', 'qtlottie', 'qtnetworkauth', 'qtpurchasing', 'qtquick3d', 'qtquicktimeline', 'qtscript', 'qtvirtualkeyboard', 'qtwebengine', 'qtwebglplugin']
     #    modules: clang_64
+    - run: ls /usr/local/Cellar/
     - run: brew install qt5
     - run: qmake
     - uses: actions/upload-artifact@v2
