@@ -5,13 +5,11 @@ environment:
 
   matrix:
     - QTDIR: C:\Qt\5.15.2\mingw81_32
-      TOOLCHAIN_VERSION: 810_32
-      gpp: win32-g++
 
 install:
-  - set PATH=%PATH%;%QTDIR%\bin;C:\Qt\Tools\QtCreator\bin;C:\Qt\Tools\mingw%TOOLCHAIN_VERSION%\bin
+  - set PATH=%PATH%;%QTDIR%\bin;C:\Qt\Tools\QtCreator\bin;C:\Qt\Tools\mingw810_32\bin
   - powershell "$file = 'AmongUsDecentralized.pro'; $content = Get-Content $file; $content[0..($content.length-20)]|Out-File $file -Encoding ascii"
   
 build_script:
-  - qmake AmongUsDecentralized.pro -r -spec %gpp% CONFIG+=ccache
+  - qmake AmongUsDecentralized.pro -r
   - mingw32-make
