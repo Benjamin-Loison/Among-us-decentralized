@@ -1,7 +1,3 @@
-branches:
-  only:
-    - master
-
 environment:
   global:
     qtdir5152: C:\Qt\5.15.2\mingw81_32
