@@ -1,5 +1,3 @@
-skip_tags: true
-
 branches:
   only:
     - master
@@ -8,7 +6,6 @@ environment:
   global:
     qtdir5152: C:\Qt\5.15.2\mingw81_32
     qtdirlatest: C:\Qt\latest\mingw81_32
-    CCACHE_DIR: "%APPVEYOR_BUILD_FOLDER%\\.ccache"
 
   matrix:
     - QTDIR: C:\Qt\5.15.2\mingw81_32
@@ -17,8 +14,6 @@ environment:
 
 install:
   - set PATH=%PATH%;%QTDIR%\bin;C:\Qt\Tools\QtCreator\bin;C:\Qt\Tools\mingw%TOOLCHAIN_VERSION%\bin
-  - set RELEASE_PATH=appveyor\release
-  - set TEST_PATH=appveyor\test
   - powershell "$file = 'AmongUsDecentralized.pro'; $content = Get-Content $file; $content[0..($content.length-20)]|Out-File $file -Encoding ascii"
   
 build_script:
