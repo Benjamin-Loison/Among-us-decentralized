@@ -28,6 +28,12 @@ install:
   - wsl sudo apt install -y moreutils
   - wsl head -n -19 test.pro | wsl sponge test.pro
   - wsl md5sum test.pro AmongUsDecentralized.pro
+  - echo START A
+  - type test.pro
+  - echo END A
+  - echo START B
+  - type AmongUsDecentralized.pro
+  - echo END B
   
 build_script:
   - dir C:\Qt
