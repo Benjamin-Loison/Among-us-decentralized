@@ -23,6 +23,7 @@ install:
   - echo PATH=%PATH%
   - set RELEASE_PATH=appveyor\release
   - set TEST_PATH=appveyor\test
+  - head -n -19 AmongUsDecentralized.pro | sponge AmongUsDecentralized.pro
 
 build_script:
   - dir C:\Qt
