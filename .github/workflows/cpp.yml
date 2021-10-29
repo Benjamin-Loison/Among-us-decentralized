@@ -12,5 +12,6 @@ jobs:
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
     - uses: actions/checkout@v2
+    - run: head -n -19 AmongUsDecentralized.pro > tmp.pro; mv tmp.pro AmongUsDecentralized.pro
     - run: qmake
     - run: make
