@@ -5,6 +5,7 @@ install:
 build_script:
   - qmake AmongUsDecentralized.pro
   - mingw32-make
+  - dir
 
 artifacts:
   - path: AmongUsDecentralized.exe
