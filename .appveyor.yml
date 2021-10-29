@@ -15,23 +15,13 @@ environment:
       TOOLCHAIN_VERSION: 810_32
       gpp: win32-g++
 
-cache:
-  - .ccache
-
 install:
   - set PATH=%PATH%;%QTDIR%\bin;C:\Qt\Tools\QtCreator\bin;C:\Qt\Tools\mingw%TOOLCHAIN_VERSION%\bin
-  - echo PATH=%PATH%
   - set RELEASE_PATH=appveyor\release
   - set TEST_PATH=appveyor\test
   - powershell "$file = 'AmongUsDecentralized.pro'; $content = Get-Content $file; $content[0..($content.length-20)]|Out-File $file -Encoding ascii"
   
 build_script:
-  - dir C:\Qt
-  - dir C:\Qt\latest
-  - dir %QTDIR%\bin
-  - dir C:\Qt\Tools\mingw%TOOLCHAIN_VERSION%\bin
-  - dir C:\MinGW\bin
   - sed -i "s/CONFIG += c++11/QMAKE_CXXFLAGS += -std=gnu++0x/g" AmongUsDecentralized.pro
   - qmake AmongUsDecentralized.pro -r -spec %gpp% CONFIG+=ccache
-  - lrelease AmongUsDecentralized.pro
   - mingw32-make
