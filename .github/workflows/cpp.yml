@@ -17,7 +17,8 @@ jobs:
         version: 5.15.2
         os: mac
         platform: desktop
-        #modules: multimedia
+        # ['clang_64', 'debug_info', 'qtcharts', 'qtdatavis3d', 'qtlottie', 'qtnetworkauth', 'qtpurchasing', 'qtquick3d', 'qtquicktimeline', 'qtscript', 'qtvirtualkeyboard', 'qtwebengine', 'qtwebglplugin']
+        modules: clang_64
     - run: qmake
     - uses: actions/upload-artifact@v2
       with:
