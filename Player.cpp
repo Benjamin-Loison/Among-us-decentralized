@@ -10,26 +10,15 @@ Player::Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor c
     QImage tmp = playerPixmap->toImage();
 
     for(quint16 y = 0; y < tmp.height(); y++)
-    {
         for(quint16 x = 0; x < tmp.width(); x++)
-        {
             for(quint8 originalColorsIndex = 0; originalColorsIndex < 2; originalColorsIndex++)
-            {
                 if(tmp.pixelColor(x, y) == originalColors[originalColorsIndex])
                     tmp.setPixelColor(x, y, colors[originalColorsIndex]);
-            }
-        }
-    }
 
     *playerPixmap = QPixmap::fromImage(tmp);
     flippedPixmap = new QPixmap(playerPixmap->transformed(QTransform().scale(-1,1)));
 }
 
-Player::Player(): x(0), y(0), nickname("Player"), playerPixmap(getQPixmap("player.png")), playerFacingLeft(false) {
+Player::Player(): x(0), y(0), nickname("Player"), playerFacingLeft(false), playerPixmap(getQPixmap("player.png")) {
     flippedPixmap = new QPixmap(playerPixmap->transformed(QTransform().scale(-1,1)));
-}
-
-Player::~Player() {
-    /*delete playerPixmap;
-    delete flippedPixmap;*/
 }

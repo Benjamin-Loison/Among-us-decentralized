@@ -10,7 +10,6 @@ public:
 
     Player();
     Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor color2);
-    ~Player();
     QPixmap* playerPixmap;
     QPixmap* flippedPixmap;
 

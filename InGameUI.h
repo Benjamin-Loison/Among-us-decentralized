@@ -26,12 +26,7 @@ class InGameUI : public QLabel
     private:
         Player currPlayer;
         QVector<Player> otherPlayers;
-        //quint16 x, y;
         int topBackground, leftBackground;
-        //QPixmap* playerPixmap;
-        //QPixmap* flippedPlayerPixmap;
-        //bool playerFacingLeft;
-        //QString nickname;
         bool everyoneReady;
         QPixmap* backgroundPixmap;
         QPixmap* collisionPixmap;

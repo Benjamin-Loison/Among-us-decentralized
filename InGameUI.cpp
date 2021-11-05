@@ -60,9 +60,12 @@ void InGameUI::initDisplay()
                 if (!isCollision(currPlayer.x, currPlayer.y))
                     found = true;
     }
-    setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    //setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
+/**
+ *  Displays given pixmap centered at map coordinates (centerx, centery). Uses the provided painter if any.
+ */
 void InGameUI::displayAt(QPixmap *pixmap, int centerx, int centery, QPainter *painter = nullptr)
 {
     int w = pixmap->size().width(), h = pixmap->size().height();
@@ -78,11 +81,17 @@ void InGameUI::displayAt(QPixmap *pixmap, int centerx, int centery, QPainter *pa
     }
 }
 
+/**
+ * Centers the in-game UI at the given coordinates, clipping at borders if necessary.
+ * If the map is smaller than the window in some dimension, the map is centered along that dimension.
+ * @brief InGameUI::setCenterBorderLimit
+ * @param x
+ * @param y
+ * @param painter A QPainter that will be used for painting the background.
+ * If nullptr is passed, a new QPainter will be used instead.
+ */
 void InGameUI::setCenterBorderLimit(int x, int y, QPainter *painter = nullptr)
 {
-    bool destroyPainter = painter == nullptr;
-    if (destroyPainter)
-        painter = new QPainter(windowPixmap);
     int winWidth = size().width(), winHeight = size().height();
     int backWidth = backgroundPixmap->size().width(), backHeight = backgroundPixmap->size().height();
     if (backWidth <= winWidth) // Center horizontally
@@ -101,11 +110,22 @@ void InGameUI::setCenterBorderLimit(int x, int y, QPainter *painter = nullptr)
         topBackground = max(topBackground, winHeight - backHeight); // clip at bottom border
         topBackground = min(topBackground, 0);                      // clip at top border
     }
-    painter->drawPixmap(leftBackground, topBackground, *backgroundPixmap);
-    if (destroyPainter)
-        delete painter;
+    if(painter)
+        painter->drawPixmap(leftBackground, topBackground, *backgroundPixmap);
+    else {
+        QPainter locPainter(windowPixmap);
+        locPainter.drawPixmap(leftBackground, topBackground, *backgroundPixmap);
+    }
 }
 
+/**
+ * Performs player movement along the specified direction: +/-1 for moving in increasing/decreasing coordinates.
+ * @brief InGameUI::performMovement
+ * @param elapsed The number of milliseconds that have elapsed since the last frame. Used for calculating the movement distance.
+ * @param dirVert Vertical direction. Can be +1 for positive y, 0 for unchanged y or -1 for negative y.
+ * @param dirHoriz Horizontal direction. Can be +1 for positive x, 0 for unchanged x or -1 for negative x.
+ * @return Whether the movement was successful (i.e. not prevented by map borders or an obstacle).
+ */
 bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz)
 {
     int delta;
@@ -165,6 +185,12 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz)
         return false;
 }
 
+/**
+ * Displays the given Player.
+ * @brief InGameUI::displayPlayer
+ * @param player
+ * @param painter A QPainter that will be used for painting. A fresh one will be used if this is nullptr.
+ */
 void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr)
 {
     displayAt(player.playerFacingLeft ? player.flippedPixmap : player.playerPixmap, player.x, player.y - player.playerPixmap->size().height() / 2, painter);
@@ -187,6 +213,10 @@ void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr)
         delete newPainter;
 }
 
+/**
+ * Performs player movement, then redraws the in-game UI. Meant to be called for each frame.
+ * @brief InGameUI::redraw
+ */
 void InGameUI::redraw()
 {
     // Movement
@@ -223,7 +253,6 @@ void InGameUI::redraw()
     windowPixmap = new QPixmap(size());
     QPainter painter(windowPixmap);
     setCenterBorderLimit(currPlayer.x, currPlayer.y - currPlayer.playerPixmap->size().height() / 2, &painter);
-    //displayAt(playerFacingLeft ? flippedPlayerPixmap : playerPixmap, x, y-playerPixmap->size().height()/2);
     // Display players with ascending y, then ascending x
     QVector<Player *> players;
     players.push_back(&currPlayer);
@@ -241,14 +270,8 @@ void InGameUI::redraw()
 
     if (!everyoneReady)
     {
-        /*
-        QRect rect(windowPixmap->size().width() - 100, windowPixmap->size().height() - 50, 100, 50);
-        painter.fillRect(rect, QColor(128, 128, 128, 255));
-        painter.setFont(QFont("Liberation Sans", 23));
-        painter.setPen(Qt::white);
-        painter.drawText(rect, Qt::AlignCenter | Qt::AlignVCenter, "Ready");*/
         if(!readyButtonLayout) {
-            qDebug() << "Creating layout";
+            qDebug() << "Creating ready button";
             readyButtonLayout = new QGridLayout;
             readyButton = new QPushButton("Ready");
             connect(readyButton, &QPushButton::released, this, &InGameUI::onReadyClicked);
@@ -275,6 +298,13 @@ void InGameUI::onReadyClicked() {
     qDebug() << "Ready clicked";
 }
 
+/**
+ * Filters key presses used in the game, and mouse events for tasks. (there may be a more efficient implementation)
+ * @brief InGameUI::eventFilter
+ * @param obj The object that received the event.
+ * @param event The event.
+ * @return
+ */
 bool InGameUI::eventFilter(QObject *obj, QEvent *event)
 {
     Q_UNUSED(obj)
@@ -310,9 +340,6 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                         delete currLayout;
                         delete qLabel;
                         qLabel = nullptr;
-                        //qLabel = new QLabel;
-                        //qLabel->clear();
-                        //free(qLabel);
                     }
                 }
                 break;
@@ -350,7 +377,7 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
     {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 
-        if (qLabel != nullptr)
+        if (qLabel != nullptr && mouseEvent->buttons() & Qt::LeftButton)
         {
             if (currentInGameGUI == IN_GAME_GUI_FIX_WIRING)
                 onMouseEventFixWiring(mouseEvent);
