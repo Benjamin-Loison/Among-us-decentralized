@@ -131,7 +131,7 @@ QPair<QPixmap*, QPainter*> getFixWiringPixmapPainter()
 QLabel* getFixWiring()
 {
     //qInfo("a");
-    playSound("Fix_Wiring_task_open_sound.ogg");
+    playSound("Fix_Wiring_task_open_sound.wav");
     QLabel* qFrame = new QLabel;
     QHBoxLayout* hbox = new QHBoxLayout(qFrame);
     QLabel* qLabel = new QLabel(qFrame);
@@ -190,7 +190,7 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
             if(d <= range)
             {
                 links[fixingIndex] = nodesIndex;
-                playSound("Fix_Wiring_connect_wire_sound_" + QString::number(QRandomGenerator::global()->bounded(3) + 1) + ".ogg");
+                playSound("Fix_Wiring_connect_wire_sound_" + QString::number(QRandomGenerator::global()->bounded(3) + 1) + ".wav");
                 break;
             }
         }
@@ -246,6 +246,6 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
     }
     if(everythingMatch)
     {
-        playSound("Fix_Wiring_task_close_sound.ogg");
+        playSound("Fix_Wiring_task_close_sound.wav");
     }
 }

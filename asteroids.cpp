@@ -21,7 +21,7 @@ QPair<QPixmap*, QPainter*> getAsteroidsPixmapPainter()
 QLabel* getAsteroids()
 {
     //qInfo("a");
-    playSound("Fix_Wiring_task_open_sound.ogg");
+    playSound("Fix_Wiring_task_open_sound.wav");
     QLabel* qFrame = new QLabel;
     QHBoxLayout* hbox = new QHBoxLayout(qFrame);
     QLabel* qLabel = new QLabel(qFrame);

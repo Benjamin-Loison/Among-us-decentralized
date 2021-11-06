@@ -7,9 +7,12 @@
 #include <QUrl>
 #include <QMessageBox>
 #include <QInputDialog>
+#include <QSoundEffect>
 #include "main.h"
 
 QString assetsFolder = "assets/";
+
+QMap<QString, QSoundEffect*> soundEffectMap;
 
 double distance(quint16 x0, quint16 y0, quint16 x1, quint16 y1)
 {
@@ -42,11 +45,14 @@ QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2) {
 
 void playSound(QString soundFile)
 {
-    QUrl qUrl = QUrl::fromLocalFile(QFileInfo(assetsFolder + soundFile).absoluteFilePath());
+    if(!soundEffectMap.count(soundFile)) {
+        QSoundEffect* effect = new QSoundEffect;
+        QUrl qUrl = QUrl::fromLocalFile(QFileInfo(assetsFolder + soundFile).absoluteFilePath());
+        effect->setSource(qUrl);
+        soundEffectMap[soundFile] = effect;
+    }
 
-    player->setMedia(qUrl);
-    player->setVolume(100);
-    player->play(); // run in a separate thread
+    soundEffectMap[soundFile]->play(); // run in a separate thread
 }
 
 QString getText(QString title, QString label)
