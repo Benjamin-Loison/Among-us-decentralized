@@ -1,5 +1,6 @@
 #include "InGameUI.h"
 #include "main.h"
+#include "asteroids.h"
 #include <QPushButton>
 #include <algorithm>
 using namespace std;
@@ -8,6 +9,7 @@ const int MOVEMENT_SPEED_SEC = 477;
 const int X_SPAWN = 5500;
 const int Y_SPAWN = 1100;
 const int KILL_RANGE_SQUARED = 200*200; // 200 pixels
+const int TASK_RANGE_SQUARED = 200*200; // 200 pixels
 const QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
              colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
                              {QColor(20, 156, 20), QColor(8, 99, 64)},
@@ -71,7 +73,8 @@ void InGameUI::initDisplay()
 }
 
 /**
- *  Displays given pixmap centered at map coordinates (centerx, centery). Uses the provided painter if any.
+ * Displays given pixmap centered at map coordinates (centerx, centery).
+ * Uses the provided painter if any.
  */
 void InGameUI::displayAt(QPixmap *pixmap, int centerx, int centery, QPainter *painter = nullptr)
 {
@@ -192,13 +195,7 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz)
         return false;
 }
 
-/**
- * Looks for a player to kill, then kills it if in range and alive.
- * Also checks whether the current Player is an alive Impostor.
- */
-bool InGameUI::killPlayer() {
-    if(!currPlayer.isImpostor || currPlayer.isGhost)
-        return false;
+QVector<Player *> InGameUI::getOtherPlayersByDistance() {
     QVector<Player *> players;
     for(Player &player : otherPlayers)
         players.push_back(&player);
@@ -215,7 +212,39 @@ bool InGameUI::killPlayer() {
         else
             return a->nickname < b->nickname;
     });
-    for(Player* player : players) {
+    return players;
+}
+
+QVector<QPair<Task, QPoint>> InGameUI::getTasksByDistance() {
+    QVector<QPair<Task, QPoint>> tasks;
+    for(Task task : tasksLocations.keys())
+        for(QPoint pt : tasksLocations[task])
+            tasks.push_back(QPair<Task, QPoint>(task, pt));
+    int x = currPlayer.x, y = currPlayer.y;
+    qSort(tasks.begin(), tasks.end(), [&](const QPair<Task, QPoint> &task1, const QPair<Task, QPoint> &task2) {
+        QPoint pt1 = task1.second;
+        QPoint pt2 = task2.second;
+        int dist1 = (pt1.x()-x)*(pt1.x()-x) + (pt1.y()-y)*(pt1.y()-y);
+        int dist2 = (pt2.x()-x)*(pt2.x()-x) + (pt2.y()-y)*(pt2.y()-y);
+        if(dist1 != dist2)
+            return dist1 < dist2;
+        else if(pt1.x() != pt2.x())
+            return pt1.x() < pt2.x();
+        else
+            return pt1.y() < pt2.y();
+    });
+    return tasks;
+}
+
+/**
+ * Looks for a player to kill, then kills it if in range and alive.
+ * Also checks whether the current Player is an alive Impostor.
+ */
+bool InGameUI::killPlayer() {
+    if(!currPlayer.isImpostor || currPlayer.isGhost)
+        return false;
+    int x = currPlayer.x, y = currPlayer.y;
+    for(Player* player : getOtherPlayersByDistance()) {
         if(!player->isGhost) {
             int sqDist = (player->x-x)*(player->x-x) + (player->y-y)*(player->y-y);
             if(sqDist <= KILL_RANGE_SQUARED)
@@ -267,9 +296,9 @@ void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr)
     QRect boundingRect;
     QPen oldPen = newPainter->pen();
     newPainter->setPen(Qt::white);
-    newPainter->drawText(textRect, Qt::TextDontClip | Qt::TextSingleLine | Qt::AlignCenter, player.nickname, &boundingRect);
+    newPainter->drawText(textRect, Qt::TextDontClip | Qt::AlignCenter, player.nickname, &boundingRect);
     newPainter->fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
-    newPainter->drawText(textRect, Qt::TextDontClip | Qt::TextSingleLine | Qt::AlignCenter, player.nickname, &boundingRect);
+    newPainter->drawText(textRect, Qt::TextDontClip | Qt::AlignCenter, player.nickname, &boundingRect);
     newPainter->setPen(oldPen);
     if (!painter)
         delete newPainter;
@@ -329,19 +358,32 @@ void InGameUI::redraw()
           });
     for (Player *player : players)
         displayPlayer(*player, &painter);
+
+    int fontSizePt = 23;
+    // Impostor message
     if(currPlayer.isImpostor) {
-        int fontSizePt = 23;
         painter.setFont(QFont("Liberation Sans", fontSizePt));
         QRect textRect(0, 0, 1, fontSizePt);
         QRect boundingRect;
-        QPen oldPen = painter.pen();
+        //QPen oldPen = painter.pen();
         painter.setPen(Qt::red);
-        painter.drawText(textRect, Qt::TextDontClip | Qt::TextSingleLine | Qt::AlignLeft, "You are an Impostor!", &boundingRect);
+        painter.drawText(textRect, Qt::TextDontClip | Qt::AlignLeft, "You are an Impostor!", &boundingRect);
         painter.fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
-        painter.drawText(textRect, Qt::TextDontClip | Qt::TextSingleLine | Qt::AlignLeft, "You are an Impostor!", &boundingRect);
-        painter.setPen(oldPen);
+        painter.drawText(textRect, Qt::TextDontClip | Qt::AlignLeft, "You are an Impostor!");
+        //painter.setPen(oldPen);
     }
 
+    // For debugging purposes: show current location
+    QRect textRect(size().width()-1, 0, 1, fontSizePt);
+    QRect boundingRect;
+    painter.setPen(Qt::white);
+    painter.drawText(textRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y), &boundingRect);
+    boundingRect.setLeft(size().width()-1-boundingRect.width());
+    boundingRect.setRight(size().width()-1);
+    painter.fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
+    painter.drawText(boundingRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y));
+
+    // Ready button
     if (!everyoneReady)
     {
         if(!readyButtonLayout) {
@@ -353,6 +395,7 @@ void InGameUI::redraw()
             setLayout(readyButtonLayout);
         }
     }
+
     setPixmap(*windowPixmap);
     delete oldPixmap;
 }
@@ -402,11 +445,30 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                 if(everyoneReady) {
                     if (qLabel == nullptr)
                     {
-                        currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
-                        qLabel = getFixWiring();
-                        currLayout = new QHBoxLayout;
-                        currLayout->addWidget(qLabel);
-                        setLayout(currLayout);
+                        QVector<QPair<Task, QPoint>> tasks = getTasksByDistance();
+                        if(tasks.size() > 0) {
+                            Task task = tasks[0].first;
+                            QPoint loc = tasks[0].second;
+                            int x = currPlayer.x, y = currPlayer.y;
+                            int sqDist = (loc.x()-x)*(loc.x()-x) + (loc.y()-y)*(loc.y()-y);
+                            if(sqDist <= TASK_RANGE_SQUARED) {
+                                switch(task) {
+                                case TASK_FIX_WIRING:
+                                    currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
+                                    qLabel = getFixWiring();
+                                    break;
+                                case TASK_ASTEROIDS:
+                                    currentInGameGUI = IN_GAME_GUI_ASTEROIDS;
+                                    qLabel = getAsteroids();
+                                    break;
+                                default:
+                                    return true;
+                                }
+                                currLayout = new QHBoxLayout;
+                                currLayout->addWidget(qLabel);
+                                setLayout(currLayout);
+                            }
+                        }
                     }
                     else
                     {

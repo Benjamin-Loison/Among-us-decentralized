@@ -7,8 +7,8 @@
 
 extern QMediaPlayer* player;
 extern InGameUI* inGameUI;
-enum InGameGUI{IN_GAME_GUI_NONE, IN_GAME_GUI_FIX_WIRING};
-enum Task{TASK_FIX_WIRING,TASK_ASTEROIDS,TASK_SWIPE};
+enum InGameGUI{IN_GAME_GUI_NONE, IN_GAME_GUI_FIX_WIRING, IN_GAME_GUI_ASTEROIDS};
 extern InGameGUI currentInGameGUI;
+extern QMap<Task,QVector<QPoint>> tasksLocations;
 
 #endif

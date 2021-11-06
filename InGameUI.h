@@ -19,6 +19,8 @@
 
 const int FPS = 30;
 
+enum Task{TASK_FIX_WIRING,TASK_ASTEROIDS,TASK_SWIPE};
+
 class InGameUI : public QLabel
 {
     Q_OBJECT
@@ -50,6 +52,8 @@ class InGameUI : public QLabel
         void setCenterBorderLimit(int x, int y, QPainter* painter);
         bool isCollision(quint16 x, quint16 y);
         void resizeEvent(QResizeEvent* ev);
+        QVector<Player *> getOtherPlayersByDistance();
+        QVector<QPair<Task, QPoint>> getTasksByDistance();
         bool killPlayer();
         bool killPlayer(Player &player);
         InGameUI(QString nickname, QLabel* parent = 0);
