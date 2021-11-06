@@ -7,6 +7,7 @@ using namespace std;
 const int MOVEMENT_SPEED_SEC = 477;
 const int X_SPAWN = 5500;
 const int Y_SPAWN = 1100;
+const int KILL_RANGE_SQUARED = 200*200; // 200 pixels
 const QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
              colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
                              {QColor(20, 156, 20), QColor(8, 99, 64)},
@@ -21,12 +22,18 @@ InGameUI::InGameUI(QString nickname, QLabel *parent) : QLabel(parent), currPlaye
     setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
     setWindowTitle("Among Us decentralized");
     readyButtonLayout = nullptr;
+    // FOR TESTING
+    currPlayer.isImpostor = true;
+    /*currPlayer.isGhost = true;
+    currPlayer.showBody = true;
+    currPlayer.bodyX = currPlayer.x;
+    currPlayer.bodyY = currPlayer.y;*/
 }
 
 void InGameUI::initialize()
 {
     everyoneReady = false;
-    otherPlayers.push_back(Player(X_SPAWN, Y_SPAWN, "Test player", colors[0][0], colors[0][1]));
+    otherPlayers.push_back(Player(X_SPAWN+200, Y_SPAWN, "Test player", colors[0][0], colors[0][1]));
     windowPixmap = new QPixmap(size());
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &InGameUI::redraw);
@@ -186,6 +193,56 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz)
 }
 
 /**
+ * Looks for a player to kill, then kills it if in range and alive.
+ * Also checks whether the current Player is an alive Impostor.
+ */
+bool InGameUI::killPlayer() {
+    if(!currPlayer.isImpostor || currPlayer.isGhost)
+        return false;
+    QVector<Player *> players;
+    for(Player &player : otherPlayers)
+        players.push_back(&player);
+    int x = currPlayer.x, y = currPlayer.y;
+    qSort(players.begin(), players.end(), [&](const Player *a, const Player *b) {
+        int sqDistA = (a->x-x) * (a->x-x) + (a->y-y) * (a->y-y);
+        int sqDistB = (b->x-x) * (b->x-x) + (b->y-y) * (b->y-y);
+        if(sqDistA != sqDistB)
+            return sqDistA < sqDistB;
+        else if(a->x != b->x)
+            return a->x < b->x;
+        else if(a->y != b->y)
+            return a->y < b->y;
+        else
+            return a->nickname < b->nickname;
+    });
+    for(Player* player : players) {
+        if(!player->isGhost) {
+            int sqDist = (player->x-x)*(player->x-x) + (player->y-y)*(player->y-y);
+            if(sqDist <= KILL_RANGE_SQUARED)
+                return killPlayer(*player);
+            else
+                break;
+        }
+    }
+    return false;
+}
+
+/**
+ * Kills the given Player.
+ */
+bool InGameUI::killPlayer(Player &p) {
+    if(!currPlayer.isImpostor || p.isGhost)
+        return false;
+    // TODO
+    p.isGhost = true;
+    p.bodyX = p.x;
+    p.bodyY = p.y;
+    p.showBody = true;
+    qDebug() << "Killed " << p.nickname;
+    return true;
+}
+
+/**
  * Displays the given Player.
  * @brief InGameUI::displayPlayer
  * @param player
@@ -193,7 +250,12 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz)
  */
 void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr)
 {
-    displayAt(player.playerFacingLeft ? player.flippedPixmap : player.playerPixmap, player.x, player.y - player.playerPixmap->size().height() / 2, painter);
+    if(player.isGhost && !player.showBody)
+        return; // TODO: show ghost?
+    int x = player.isGhost ? player.bodyX : player.x;
+    int y = player.isGhost ? player.bodyY : player.y;
+    QPixmap* toDraw = player.isGhost ? player.deadPixmap : (player.playerFacingLeft ? player.flippedPixmap : player.playerPixmap);
+    displayAt(toDraw, x, y - toDraw->size().height() / 2, painter);
     QPainter *newPainter;
     if (painter)
         newPainter = painter;
@@ -201,7 +263,7 @@ void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr)
         newPainter = new QPainter(windowPixmap);
     int fontSizePt = 23;
     newPainter->setFont(QFont("Liberation Sans", fontSizePt));
-    QRect textRect(leftBackground + player.x, topBackground + player.y - player.playerPixmap->size().height() - fontSizePt - 5, 1, fontSizePt);
+    QRect textRect(leftBackground + x, topBackground + y - toDraw->size().height() - fontSizePt - 5, 1, fontSizePt);
     QRect boundingRect;
     QPen oldPen = newPainter->pen();
     newPainter->setPen(Qt::white);
@@ -214,7 +276,7 @@ void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr)
 }
 
 /**
- * Performs player movement, then redraws the in-game UI. Meant to be called for each frame.
+ * Performs player movement, then redraws the in-game UI. Meant to be called at each frame.
  * @brief InGameUI::redraw
  */
 void InGameUI::redraw()
@@ -267,6 +329,18 @@ void InGameUI::redraw()
           });
     for (Player *player : players)
         displayPlayer(*player, &painter);
+    if(currPlayer.isImpostor) {
+        int fontSizePt = 23;
+        painter.setFont(QFont("Liberation Sans", fontSizePt));
+        QRect textRect(0, 0, 1, fontSizePt);
+        QRect boundingRect;
+        QPen oldPen = painter.pen();
+        painter.setPen(Qt::red);
+        painter.drawText(textRect, Qt::TextDontClip | Qt::TextSingleLine | Qt::AlignLeft, "You are an Impostor!", &boundingRect);
+        painter.fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
+        painter.drawText(textRect, Qt::TextDontClip | Qt::TextSingleLine | Qt::AlignLeft, "You are an Impostor!", &boundingRect);
+        painter.setPen(oldPen);
+    }
 
     if (!everyoneReady)
     {
@@ -341,6 +415,12 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                         delete qLabel;
                         qLabel = nullptr;
                     }
+                }
+                break;
+            case Qt::Key_K:
+                if(everyoneReady) {
+                    // Game logic verifications are performed in killPlayer()
+                    killPlayer();
                 }
                 break;
             default:

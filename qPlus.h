@@ -11,5 +11,6 @@ QPixmap* getQPixmap(QString filePath);
 QPixmap* getQPixmap(quint16 width,quint16 height);
 void playSound(QString soundFile);
 QString getText(QString title, QString label);
+QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2);
 
 #endif

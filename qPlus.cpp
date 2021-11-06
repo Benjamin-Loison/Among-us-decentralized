@@ -26,6 +26,20 @@ QPixmap* getQPixmap(quint16 width,quint16 height)
 {
     return new QPixmap(width,height);
 }
+
+QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2) {
+    QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)};
+    QColor colors[2] = {color1, color2};
+    QImage tmp = pixmap.toImage();
+
+    for(quint16 y = 0; y < tmp.height(); y++)
+        for(quint16 x = 0; x < tmp.width(); x++)
+            for(quint8 originalColorsIndex = 0; originalColorsIndex < 2; originalColorsIndex++)
+                if(tmp.pixelColor(x, y) == originalColors[originalColorsIndex])
+                    tmp.setPixelColor(x, y, colors[originalColorsIndex]);
+    return QPixmap::fromImage(tmp);
+}
+
 void playSound(QString soundFile)
 {
     QUrl qUrl = QUrl::fromLocalFile(QFileInfo(assetsFolder + soundFile).absoluteFilePath());

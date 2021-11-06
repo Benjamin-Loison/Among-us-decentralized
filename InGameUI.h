@@ -50,6 +50,8 @@ class InGameUI : public QLabel
         void setCenterBorderLimit(int x, int y, QPainter* painter);
         bool isCollision(quint16 x, quint16 y);
         void resizeEvent(QResizeEvent* ev);
+        bool killPlayer();
+        bool killPlayer(Player &player);
         InGameUI(QString nickname, QLabel* parent = 0);
 
     public slots:
