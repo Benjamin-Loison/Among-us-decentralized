@@ -35,6 +35,8 @@ Requires Qt 5.12.11 (or probably any other recent version of Qt 5). To build, yo
 
 -----------
 
+For network maybe just working with Discord Rich Presence with a high level of abstraction would be nice
+
 5.1 s pour faire upper engine vers cafetaria (arrêt table) en "frotant" le mur du bas 2 431 pixels d'après ma mesure relativement précise donc une vitesse de 477 pixels par seconde
 
 make some tests (by a human for tasks for instance but precise a procedure)
