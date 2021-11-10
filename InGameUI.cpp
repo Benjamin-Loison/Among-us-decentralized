@@ -250,7 +250,7 @@ bool InGameUI::reportBody() {
             int sqDist = (player->x-x)*(player->x-x) + (player->y-y)*(player->y-y);
             if(sqDist <= REPORT_RANGE_SQUARED) {
                 // TODO
-                qDebug() << "Reported player " << player->nickname;
+                qDebug() << "Reported player" << player->nickname;
                 return true;
             }
         }
@@ -289,7 +289,7 @@ bool InGameUI::killPlayer(Player &p) {
     p.bodyX = p.x;
     p.bodyY = p.y;
     p.showBody = true;
-    qDebug() << "Killed " << p.nickname;
+    qDebug() << "Killed" << p.nickname;
     return true;
 }
 
