@@ -10,6 +10,7 @@ const int X_SPAWN = 5500;
 const int Y_SPAWN = 1100;
 const int KILL_RANGE_SQUARED = 200*200; // 200 pixels
 const int TASK_RANGE_SQUARED = 200*200; // 200 pixels
+const int REPORT_RANGE_SQUARED = 200*200; // 200 pixels
 const QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
              colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
                              {QColor(20, 156, 20), QColor(8, 99, 64)},
@@ -234,6 +235,27 @@ QVector<QPair<Task, QPoint>> InGameUI::getTasksByDistance() {
             return pt1.y() < pt2.y();
     });
     return tasks;
+}
+
+/**
+ * Looks for a corpse to report, reports it if found.
+ */
+bool InGameUI::reportBody() {
+    // Confirm: ghosts can't report bodies, right?
+    if(currPlayer.isGhost)
+        return false;
+    int x = currPlayer.x, y = currPlayer.y;
+    for(Player* player : getOtherPlayersByDistance()) {
+        if(player->showBody) {
+            int sqDist = (player->x-x)*(player->x-x) + (player->y-y)*(player->y-y);
+            if(sqDist <= REPORT_RANGE_SQUARED) {
+                // TODO
+                qDebug() << "Reported player " << player->nickname;
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 /**
@@ -483,6 +505,11 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                 if(everyoneReady) {
                     // Game logic verifications are performed in killPlayer()
                     killPlayer();
+                }
+                break;
+            case Qt::Key_R:
+                if(everyoneReady) {
+                    reportBody();
                 }
                 break;
             default:

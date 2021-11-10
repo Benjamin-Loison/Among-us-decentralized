@@ -56,6 +56,7 @@ class InGameUI : public QLabel
         QVector<QPair<Task, QPoint>> getTasksByDistance();
         bool killPlayer();
         bool killPlayer(Player &player);
+        bool reportBody();
         InGameUI(QString nickname, QLabel* parent = 0);
 
     public slots:
