@@ -20,7 +20,7 @@ Crossplatform
 - [ ] Menu (main menu and "meetings")
 - [ ] Network: peer-to-peer with secret (visibility) - using OpenSSL/Helib for cryptography
 - [ ] Tasks:
-    - [X] Fix Wiring (needs debugging)
+    - [X] Fix Wiring
     - [ ] Other tasks
     - [X] Set places for tasks (currently not very user-friendly, as players currently need to know where the tasks are)
 - [ ] vocal chat during "meetings" (not priority)
