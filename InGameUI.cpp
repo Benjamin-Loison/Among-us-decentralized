@@ -35,16 +35,21 @@ InGameUI::InGameUI(QString nickname, QLabel *parent) : QLabel(parent), currPlaye
     readyButtonLayout = nullptr;
     // FOR TESTING
     currPlayer.isImpostor = true;
-    /*currPlayer.isGhost = true;
+    currPlayer.isGhost = true;
     currPlayer.showBody = true;
     currPlayer.bodyX = currPlayer.x;
-    currPlayer.bodyY = currPlayer.y;*/
+    currPlayer.bodyY = currPlayer.y;
 }
 
 void InGameUI::initialize()
 {
     everyoneReady = false;
     otherPlayers.push_back(Player(X_SPAWN+200, Y_SPAWN, "Test player", colors[0][0], colors[0][1]));
+    // FOR TESTING
+    /*otherPlayers[0].isGhost = true;
+    otherPlayers[0].showBody = true;
+    otherPlayers[0].bodyX = otherPlayers[0].x;
+    otherPlayers[0].bodyY = otherPlayers[0].y;*/
     windowPixmap = new QPixmap(size());
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &InGameUI::redraw);
@@ -327,7 +332,8 @@ bool InGameUI::killPlayer(Player &p) {
  */
 void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr, bool showGhost = false)
 {
-    if(showGhost && (!player.isGhost || &player != &currPlayer))
+    // Only ghosts see ghosts
+    if(showGhost && (!currPlayer.isGhost || !player.isGhost))
         return;
     else if(player.isGhost && !player.showBody && !showGhost)
         displayPlayer(player, painter, true);
@@ -638,6 +644,8 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
         {
             if (currentInGameGUI == IN_GAME_GUI_FIX_WIRING)
                 onMouseEventFixWiring(mouseEvent);
+            else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS)
+                onMouseEventAsteroids(mouseEvent);
             return true;
         }
     }
