@@ -21,7 +21,6 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     
-    qDebug() << "int size in bytes:" << sizeof(int);
     nickname = getText("Nickname", "Your nickname");
     peerAddress = getText("Peer address", "A peer address");
     tasksLocations[TASK_FIX_WIRING] = {QPoint(4060, 360), QPoint(5433,2444),QPoint(7455,2055)};
