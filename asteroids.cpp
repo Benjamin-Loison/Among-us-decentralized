@@ -14,6 +14,7 @@ qint16 asteroids[4][3],nbasteroids=2;
 QPair<QPixmap*, QPainter*> getAsteroidsPixmapPainter()
 {
     QPixmap* qBackgroundPixmap = getQPixmap(600,600);
+    qBackgroundPixmap->fill(QColor(89, 206, 103, 153));
     QPainter* painter = new QPainter(qBackgroundPixmap);
     return qMakePair(qBackgroundPixmap, painter);
 }
@@ -33,7 +34,7 @@ QLabel* getAsteroids()
     QPixmap* qBackgroundPixmap = pixmapPainter.first;
     QPainter* painter = pixmapPainter.second;
 
-    painter->end();
+    delete painter;
     qLabel->setPixmap(*qBackgroundPixmap);
 
     return qFrame;
