@@ -29,7 +29,7 @@ Crossplatform
 Realtime game similar to (C++ Qt decentralized...) https://github.com/Benjamin-Loison/Travian-blockchained
 
 ## Building
-Requires Qt 5.12.11 (or probably any other recent version of Qt 5). To build, you can either:
+Requires Qt 5.12.11 (or probably any other recent version of Qt 5). To build on Ubuntu, you can either:
 - open `AmongUsDecentralized.pro` in Qt Creator, then click "Build Project",
 - or, from a build directory, run `qmake path/to/AmongUsDecentralized.pro` then `make`.
 

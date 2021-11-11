@@ -414,6 +414,10 @@ void InGameUI::redraw()
         }
     }
 
+    // Asteroids
+    if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS)
+        redrawAsteroids();
+
     QPixmap *oldPixmap = windowPixmap;
     windowPixmap = new QPixmap(size());
     QPainter painter(windowPixmap);
@@ -509,7 +513,7 @@ void InGameUI::closeTask() {
         onCloseFixWiring();
         break;
         case IN_GAME_GUI_ASTEROIDS:
-        // TODO
+        onCloseAsteroids();
         break;
         default:
         break;
@@ -644,8 +648,6 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
         {
             if (currentInGameGUI == IN_GAME_GUI_FIX_WIRING)
                 onMouseEventFixWiring(mouseEvent);
-            else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS)
-                onMouseEventAsteroids(mouseEvent);
             return true;
         }
     }
@@ -666,6 +668,9 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                 else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && getUsableTasksByDistance().size() > 0)
                     onClickUse();
                 return true;
+            }
+            else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS) {
+                onMouseEventAsteroids(mouseEvent);
             }
             return false;
         }
