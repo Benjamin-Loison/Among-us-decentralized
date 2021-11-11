@@ -164,8 +164,10 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
           windowSize = inGameUI->size();
     QPainter* painter = pixmapPainter.second;
     QPoint position = mouseEvent->pos();
-    quint16 mouseY = position.y() - (windowSize.height() - pixmapSize.height()) / 2,
-            mouseX = position.x() - (windowSize.width() - pixmapSize.width()) / 2;
+    qint16 mouseY = position.y() - (windowSize.height() - pixmapSize.height()) / 2,
+           mouseX = position.x() - (windowSize.width() - pixmapSize.width()) / 2;
+    if(mouseX < 0 || mouseX >= pixmapSize.width() || mouseY < 0 || mouseY >= pixmapSize.height())
+        return;
 
     bool isFixing = false;
     quint8 fixingIndex = 0;
@@ -236,8 +238,12 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
     bool everythingMatch = true;
     for(qint8 nodesIndex = 0; nodesIndex < COLORS_NUMBER; nodesIndex++)
     {
-        quint8 link = links[nodesIndex],
-               right = getIndex(rights[link]);
+        quint8 link = links[nodesIndex];
+        if(link >= COLORS_NUMBER) {
+            everythingMatch = false;
+            break;
+        }
+        quint8 right = getIndex(rights[link]);
         if(lefts[nodesIndex] != right)
         {
             everythingMatch = false;
