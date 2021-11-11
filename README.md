@@ -14,17 +14,18 @@ Crossplatform
 - [X] map/players (assets from native game for instance) - https://github.com/Perfare/AssetStudio
 - [X] Show the map
 - [X] Handle player movement
-- [ ] Maintain game state (in progress)
+- [X] Maintain game state
 - [X] Display other players
 - [X] Display name tags
 - [ ] Menu (main menu and "meetings")
 - [ ] Network: peer-to-peer with secret (visibility) - using OpenSSL/Helib for cryptography
 - [ ] Tasks:
     - [X] Fix Wiring
+    - [X] Asteroids
     - [ ] Other tasks
-    - [X] Set places for tasks (currently not very user-friendly, as players currently need to know where the tasks are)
-- [ ] vocal chat during "meetings" (not priority)
-- [ ] extra anti cheat (not priority)
+    - [X] Set places for tasks (currently not very user-friendly, as players need to know where the tasks are)
+- [ ] vocal chat during "meetings" (not prioritary)
+- [ ] extra anti cheat (not prioritary)
 
 Realtime game similar to (C++ Qt decentralized...) https://github.com/Benjamin-Loison/Travian-blockchained
 

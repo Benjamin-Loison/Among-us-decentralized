@@ -11,7 +11,7 @@ Partie "normale" (pas toutes les tâches):
 
 Tâches réalisées :
 - Fix wiring : ok
-- Asteroids : non
+- Asteroids : ok
 
 Choix (Victor) :
 - Les joueurs sont identifiés de manière unique par leur pseudo
@@ -20,3 +20,4 @@ Choix (Victor) :
 - On peut rapporter un cadavre à 200 pixels de distance avec la touche R ou avec le bouton affiché
 - On peut réaliser une tâche à 200 pixels de distance avec la touche E ou avec le bouton affiché
 - Les imposteurs peuvent pour l'instant tuer d'autres imposteurs (!)
+- Asteroids : 10 astéroïdes à détruire, pour l'instant remis à zéro en quittant la tâche (pas comme dans le vrai Among us)
