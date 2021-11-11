@@ -17,6 +17,8 @@ public:
     QPixmap* playerPixmap;
     QPixmap* flippedPixmap;
     QPixmap* deadPixmap;
+    QPixmap* ghostPixmap;
+    QPixmap* flippedGhostPixmap;
 
 };
 

@@ -50,7 +50,7 @@ class InGameUI : public QLabel
         void initialize();
         void initDisplay();
         void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
-        void displayPlayer(const Player &player, QPainter* painter);
+        void displayPlayer(const Player &player, QPainter* painter, bool showGhost);
         bool performMovement(qint64 elapsed, int dirVert, int dirHoriz);
         void setCenterBorderLimit(int x, int y, QPainter* painter);
         bool isCollision(quint16 x, quint16 y);

@@ -27,10 +27,10 @@ InGameUI::InGameUI(QString nickname, QLabel *parent) : QLabel(parent), currPlaye
     readyButtonLayout = nullptr;
     // FOR TESTING
     currPlayer.isImpostor = true;
-    /*currPlayer.isGhost = true;
+    currPlayer.isGhost = true;
     currPlayer.showBody = true;
     currPlayer.bodyX = currPlayer.x;
-    currPlayer.bodyY = currPlayer.y;*/
+    currPlayer.bodyY = currPlayer.y;
 }
 
 void InGameUI::initialize()
@@ -53,7 +53,7 @@ void InGameUI::initialize()
 
 bool InGameUI::isCollision(quint16 x, quint16 y)
 {
-    return collisionImage.pixelColor(x, y) == QColor(255, 0, 0);
+    return !currPlayer.isGhost && collisionImage.pixelColor(x, y) == QColor(255, 0, 0);
 }
 
 void InGameUI::initDisplay()
@@ -314,31 +314,51 @@ bool InGameUI::killPlayer(Player &p) {
  * @param player
  * @param painter A QPainter that will be used for painting. A fresh one will be used if this is nullptr.
  */
-void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr)
+void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr, bool showGhost = false)
 {
-    if(player.isGhost && !player.showBody)
-        return; // TODO: show ghost?
-    int x = player.isGhost ? player.bodyX : player.x;
-    int y = player.isGhost ? player.bodyY : player.y;
-    QPixmap* toDraw = player.isGhost ? player.deadPixmap : (player.playerFacingLeft ? player.flippedPixmap : player.playerPixmap);
-    displayAt(toDraw, x, y - toDraw->size().height() / 2, painter);
-    QPainter *newPainter;
-    if (painter)
-        newPainter = painter;
-    else
-        newPainter = new QPainter(windowPixmap);
-    int fontSizePt = 23;
-    newPainter->setFont(QFont("Liberation Sans", fontSizePt));
-    QRect textRect(leftBackground + x, topBackground + y - toDraw->size().height() - fontSizePt - 5, 1, fontSizePt);
-    QRect boundingRect;
-    QPen oldPen = newPainter->pen();
-    newPainter->setPen(Qt::white);
-    newPainter->drawText(textRect, Qt::TextDontClip | Qt::AlignCenter, player.nickname, &boundingRect);
-    newPainter->fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
-    newPainter->drawText(textRect, Qt::TextDontClip | Qt::AlignCenter, player.nickname, &boundingRect);
-    newPainter->setPen(oldPen);
-    if (!painter)
-        delete newPainter;
+    if(showGhost && (!player.isGhost || &player != &currPlayer))
+        return;
+    else if(player.isGhost && !player.showBody && !showGhost)
+        displayPlayer(player, painter, true);
+    else {
+        int x = (player.isGhost && !showGhost) ? player.bodyX : player.x;
+        int y = (player.isGhost && !showGhost) ? player.bodyY : player.y;
+        QPixmap* toDraw;
+        if(!showGhost) {
+            if(player.isGhost)
+                toDraw = player.deadPixmap;
+            else if(player.playerFacingLeft)
+                toDraw = player.flippedPixmap;
+            else
+                toDraw = player.playerPixmap;
+        }
+        else {
+            if(player.playerFacingLeft)
+                toDraw = player.flippedGhostPixmap;
+            else
+                toDraw = player.ghostPixmap;
+        }
+        displayAt(toDraw, x, y - toDraw->size().height() / 2, painter);
+        QPainter *newPainter;
+        if (painter)
+            newPainter = painter;
+        else
+            newPainter = new QPainter(windowPixmap);
+        int fontSizePt = 23;
+        newPainter->setFont(QFont("Liberation Sans", fontSizePt));
+        QRect textRect(leftBackground + x, topBackground + y - toDraw->size().height() - fontSizePt - 5, 1, fontSizePt);
+        QRect boundingRect;
+        QPen oldPen = newPainter->pen();
+        newPainter->setPen(Qt::white);
+        newPainter->drawText(textRect, Qt::TextDontClip | Qt::AlignCenter, player.nickname, &boundingRect);
+        newPainter->fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
+        newPainter->drawText(textRect, Qt::TextDontClip | Qt::AlignCenter, player.nickname, &boundingRect);
+        newPainter->setPen(oldPen);
+        if(!showGhost)
+            displayPlayer(player, newPainter, true);
+        if (!painter)
+            delete newPainter;
+    }
 }
 
 /**
