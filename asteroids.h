@@ -6,7 +6,7 @@
 
 struct Asteroid {
     int x, y;
-    int vx, vy; // velocity in pixels per frame
+    double vx, vy; // velocity in pixels per second
     QPixmap* pixmap;
     bool destroyed = false;
 
@@ -15,10 +15,10 @@ struct Asteroid {
 };
 
 QPair<QPixmap*, QPainter*> getAsteroidsPixmapPainter();
-QLabel* getAsteroids();
+QLabel* getAsteroids(qint64 now);
 void fillAsteroids(QPainter* painter, quint8 start, quint16 y, quint16 x),
      onMouseEventAsteroids(QMouseEvent* mouseEvent),
-     redrawAsteroids(),
+     redrawAsteroids(qint64 now),
      resetAsteroids(),
      onCloseAsteroids();
 

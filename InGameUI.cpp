@@ -416,7 +416,7 @@ void InGameUI::redraw()
 
     // Asteroids
     if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS)
-        redrawAsteroids();
+        redrawAsteroids(now);
 
     QPixmap *oldPixmap = windowPixmap;
     windowPixmap = new QPixmap(size());
@@ -538,7 +538,7 @@ void InGameUI::onClickUse() {
         case TASK_ASTEROIDS:
             currentTask = task;
             currentInGameGUI = IN_GAME_GUI_ASTEROIDS;
-            qLabel = getAsteroids();
+            qLabel = getAsteroids(elapsedTimer->elapsed());
             break;
         default:
             return;

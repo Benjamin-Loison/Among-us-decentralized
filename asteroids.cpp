@@ -12,13 +12,12 @@
 #include "qPlus.h"
 #include "InGameUI.h"
 const double ASTEROID_VELOCITY_SEC = 200; // 200 pixels per second
-const double ASTEROID_VELOCITY_FRAME = ASTEROID_VELOCITY_SEC/FPS;
 const int TARGET_ASTEROID_COUNT = 10;
-const double ASTEROID_SPAWN_INTERVAL = 1.0;
-const int ASTEROID_SPAWN_INTERVAL_FRAMES = (int)(ASTEROID_SPAWN_INTERVAL * FPS);
+const int ASTEROID_SPAWN_INTERVAL_MS = 1000;
 //qint16 asteroids[4][3],nbasteroids=2;
 int nbAsteroids;
-qint64 asteroidsFrameCount = 0;
+qint64 asteroidsLastSpawn = 0;
+qint64 asteroidsLastUpdate = 0;
 QVector<Asteroid> asteroids;
 QVector<QPixmap*> asteroidPixmaps;
 QPixmap* currAsteroidsPixmap = nullptr;
@@ -32,8 +31,8 @@ Asteroid::Asteroid(int x, int y, double unit_x, double unit_y, QPixmap* pixmap):
     double norm = sqrt(unit_x*unit_x+unit_y*unit_y);
     unit_x /= norm;
     unit_y /= norm;
-    vx = (int)(unit_x*ASTEROID_VELOCITY_FRAME);
-    vy = (int)(unit_y*ASTEROID_VELOCITY_FRAME);
+    vx = unit_x*ASTEROID_VELOCITY_SEC;
+    vy = unit_y*ASTEROID_VELOCITY_SEC;
 }
 
 QPair<QPixmap*, QPainter*> getAsteroidsPixmapPainter()
@@ -44,7 +43,7 @@ QPair<QPixmap*, QPainter*> getAsteroidsPixmapPainter()
     return qMakePair(qBackgroundPixmap, painter);
 }
 
-QLabel* getAsteroids()
+QLabel* getAsteroids(qint64 now)
 {
     QLabel* qFrame = new QLabel;
     QHBoxLayout* hbox = new QHBoxLayout(qFrame);
@@ -70,6 +69,7 @@ QLabel* getAsteroids()
     if(asteroidPixmaps.size() == 0) {
         asteroidPixmaps.push_back(getQPixmap("Asteroid.png"));
     }
+    asteroidsLastUpdate = now;
     return qFrame;
 }
 
@@ -89,7 +89,9 @@ void replaceAsteroidsPixmap(QPixmap* pixmap) {
     currAsteroidsPixmap = pixmap;
 }
 
-void redrawAsteroids() {
+void redrawAsteroids(qint64 now) {
+    qint64 elapsed = now - asteroidsLastUpdate;
+    asteroidsLastUpdate = now;
     QPair<QPixmap*, QPainter*> pixmapPainter = getAsteroidsPixmapPainter();
     QPixmap* pixmap = pixmapPainter.first;
     QPainter* painter = pixmapPainter.second;
@@ -97,8 +99,8 @@ void redrawAsteroids() {
     for(Asteroid& asteroid : asteroids) {
         if(asteroid.destroyed)
             continue;
-        asteroid.x += asteroid.vx;
-        asteroid.y += asteroid.vy;
+        asteroid.x += asteroid.vx * elapsed / 1000;
+        asteroid.y += asteroid.vy * elapsed / 1000;
         int x = asteroid.x;
         int w = asteroid.pixmap->size().width();
         int asteroidLeft = x-w/2, asteroidRight = asteroidLeft+w;
@@ -108,8 +110,8 @@ void redrawAsteroids() {
     }
     asteroids = newAsteroids;
 
-    asteroidsFrameCount++;
-    if(asteroidsFrameCount % ASTEROID_SPAWN_INTERVAL_FRAMES == 0) {
+    if(now - asteroidsLastSpawn >= ASTEROID_SPAWN_INTERVAL_MS) {
+        asteroidsLastSpawn = now;
         int xSpawn = 700;
         int ySpawn = QRandomGenerator::global()->bounded(-100, 700);
         int xDir = 300;
@@ -155,7 +157,7 @@ void onMouseEventAsteroids(QMouseEvent* mouseEvent)
     for(Asteroid& asteroid : asteroids) {
         int x = asteroid.x, y = asteroid.y, w = asteroid.pixmap->size().width(), h = asteroid.pixmap->size().height();
         int left = x-w/2, top = y-h/2, right = left+w, bottom = top+h;
-        if(mouseX >= left && mouseX < right && mouseY >= top && mouseY < bottom) {
+        if(mouseX >= left && mouseX < right && mouseY >= top && mouseY < bottom && !asteroid.destroyed) {
             asteroid.destroyed = true;
             nbAsteroids--;
             playSound(QString("Clear_Asteroids_asteroid_destroyed_sound_%1.wav").arg(QRandomGenerator::global()->bounded(1,4)));
