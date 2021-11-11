@@ -15,6 +15,9 @@
 quint8 links[COLORS_NUMBER] = {COLOR_UNDEFINED, COLOR_UNDEFINED, COLOR_UNDEFINED, COLOR_UNDEFINED};
 WiringColor lefts[COLORS_NUMBER],
             rights[COLORS_NUMBER] = {Red, Blue, Yellow, Magenta};
+QPixmap* fixWiringBackgroundPixmap = nullptr;
+QPixmap* currFixWiringPixmap = nullptr;
+QLabel* currFixWiringLabel = nullptr;
 
 WiringColor getColor(quint8 colorIndex)
 {
@@ -116,8 +119,9 @@ void fillWire(QPainter* painter, quint8 start)
 
 QPair<QPixmap*, QPainter*> getFixWiringPixmapPainter()
 {
-    QPixmap* qBackgroundPixmap = getQPixmap("fixWiring.png");
-    QPainter* painter = new QPainter(qBackgroundPixmap);
+    QPixmap* pixmap = new QPixmap(fixWiringBackgroundPixmap->size());
+    QPainter* painter = new QPainter(pixmap);
+    painter->drawImage(0, 0, fixWiringBackgroundPixmap->toImage());
 
     for(quint8 nodesIndex = 0; nodesIndex < COLORS_NUMBER; nodesIndex++)
     {
@@ -125,11 +129,13 @@ QPair<QPixmap*, QPainter*> getFixWiringPixmapPainter()
         painter->fillRect(FIX_WIRING_LEFT_X, y, FIX_WIRING_WIDTH, FIX_WIRING_HEIGHT, getQtColor(lefts[nodesIndex])); // as QBrush Qt::SolidPattern, Qt::HorPattern looks cool too
         painter->fillRect(FIX_WIRING_RIGHT_X, y, FIX_WIRING_WIDTH, FIX_WIRING_HEIGHT, getQtColor(rights[nodesIndex]));
     }
-    return qMakePair(qBackgroundPixmap, painter);
+    return qMakePair(pixmap, painter);
 }
 
 QLabel* getFixWiring()
 {
+    if(!fixWiringBackgroundPixmap)
+        fixWiringBackgroundPixmap = getQPixmap("fixWiring.png");
     //qInfo("a");
     playSound("Fix_Wiring_task_open_sound.wav");
     QLabel* qFrame = new QLabel;
@@ -145,11 +151,23 @@ QLabel* getFixWiring()
     //randomWires(rights); // could almost directly change the background image for the right side color constants
 
     QPair<QPixmap*, QPainter*> pixmapPainter = getFixWiringPixmapPainter();
-    QPixmap* qBackgroundPixmap = pixmapPainter.first;
+    QPixmap* pixmap = pixmapPainter.first;
     QPainter* painter = pixmapPainter.second;
 
-    painter->end();
-    qLabel->setPixmap(*qBackgroundPixmap);
+    delete painter;
+    qLabel->setPixmap(*pixmap);
+
+    if(currFixWiringPixmap) {
+        delete currFixWiringPixmap;
+        currFixWiringPixmap = nullptr;
+    }
+    currFixWiringPixmap = pixmap;
+
+    if(currFixWiringLabel) {
+        delete currFixWiringLabel;
+        currFixWiringLabel = nullptr;
+    }
+    currFixWiringLabel = qLabel;
 
     return qFrame;
 }
@@ -230,6 +248,12 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
     hbox->takeAt(1);
     hbox->addWidget(qImage);
     hbox->addStretch();
+    if(currFixWiringLabel)
+        delete currFixWiringLabel;
+    currFixWiringLabel = qImage;
+    if(currFixWiringPixmap)
+        delete currFixWiringPixmap;
+    currFixWiringPixmap = qBackgroundPixmap;
     /* sometimes this happen when launching (maybe due to huge image)
      * 21:47:13: The program has unexpectedly finished.
         21:47:13: The process was ended forcefully.
@@ -260,6 +284,14 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
 void onCloseFixWiring() {
     playSound("Fix_Wiring_task_close_sound.wav");
     resetFixWiring();
+    if(currFixWiringLabel) {
+        delete currFixWiringLabel;
+        currFixWiringLabel = nullptr;
+    }
+    if(currFixWiringPixmap) {
+        delete currFixWiringPixmap;
+        currFixWiringPixmap = nullptr;
+    }
 }
 
 void resetFixWiring() {
