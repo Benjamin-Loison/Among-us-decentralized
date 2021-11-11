@@ -27,10 +27,10 @@ InGameUI::InGameUI(QString nickname, QLabel *parent) : QLabel(parent), currPlaye
     readyButtonLayout = nullptr;
     // FOR TESTING
     currPlayer.isImpostor = true;
-    /*currPlayer.isGhost = true;
+    currPlayer.isGhost = true;
     currPlayer.showBody = true;
     currPlayer.bodyX = currPlayer.x;
-    currPlayer.bodyY = currPlayer.y;*/
+    currPlayer.bodyY = currPlayer.y;
 }
 
 void InGameUI::initialize()
@@ -53,7 +53,7 @@ void InGameUI::initialize()
 
 bool InGameUI::isCollision(quint16 x, quint16 y)
 {
-    return collisionImage.pixelColor(x, y) == QColor(255, 0, 0);
+    return !currPlayer.isGhost && collisionImage.pixelColor(x, y) == QColor(255, 0, 0);
 }
 
 void InGameUI::initDisplay()
@@ -61,6 +61,12 @@ void InGameUI::initDisplay()
     backgroundPixmap = getQPixmap("mapCrop.png"); // "The Skeld"
     collisionPixmap = getQPixmap("mapCropCollision.png");
     collisionImage = collisionPixmap->toImage();
+    QPixmap* killButtonPixmap = getQPixmap("killButton.png");
+    killButtonImage = killButtonPixmap->toImage();
+    QPixmap* reportButtonPixmap = getQPixmap("reportButton.png");
+    reportButtonImage = reportButtonPixmap->toImage();
+    QPixmap* useButtonPixmap = getQPixmap("useButton.png");
+    useButtonImage = useButtonPixmap->toImage();
 
     if (isCollision(currPlayer.x, currPlayer.y))
     {
@@ -216,12 +222,15 @@ QVector<Player *> InGameUI::getOtherPlayersByDistance() {
     return players;
 }
 
-QVector<QPair<Task, QPoint>> InGameUI::getTasksByDistance() {
+QVector<QPair<Task, QPoint>> InGameUI::getUsableTasksByDistance() {
     QVector<QPair<Task, QPoint>> tasks;
-    for(Task task : tasksLocations.keys())
-        for(QPoint pt : tasksLocations[task])
-            tasks.push_back(QPair<Task, QPoint>(task, pt));
     int x = currPlayer.x, y = currPlayer.y;
+    for(Task task : tasksLocations.keys())
+        for(QPoint pt : tasksLocations[task]) {
+            int dist = (pt.x()-x)*(pt.x()-x) + (pt.y()-y)*(pt.y()-y);
+            if(dist <= TASK_RANGE_SQUARED)
+                tasks.push_back(QPair<Task, QPoint>(task, pt));
+        }
     qSort(tasks.begin(), tasks.end(), [&](const QPair<Task, QPoint> &task1, const QPair<Task, QPoint> &task2) {
         QPoint pt1 = task1.second;
         QPoint pt2 = task2.second;
@@ -238,44 +247,50 @@ QVector<QPair<Task, QPoint>> InGameUI::getTasksByDistance() {
 }
 
 /**
- * Looks for a corpse to report, reports it if found.
+ * Looks for a corpse to report.
  */
-bool InGameUI::reportBody() {
+Player* InGameUI::findReportableBody() {
     // Confirm: ghosts can't report bodies, right?
     if(currPlayer.isGhost)
-        return false;
+        return nullptr;
     int x = currPlayer.x, y = currPlayer.y;
     for(Player* player : getOtherPlayersByDistance()) {
         if(player->showBody) {
             int sqDist = (player->x-x)*(player->x-x) + (player->y-y)*(player->y-y);
-            if(sqDist <= REPORT_RANGE_SQUARED) {
-                // TODO
-                qDebug() << "Reported player" << player->nickname;
-                return true;
-            }
+            if(sqDist <= REPORT_RANGE_SQUARED)
+                return player;
         }
     }
+    return nullptr;
+}
+
+/**
+ * Reports a corpse. Does not perform checks.
+ */
+bool InGameUI::reportBody(Player &p) {
+    // TODO
+    qDebug() << "Reported player" << p.nickname;
     return false;
 }
 
 /**
- * Looks for a player to kill, then kills it if in range and alive.
+ * Looks for a player to kill. The returned Player is in range and alive.
  * Also checks whether the current Player is an alive Impostor.
  */
-bool InGameUI::killPlayer() {
+Player* InGameUI::findKillablePlayer() {
     if(!currPlayer.isImpostor || currPlayer.isGhost)
-        return false;
+        return nullptr;
     int x = currPlayer.x, y = currPlayer.y;
     for(Player* player : getOtherPlayersByDistance()) {
         if(!player->isGhost) {
             int sqDist = (player->x-x)*(player->x-x) + (player->y-y)*(player->y-y);
             if(sqDist <= KILL_RANGE_SQUARED)
-                return killPlayer(*player);
+                return player;
             else
                 break;
         }
     }
-    return false;
+    return nullptr;
 }
 
 /**
@@ -299,31 +314,51 @@ bool InGameUI::killPlayer(Player &p) {
  * @param player
  * @param painter A QPainter that will be used for painting. A fresh one will be used if this is nullptr.
  */
-void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr)
+void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr, bool showGhost = false)
 {
-    if(player.isGhost && !player.showBody)
-        return; // TODO: show ghost?
-    int x = player.isGhost ? player.bodyX : player.x;
-    int y = player.isGhost ? player.bodyY : player.y;
-    QPixmap* toDraw = player.isGhost ? player.deadPixmap : (player.playerFacingLeft ? player.flippedPixmap : player.playerPixmap);
-    displayAt(toDraw, x, y - toDraw->size().height() / 2, painter);
-    QPainter *newPainter;
-    if (painter)
-        newPainter = painter;
-    else
-        newPainter = new QPainter(windowPixmap);
-    int fontSizePt = 23;
-    newPainter->setFont(QFont("Liberation Sans", fontSizePt));
-    QRect textRect(leftBackground + x, topBackground + y - toDraw->size().height() - fontSizePt - 5, 1, fontSizePt);
-    QRect boundingRect;
-    QPen oldPen = newPainter->pen();
-    newPainter->setPen(Qt::white);
-    newPainter->drawText(textRect, Qt::TextDontClip | Qt::AlignCenter, player.nickname, &boundingRect);
-    newPainter->fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
-    newPainter->drawText(textRect, Qt::TextDontClip | Qt::AlignCenter, player.nickname, &boundingRect);
-    newPainter->setPen(oldPen);
-    if (!painter)
-        delete newPainter;
+    if(showGhost && (!player.isGhost || &player != &currPlayer))
+        return;
+    else if(player.isGhost && !player.showBody && !showGhost)
+        displayPlayer(player, painter, true);
+    else {
+        int x = (player.isGhost && !showGhost) ? player.bodyX : player.x;
+        int y = (player.isGhost && !showGhost) ? player.bodyY : player.y;
+        QPixmap* toDraw;
+        if(!showGhost) {
+            if(player.isGhost)
+                toDraw = player.deadPixmap;
+            else if(player.playerFacingLeft)
+                toDraw = player.flippedPixmap;
+            else
+                toDraw = player.playerPixmap;
+        }
+        else {
+            if(player.playerFacingLeft)
+                toDraw = player.flippedGhostPixmap;
+            else
+                toDraw = player.ghostPixmap;
+        }
+        displayAt(toDraw, x, y - toDraw->size().height() / 2, painter);
+        QPainter *newPainter;
+        if (painter)
+            newPainter = painter;
+        else
+            newPainter = new QPainter(windowPixmap);
+        int fontSizePt = 23;
+        newPainter->setFont(QFont("Liberation Sans", fontSizePt));
+        QRect textRect(leftBackground + x, topBackground + y - toDraw->size().height() - fontSizePt - 5, 1, fontSizePt);
+        QRect boundingRect;
+        QPen oldPen = newPainter->pen();
+        newPainter->setPen(Qt::white);
+        newPainter->drawText(textRect, Qt::TextDontClip | Qt::AlignCenter, player.nickname, &boundingRect);
+        newPainter->fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
+        newPainter->drawText(textRect, Qt::TextDontClip | Qt::AlignCenter, player.nickname, &boundingRect);
+        newPainter->setPen(oldPen);
+        if(!showGhost)
+            displayPlayer(player, newPainter, true);
+        if (!painter)
+            delete newPainter;
+    }
 }
 
 /**
@@ -405,6 +440,14 @@ void InGameUI::redraw()
     painter.fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
     painter.drawText(boundingRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y));
 
+    // Game buttons
+    if(findKillablePlayer())
+        painter.drawImage(size().width()-220, size().height()-110, killButtonImage);
+    if(findReportableBody())
+        painter.drawImage(size().width()-110, size().height()-110, reportButtonImage);
+    if(getUsableTasksByDistance().size() > 0)
+        painter.drawImage(size().width()-110, size().height()-220, useButtonImage);
+
     // Ready button
     if (!everyoneReady)
     {
@@ -454,6 +497,42 @@ void InGameUI::closeTask() {
     qLabel = nullptr;
 }
 
+void InGameUI::onClickUse() {
+    QVector<QPair<Task, QPoint>> tasks = getUsableTasksByDistance();
+    if(tasks.size() > 0) {
+        Task task = tasks[0].first;
+        switch(task) {
+        case TASK_FIX_WIRING:
+            currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
+            qLabel = getFixWiring();
+            break;
+        case TASK_ASTEROIDS:
+            currentInGameGUI = IN_GAME_GUI_ASTEROIDS;
+            qLabel = getAsteroids();
+            break;
+        default:
+            return;
+        }
+        currLayout = new QHBoxLayout;
+        currLayout->addWidget(qLabel);
+        setLayout(currLayout);
+    }
+
+}
+
+void InGameUI::onClickReport() {
+    Player* reportable = findReportableBody();
+    if(reportable)
+        reportBody(*reportable);
+}
+
+void InGameUI::onClickKill() {
+    // Game logic verifications are performed in the function calls
+    Player* killable = findKillablePlayer();
+    if(killable)
+        killPlayer(*killable);
+}
+
 /**
  * Filters key presses used in the game, and mouse events for tasks. (there may be a more efficient implementation)
  * @brief InGameUI::eventFilter
@@ -463,7 +542,6 @@ void InGameUI::closeTask() {
  */
 bool InGameUI::eventFilter(QObject *obj, QEvent *event)
 {
-    Q_UNUSED(obj)
 
     if (event->type() == QEvent::KeyPress)
     {
@@ -484,30 +562,7 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                 if(everyoneReady) {
                     if (qLabel == nullptr)
                     {
-                        QVector<QPair<Task, QPoint>> tasks = getTasksByDistance();
-                        if(tasks.size() > 0) {
-                            Task task = tasks[0].first;
-                            QPoint loc = tasks[0].second;
-                            int x = currPlayer.x, y = currPlayer.y;
-                            int sqDist = (loc.x()-x)*(loc.x()-x) + (loc.y()-y)*(loc.y()-y);
-                            if(sqDist <= TASK_RANGE_SQUARED) {
-                                switch(task) {
-                                case TASK_FIX_WIRING:
-                                    currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
-                                    qLabel = getFixWiring();
-                                    break;
-                                case TASK_ASTEROIDS:
-                                    currentInGameGUI = IN_GAME_GUI_ASTEROIDS;
-                                    qLabel = getAsteroids();
-                                    break;
-                                default:
-                                    return true;
-                                }
-                                currLayout = new QHBoxLayout;
-                                currLayout->addWidget(qLabel);
-                                setLayout(currLayout);
-                            }
-                        }
+                        onClickUse();
                     }
                     else
                     {
@@ -516,14 +571,13 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                 }
                 break;
             case Qt::Key_K:
-                if(everyoneReady) {
-                    // Game logic verifications are performed in killPlayer()
-                    killPlayer();
+                if(everyoneReady && currentInGameGUI == IN_GAME_GUI_NONE) {
+                    onClickKill();
                 }
                 break;
             case Qt::Key_R:
-                if(everyoneReady) {
-                    reportBody();
+                if(everyoneReady && currentInGameGUI == IN_GAME_GUI_NONE) {
+                    onClickReport();
                 }
                 break;
             default:
@@ -565,6 +619,27 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
             if (currentInGameGUI == IN_GAME_GUI_FIX_WIRING)
                 onMouseEventFixWiring(mouseEvent);
             return true;
+        }
+    }
+    else if (event->type() == QEvent::MouseButtonDblClick || event->type() == QEvent::MouseButtonPress)
+    {
+        if(!everyoneReady || obj != this)
+            return false;
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        
+        if(mouseEvent->button() == Qt::LeftButton) {
+            int mouseX = mouseEvent->x(), mouseY = mouseEvent->y();
+            int width = size().width(), height = size().height();
+            if(currentInGameGUI == IN_GAME_GUI_NONE) {
+                if(mouseX >= width-220 && mouseX < width-110 && mouseY >= height-110 && mouseY < height && findKillablePlayer())
+                    onClickKill();
+                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-110 && mouseY < height && findReportableBody())
+                    onClickReport();
+                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && getUsableTasksByDistance().size() > 0)
+                    onClickUse();
+                return true;
+            }
+            return false;
         }
     }
     return false;

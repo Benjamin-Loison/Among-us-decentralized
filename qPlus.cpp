@@ -37,9 +37,16 @@ QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2) {
 
     for(quint16 y = 0; y < tmp.height(); y++)
         for(quint16 x = 0; x < tmp.width(); x++)
-            for(quint8 originalColorsIndex = 0; originalColorsIndex < 2; originalColorsIndex++)
-                if(tmp.pixelColor(x, y) == originalColors[originalColorsIndex])
-                    tmp.setPixelColor(x, y, colors[originalColorsIndex]);
+            for(quint8 originalColorsIndex = 0; originalColorsIndex < 2; originalColorsIndex++) {
+                int alpha = tmp.pixelColor(x,y).alpha();
+                QColor newOriginalColor = originalColors[originalColorsIndex];
+                newOriginalColor.setAlpha(alpha);
+                if(tmp.pixelColor(x, y) == newOriginalColor) {
+                    QColor newColor = colors[originalColorsIndex];
+                    newColor.setAlpha(alpha);
+                    tmp.setPixelColor(x, y, newColor);
+                }
+            }
     return QPixmap::fromImage(tmp);
 }
 

@@ -33,6 +33,9 @@ class InGameUI : public QLabel
         QPixmap* backgroundPixmap;
         QPixmap* collisionPixmap;
         QImage collisionImage;
+        QImage killButtonImage;
+        QImage reportButtonImage;
+        QImage useButtonImage;
         QPixmap* windowPixmap;
         QTimer* timer;
         QElapsedTimer* elapsedTimer;
@@ -47,17 +50,21 @@ class InGameUI : public QLabel
         void initialize();
         void initDisplay();
         void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
-        void displayPlayer(const Player &player, QPainter* painter);
+        void displayPlayer(const Player &player, QPainter* painter, bool showGhost);
         bool performMovement(qint64 elapsed, int dirVert, int dirHoriz);
         void setCenterBorderLimit(int x, int y, QPainter* painter);
         bool isCollision(quint16 x, quint16 y);
         void resizeEvent(QResizeEvent* ev);
         QVector<Player *> getOtherPlayersByDistance();
-        QVector<QPair<Task, QPoint>> getTasksByDistance();
-        bool killPlayer();
+        QVector<QPair<Task, QPoint>> getUsableTasksByDistance();
+        Player* findKillablePlayer();
         bool killPlayer(Player &player);
-        bool reportBody();
+        Player* findReportableBody();
+        bool reportBody(Player &player);
         void closeTask();
+        void onClickUse();
+        void onClickReport();
+        void onClickKill();
         InGameUI(QString nickname, QLabel* parent = 0);
 
     public slots:
