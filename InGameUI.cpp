@@ -20,10 +20,18 @@ const QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
                              {QColor(62, 71, 78), QColor(30, 30, 38)},
                              {QColor(244, 244, 86), QColor(194, 134, 34)}};
 
-InGameUI::InGameUI(QString nickname, QLabel *parent) : QLabel(parent), currPlayer(Player(X_SPAWN, Y_SPAWN, nickname, colors[1][0], colors[1][1])), qLabel(nullptr)
+InGameUI::InGameUI(QString nickname, QLabel *parent) : QLabel(parent), currPlayer(Player(X_SPAWN, Y_SPAWN, nickname, colors[1][0], colors[1][1])), currentTask(nullptr), qLabel(nullptr)
 {
     setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
     setWindowTitle("Among Us decentralized");
+    tasks = {
+        new Task(TASK_FIX_WIRING, QPoint(4060, 360)),
+        new Task(TASK_FIX_WIRING, QPoint(5433,2444)),
+        new Task(TASK_FIX_WIRING, QPoint(7455,2055)),
+        new Task(TASK_ASTEROIDS,  QPoint(6653, 900))
+    };
+    /*tasksLocations[TASK_FIX_WIRING] = {QPoint(4060, 360), QPoint(5433,2444),QPoint(7455,2055)};
+    tasksLocations[TASK_ASTEROIDS] = {QPoint(6653,900)};*/
     readyButtonLayout = nullptr;
     // FOR TESTING
     currPlayer.isImpostor = true;
@@ -222,18 +230,20 @@ QVector<Player *> InGameUI::getOtherPlayersByDistance() {
     return players;
 }
 
-QVector<QPair<Task, QPoint>> InGameUI::getUsableTasksByDistance() {
-    QVector<QPair<Task, QPoint>> tasks;
+QVector<Task*> InGameUI::getUsableTasksByDistance() {
+    QVector<Task*> ret;
     int x = currPlayer.x, y = currPlayer.y;
-    for(Task task : tasksLocations.keys())
-        for(QPoint pt : tasksLocations[task]) {
-            int dist = (pt.x()-x)*(pt.x()-x) + (pt.y()-y)*(pt.y()-y);
-            if(dist <= TASK_RANGE_SQUARED)
-                tasks.push_back(QPair<Task, QPoint>(task, pt));
-        }
-    qSort(tasks.begin(), tasks.end(), [&](const QPair<Task, QPoint> &task1, const QPair<Task, QPoint> &task2) {
-        QPoint pt1 = task1.second;
-        QPoint pt2 = task2.second;
+    for(Task* task : tasks) {
+        QPoint pt = task->location;
+        if(task->finished)
+            continue;
+        int dist = (pt.x()-x)*(pt.x()-x) + (pt.y()-y)*(pt.y()-y);
+        if(dist <= TASK_RANGE_SQUARED)
+            ret.push_back(task);
+    }
+    qSort(ret.begin(), ret.end(), [&](const Task* task1, const Task* task2) {
+        QPoint pt1 = task1->location;
+        QPoint pt2 = task2->location;
         int dist1 = (pt1.x()-x)*(pt1.x()-x) + (pt1.y()-y)*(pt1.y()-y);
         int dist2 = (pt2.x()-x)*(pt2.x()-x) + (pt2.y()-y)*(pt2.y()-y);
         if(dist1 != dist2)
@@ -243,7 +253,7 @@ QVector<QPair<Task, QPoint>> InGameUI::getUsableTasksByDistance() {
         else
             return pt1.y() < pt2.y();
     });
-    return tasks;
+    return ret;
 }
 
 /**
@@ -481,6 +491,12 @@ void InGameUI::onReadyClicked() {
     qDebug() << "Ready clicked";
 }
 
+void InGameUI::finishTask() {
+    if(!currentTask)
+        return;
+    currentTask->finished = true;
+}
+
 void InGameUI::closeTask() {
     switch(currentInGameGUI) {
         case IN_GAME_GUI_FIX_WIRING:
@@ -492,6 +508,7 @@ void InGameUI::closeTask() {
         default:
         break;
     }
+    currentTask = nullptr;
     currentInGameGUI = IN_GAME_GUI_NONE;
     delete currLayout;
     delete qLabel;
@@ -499,15 +516,17 @@ void InGameUI::closeTask() {
 }
 
 void InGameUI::onClickUse() {
-    QVector<QPair<Task, QPoint>> tasks = getUsableTasksByDistance();
-    if(tasks.size() > 0) {
-        Task task = tasks[0].first;
-        switch(task) {
+    QVector<Task*> usableTasks = getUsableTasksByDistance();
+    if(usableTasks.size() > 0) {
+        Task* task = usableTasks[0];
+        switch(task->taskType) {
         case TASK_FIX_WIRING:
+            currentTask = task;
             currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
             qLabel = getFixWiring();
             break;
         case TASK_ASTEROIDS:
+            currentTask = task;
             currentInGameGUI = IN_GAME_GUI_ASTEROIDS;
             qLabel = getAsteroids();
             break;

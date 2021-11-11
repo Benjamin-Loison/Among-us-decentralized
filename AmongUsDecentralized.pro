@@ -9,7 +9,8 @@ SOURCES += \
     main.cpp \
     qPlus.cpp \
     Server.cpp \
-    Client.cpp
+    Client.cpp \
+    Task.cpp
 
 HEADERS += \
     InGameUI.h \
@@ -19,7 +20,8 @@ HEADERS += \
     main.h \
     qPlus.h \
     Server.h \
-    Client.h
+    Client.h \
+    Task.h
 
 # Source: https://stackoverflow.com/questions/19066593/copy-a-file-to-build-directory-after-compiling-project-with-qt
 win32 {

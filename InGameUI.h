@@ -16,10 +16,9 @@
 #include "fixWiring.h"
 #include "qPlus.h"
 #include "Player.h"
+#include "Task.h"
 
 const int FPS = 30;
-
-enum Task{TASK_FIX_WIRING,TASK_ASTEROIDS,TASK_SWIPE};
 
 class InGameUI : public QLabel
 {
@@ -28,6 +27,7 @@ class InGameUI : public QLabel
     private:
         Player currPlayer;
         QVector<Player> otherPlayers;
+        QVector<Task*> tasks;
         int topBackground, leftBackground;
         bool everyoneReady;
         QPixmap* backgroundPixmap;
@@ -44,6 +44,7 @@ class InGameUI : public QLabel
         QHBoxLayout* currLayout;
         QGridLayout* readyButtonLayout;
         QPushButton* readyButton;
+        Task* currentTask;
 
     public:
         QLabel* qLabel;
@@ -56,11 +57,12 @@ class InGameUI : public QLabel
         bool isCollision(quint16 x, quint16 y);
         void resizeEvent(QResizeEvent* ev);
         QVector<Player *> getOtherPlayersByDistance();
-        QVector<QPair<Task, QPoint>> getUsableTasksByDistance();
+        QVector<Task *> getUsableTasksByDistance();
         Player* findKillablePlayer();
         bool killPlayer(Player &player);
         Player* findReportableBody();
         bool reportBody(Player &player);
+        void finishTask();
         void closeTask();
         void onClickUse();
         void onClickReport();

@@ -16,15 +16,12 @@ InGameGUI currentInGameGUI = IN_GAME_GUI_NONE;
 Server* server;
 Client* client;
 QString nickname, peerAddress;
-QMap<Task,QVector<QPoint>> tasksLocations;
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     
     nickname = getText("Nickname", "Your nickname");
     peerAddress = getText("Peer address", "A peer address");
-    tasksLocations[TASK_FIX_WIRING] = {QPoint(4060, 360), QPoint(5433,2444),QPoint(7455,2055)};
-    tasksLocations[TASK_ASTEROIDS] = {QPoint(6653,900)};
     inGameUI = new InGameUI(nickname);
     /*QString languageFile = "among_us_decentralized_fr";
         if(translator.load(languageFile))

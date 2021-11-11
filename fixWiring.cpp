@@ -246,6 +246,7 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
     }
     if(everythingMatch)
     {
+        inGameUI->finishTask();
         inGameUI->closeTask();
     }
 }
