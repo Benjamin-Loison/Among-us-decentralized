@@ -27,10 +27,10 @@ InGameUI::InGameUI(QString nickname, QLabel *parent) : QLabel(parent), currPlaye
     readyButtonLayout = nullptr;
     // FOR TESTING
     currPlayer.isImpostor = true;
-    currPlayer.isGhost = true;
+    /*currPlayer.isGhost = true;
     currPlayer.showBody = true;
     currPlayer.bodyX = currPlayer.x;
-    currPlayer.bodyY = currPlayer.y;
+    currPlayer.bodyY = currPlayer.y;*/
 }
 
 void InGameUI::initialize()
@@ -270,7 +270,8 @@ Player* InGameUI::findReportableBody() {
 bool InGameUI::reportBody(Player &p) {
     // TODO
     qDebug() << "Reported player" << p.nickname;
-    return false;
+    p.showBody = false;
+    return true;
 }
 
 /**
