@@ -437,6 +437,23 @@ void InGameUI::onReadyClicked() {
     qDebug() << "Ready clicked";
 }
 
+void InGameUI::closeTask() {
+    switch(currentInGameGUI) {
+        case IN_GAME_GUI_FIX_WIRING:
+        onCloseFixWiring();
+        break;
+        case IN_GAME_GUI_ASTEROIDS:
+        // TODO
+        break;
+        default:
+        break;
+    }
+    currentInGameGUI = IN_GAME_GUI_NONE;
+    delete currLayout;
+    delete qLabel;
+    qLabel = nullptr;
+}
+
 /**
  * Filters key presses used in the game, and mouse events for tasks. (there may be a more efficient implementation)
  * @brief InGameUI::eventFilter
@@ -494,10 +511,7 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                     }
                     else
                     {
-                        currentInGameGUI = IN_GAME_GUI_NONE;
-                        delete currLayout;
-                        delete qLabel;
-                        qLabel = nullptr;
+                        closeTask();
                     }
                 }
                 break;

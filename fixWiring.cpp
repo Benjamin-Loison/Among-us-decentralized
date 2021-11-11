@@ -246,6 +246,16 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
     }
     if(everythingMatch)
     {
-        playSound("Fix_Wiring_task_close_sound.wav");
+        inGameUI->closeTask();
     }
+}
+
+void onCloseFixWiring() {
+    playSound("Fix_Wiring_task_close_sound.wav");
+    resetFixWiring();
+}
+
+void resetFixWiring() {
+    for(int i = 0; i < COLORS_NUMBER; i++)
+        links[i] = COLOR_UNDEFINED;
 }

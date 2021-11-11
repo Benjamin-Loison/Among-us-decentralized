@@ -57,6 +57,7 @@ class InGameUI : public QLabel
         bool killPlayer();
         bool killPlayer(Player &player);
         bool reportBody();
+        void closeTask();
         InGameUI(QString nickname, QLabel* parent = 0);
 
     public slots:
