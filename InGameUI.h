@@ -62,6 +62,9 @@ class InGameUI : public QLabel
         Player* findReportableBody();
         bool reportBody(Player &player);
         void closeTask();
+        void onClickUse();
+        void onClickReport();
+        void onClickKill();
         InGameUI(QString nickname, QLabel* parent = 0);
 
     public slots:

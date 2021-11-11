@@ -257,11 +257,8 @@ Player* InGameUI::findReportableBody() {
     for(Player* player : getOtherPlayersByDistance()) {
         if(player->showBody) {
             int sqDist = (player->x-x)*(player->x-x) + (player->y-y)*(player->y-y);
-            if(sqDist <= REPORT_RANGE_SQUARED) {
-                // TODO
-                qDebug() << "Reported player" << player->nickname;
+            if(sqDist <= REPORT_RANGE_SQUARED)
                 return player;
-            }
         }
     }
     return nullptr;
@@ -272,6 +269,7 @@ Player* InGameUI::findReportableBody() {
  */
 bool InGameUI::reportBody(Player &p) {
     // TODO
+    qDebug() << "Reported player" << p.nickname;
     return false;
 }
 
@@ -479,6 +477,42 @@ void InGameUI::closeTask() {
     qLabel = nullptr;
 }
 
+void InGameUI::onClickUse() {
+    QVector<QPair<Task, QPoint>> tasks = getUsableTasksByDistance();
+    if(tasks.size() > 0) {
+        Task task = tasks[0].first;
+        switch(task) {
+        case TASK_FIX_WIRING:
+            currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
+            qLabel = getFixWiring();
+            break;
+        case TASK_ASTEROIDS:
+            currentInGameGUI = IN_GAME_GUI_ASTEROIDS;
+            qLabel = getAsteroids();
+            break;
+        default:
+            return;
+        }
+        currLayout = new QHBoxLayout;
+        currLayout->addWidget(qLabel);
+        setLayout(currLayout);
+    }
+
+}
+
+void InGameUI::onClickReport() {
+    Player* reportable = findReportableBody();
+    if(reportable)
+        reportBody(*reportable);
+}
+
+void InGameUI::onClickKill() {
+    // Game logic verifications are performed in the function calls
+    Player* killable = findKillablePlayer();
+    if(killable)
+        killPlayer(*killable);
+}
+
 /**
  * Filters key presses used in the game, and mouse events for tasks. (there may be a more efficient implementation)
  * @brief InGameUI::eventFilter
@@ -488,7 +522,6 @@ void InGameUI::closeTask() {
  */
 bool InGameUI::eventFilter(QObject *obj, QEvent *event)
 {
-    Q_UNUSED(obj)
 
     if (event->type() == QEvent::KeyPress)
     {
@@ -509,25 +542,7 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                 if(everyoneReady) {
                     if (qLabel == nullptr)
                     {
-                        QVector<QPair<Task, QPoint>> tasks = getUsableTasksByDistance();
-                        if(tasks.size() > 0) {
-                            Task task = tasks[0].first;
-                            switch(task) {
-                            case TASK_FIX_WIRING:
-                                currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
-                                qLabel = getFixWiring();
-                                break;
-                            case TASK_ASTEROIDS:
-                                currentInGameGUI = IN_GAME_GUI_ASTEROIDS;
-                                qLabel = getAsteroids();
-                                break;
-                            default:
-                                return true;
-                            }
-                            currLayout = new QHBoxLayout;
-                            currLayout->addWidget(qLabel);
-                            setLayout(currLayout);
-                        }
+                        onClickUse();
                     }
                     else
                     {
@@ -536,18 +551,13 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                 }
                 break;
             case Qt::Key_K:
-                if(everyoneReady) {
-                    // Game logic verifications are performed in the function calls
-                    Player* killable = findKillablePlayer();
-                    if(killable)
-                        killPlayer(*killable);
+                if(everyoneReady && currentInGameGUI == IN_GAME_GUI_NONE) {
+                    onClickKill();
                 }
                 break;
             case Qt::Key_R:
-                if(everyoneReady) {
-                    Player* reportable = findReportableBody();
-                    if(reportable)
-                        reportBody(*reportable);
+                if(everyoneReady && currentInGameGUI == IN_GAME_GUI_NONE) {
+                    onClickReport();
                 }
                 break;
             default:
@@ -589,6 +599,27 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
             if (currentInGameGUI == IN_GAME_GUI_FIX_WIRING)
                 onMouseEventFixWiring(mouseEvent);
             return true;
+        }
+    }
+    else if (event->type() == QEvent::MouseButtonDblClick || event->type() == QEvent::MouseButtonPress)
+    {
+        if(!everyoneReady || obj != this)
+            return false;
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        
+        if(mouseEvent->button() == Qt::LeftButton) {
+            int mouseX = mouseEvent->x(), mouseY = mouseEvent->y();
+            int width = size().width(), height = size().height();
+            if(currentInGameGUI == IN_GAME_GUI_NONE) {
+                if(mouseX >= width-220 && mouseX < width-110 && mouseY >= height-110 && mouseY < height && findKillablePlayer())
+                    onClickKill();
+                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-110 && mouseY < height && findReportableBody())
+                    onClickReport();
+                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && getUsableTasksByDistance().size() > 0)
+                    onClickUse();
+                return true;
+            }
+            return false;
         }
     }
     return false;
