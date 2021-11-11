@@ -210,7 +210,7 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
             if(d <= range)
             {
                 links[fixingIndex] = nodesIndex;
-                playSound("Fix_Wiring_connect_wire_sound_" + QString::number(QRandomGenerator::global()->bounded(3) + 1) + ".wav");
+                playSound(QString("Fix_Wiring_connect_wire_sound_%1.wav").arg(QRandomGenerator::global()->bounded(1,4)));
                 break;
             }
         }
@@ -276,6 +276,7 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
     }
     if(everythingMatch)
     {
+        playSound("task_Complete.wav");
         inGameUI->finishTask();
         inGameUI->closeTask();
     }
