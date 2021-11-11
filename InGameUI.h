@@ -33,6 +33,9 @@ class InGameUI : public QLabel
         QPixmap* backgroundPixmap;
         QPixmap* collisionPixmap;
         QImage collisionImage;
+        QImage killButtonImage;
+        QImage reportButtonImage;
+        QImage useButtonImage;
         QPixmap* windowPixmap;
         QTimer* timer;
         QElapsedTimer* elapsedTimer;
@@ -53,10 +56,11 @@ class InGameUI : public QLabel
         bool isCollision(quint16 x, quint16 y);
         void resizeEvent(QResizeEvent* ev);
         QVector<Player *> getOtherPlayersByDistance();
-        QVector<QPair<Task, QPoint>> getTasksByDistance();
-        bool killPlayer();
+        QVector<QPair<Task, QPoint>> getUsableTasksByDistance();
+        Player* findKillablePlayer();
         bool killPlayer(Player &player);
-        bool reportBody();
+        Player* findReportableBody();
+        bool reportBody(Player &player);
         void closeTask();
         InGameUI(QString nickname, QLabel* parent = 0);
 

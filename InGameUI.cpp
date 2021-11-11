@@ -61,6 +61,12 @@ void InGameUI::initDisplay()
     backgroundPixmap = getQPixmap("mapCrop.png"); // "The Skeld"
     collisionPixmap = getQPixmap("mapCropCollision.png");
     collisionImage = collisionPixmap->toImage();
+    QPixmap* killButtonPixmap = getQPixmap("killButton.png");
+    killButtonImage = killButtonPixmap->toImage();
+    QPixmap* reportButtonPixmap = getQPixmap("reportButton.png");
+    reportButtonImage = reportButtonPixmap->toImage();
+    QPixmap* useButtonPixmap = getQPixmap("useButton.png");
+    useButtonImage = useButtonPixmap->toImage();
 
     if (isCollision(currPlayer.x, currPlayer.y))
     {
@@ -216,12 +222,15 @@ QVector<Player *> InGameUI::getOtherPlayersByDistance() {
     return players;
 }
 
-QVector<QPair<Task, QPoint>> InGameUI::getTasksByDistance() {
+QVector<QPair<Task, QPoint>> InGameUI::getUsableTasksByDistance() {
     QVector<QPair<Task, QPoint>> tasks;
-    for(Task task : tasksLocations.keys())
-        for(QPoint pt : tasksLocations[task])
-            tasks.push_back(QPair<Task, QPoint>(task, pt));
     int x = currPlayer.x, y = currPlayer.y;
+    for(Task task : tasksLocations.keys())
+        for(QPoint pt : tasksLocations[task]) {
+            int dist = (pt.x()-x)*(pt.x()-x) + (pt.y()-y)*(pt.y()-y);
+            if(dist <= TASK_RANGE_SQUARED)
+                tasks.push_back(QPair<Task, QPoint>(task, pt));
+        }
     qSort(tasks.begin(), tasks.end(), [&](const QPair<Task, QPoint> &task1, const QPair<Task, QPoint> &task2) {
         QPoint pt1 = task1.second;
         QPoint pt2 = task2.second;
@@ -238,12 +247,12 @@ QVector<QPair<Task, QPoint>> InGameUI::getTasksByDistance() {
 }
 
 /**
- * Looks for a corpse to report, reports it if found.
+ * Looks for a corpse to report.
  */
-bool InGameUI::reportBody() {
+Player* InGameUI::findReportableBody() {
     // Confirm: ghosts can't report bodies, right?
     if(currPlayer.isGhost)
-        return false;
+        return nullptr;
     int x = currPlayer.x, y = currPlayer.y;
     for(Player* player : getOtherPlayersByDistance()) {
         if(player->showBody) {
@@ -251,31 +260,39 @@ bool InGameUI::reportBody() {
             if(sqDist <= REPORT_RANGE_SQUARED) {
                 // TODO
                 qDebug() << "Reported player" << player->nickname;
-                return true;
+                return player;
             }
         }
     }
+    return nullptr;
+}
+
+/**
+ * Reports a corpse. Does not perform checks.
+ */
+bool InGameUI::reportBody(Player &p) {
+    // TODO
     return false;
 }
 
 /**
- * Looks for a player to kill, then kills it if in range and alive.
+ * Looks for a player to kill. The returned Player is in range and alive.
  * Also checks whether the current Player is an alive Impostor.
  */
-bool InGameUI::killPlayer() {
+Player* InGameUI::findKillablePlayer() {
     if(!currPlayer.isImpostor || currPlayer.isGhost)
-        return false;
+        return nullptr;
     int x = currPlayer.x, y = currPlayer.y;
     for(Player* player : getOtherPlayersByDistance()) {
         if(!player->isGhost) {
             int sqDist = (player->x-x)*(player->x-x) + (player->y-y)*(player->y-y);
             if(sqDist <= KILL_RANGE_SQUARED)
-                return killPlayer(*player);
+                return player;
             else
                 break;
         }
     }
-    return false;
+    return nullptr;
 }
 
 /**
@@ -405,6 +422,14 @@ void InGameUI::redraw()
     painter.fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
     painter.drawText(boundingRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y));
 
+    // Game buttons
+    if(findKillablePlayer())
+        painter.drawImage(size().width()-220, size().height()-110, killButtonImage);
+    if(findReportableBody())
+        painter.drawImage(size().width()-110, size().height()-110, reportButtonImage);
+    if(getUsableTasksByDistance().size() > 0)
+        painter.drawImage(size().width()-110, size().height()-220, useButtonImage);
+
     // Ready button
     if (!everyoneReady)
     {
@@ -484,29 +509,24 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                 if(everyoneReady) {
                     if (qLabel == nullptr)
                     {
-                        QVector<QPair<Task, QPoint>> tasks = getTasksByDistance();
+                        QVector<QPair<Task, QPoint>> tasks = getUsableTasksByDistance();
                         if(tasks.size() > 0) {
                             Task task = tasks[0].first;
-                            QPoint loc = tasks[0].second;
-                            int x = currPlayer.x, y = currPlayer.y;
-                            int sqDist = (loc.x()-x)*(loc.x()-x) + (loc.y()-y)*(loc.y()-y);
-                            if(sqDist <= TASK_RANGE_SQUARED) {
-                                switch(task) {
-                                case TASK_FIX_WIRING:
-                                    currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
-                                    qLabel = getFixWiring();
-                                    break;
-                                case TASK_ASTEROIDS:
-                                    currentInGameGUI = IN_GAME_GUI_ASTEROIDS;
-                                    qLabel = getAsteroids();
-                                    break;
-                                default:
-                                    return true;
-                                }
-                                currLayout = new QHBoxLayout;
-                                currLayout->addWidget(qLabel);
-                                setLayout(currLayout);
+                            switch(task) {
+                            case TASK_FIX_WIRING:
+                                currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
+                                qLabel = getFixWiring();
+                                break;
+                            case TASK_ASTEROIDS:
+                                currentInGameGUI = IN_GAME_GUI_ASTEROIDS;
+                                qLabel = getAsteroids();
+                                break;
+                            default:
+                                return true;
                             }
+                            currLayout = new QHBoxLayout;
+                            currLayout->addWidget(qLabel);
+                            setLayout(currLayout);
                         }
                     }
                     else
@@ -517,13 +537,17 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                 break;
             case Qt::Key_K:
                 if(everyoneReady) {
-                    // Game logic verifications are performed in killPlayer()
-                    killPlayer();
+                    // Game logic verifications are performed in the function calls
+                    Player* killable = findKillablePlayer();
+                    if(killable)
+                        killPlayer(*killable);
                 }
                 break;
             case Qt::Key_R:
                 if(everyoneReady) {
-                    reportBody();
+                    Player* reportable = findReportableBody();
+                    if(reportable)
+                        reportBody(*reportable);
                 }
                 break;
             default:
