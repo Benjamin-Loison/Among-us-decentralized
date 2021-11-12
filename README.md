@@ -40,7 +40,7 @@ Course schedule: http://www.lsv.fr/~chatain/enseignement/GL/
 Realtime game similar to (C++ Qt decentralized...) https://github.com/Benjamin-Loison/Travian-blockchained
 
 ## Building
-Requires Qt 5.12.11 (or probably any other recent version of Qt 5). To build on Ubuntu, you can either:
+Requires Qt 5.12.11 (or probably any other recent version). To build on Ubuntu, you can either:
 - open `AmongUsDecentralized.pro` in Qt Creator, then click "Build Project",
 - or, from a build directory, run `qmake path/to/AmongUsDecentralized.pro` then `make`.
 
@@ -79,5 +79,4 @@ Thus, when they reach a certain distance, they agree on a a protocol to see each
 dealing with doors is optionnal
 
 
-the main objective is to make sure that no one cheated at the end of the round/game
-~                                                                                         
+the main objective is to make sure that no one cheated at the end of the round/game                                      
