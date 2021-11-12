@@ -8,6 +8,8 @@
 #include "main.h"
 #include "InGameUI.h"
 #include <unistd.h> // only linux...
+#include <QtGlobal>
+
 
 QMediaPlayer* player;
 InGameUI* inGameUI;
@@ -18,6 +20,9 @@ QString nickname, peerAddress;
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QImageReader::setAllocationLimit(256);
+#endif
     inGameUI = new InGameUI(/*nickname*/);
     bool isFirstToRun = getBool("First to run", "Are you the first to run for this party ?"),
          runServer = isFirstToRun/*should be true for more than 2 players*/,
