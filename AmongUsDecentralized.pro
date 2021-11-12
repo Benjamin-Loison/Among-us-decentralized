@@ -1,4 +1,5 @@
 QT += widgets
+QT += network
 QT += multimedia
 
 SOURCES += \
