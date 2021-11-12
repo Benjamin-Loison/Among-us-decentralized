@@ -32,9 +32,9 @@ Course schedule: http://www.lsv.fr/~chatain/enseignement/GL/
 - [ ] Packaging
 - Tests :
     - Continuous integration:
-        - [ ] Windows (?)
+        - [X] Windows (Helib incompatible?)
         - [X] Linux
-        - [ ] MacOS
+        - [X] MacOS
     - [ ] Other tests
 
 Realtime game similar to (C++ Qt decentralized...) https://github.com/Benjamin-Loison/Travian-blockchained
