@@ -10,29 +10,14 @@ jobs:
     runs-on: macos-11
     steps:
     - uses: actions/checkout@v2
-    - run: tail -r AmongUsDecentralized.pro | sed '1,19d' AmongUsDecentralized.pro | tail -r > AmongUsDecentralized.pro
-    #- uses: jurplel/install-qt-action@v2
-    #- uses: WillBrennan/yaqti@2021.07.29
-    #  with:
-    #    version: 5.15.2
-    #    os: mac
-    #    platform: desktop
-    #    # ['clang_64', 'debug_info', 'qtcharts', 'qtdatavis3d', 'qtlottie', 'qtnetworkauth', 'qtpurchasing', 'qtquick3d', 'qtquicktimeline', 'qtscript', 'qtvirtualkeyboard', 'qtwebengine', 'qtwebglplugin']
-    #    modules: clang_64
-    # is Qt already installed ?
-    #- run: ls /usr/local/Cellar/
-    #- run: ls /usr/local/opt/
     - run: brew install qt5
-    #- run: ls /usr/local/opt/qt@5/
-    #- run: export PATH="/usr/local/opt/qt@5/bin:$PATH"
     - run: echo 'export PATH="/usr/local/opt/qt@5/bin:$PATH"' >> /Users/runner/.bash_profile
     - run: export LDFLAGS="-L/usr/local/opt/qt@5/lib"
     - run: export CPPFLAGS="-I/usr/local/opt/qt@5/include"
     - run: export PKG_CONFIG_PATH="/usr/local/opt/qt@5/lib/pkgconfig"
     - run: /usr/local/opt/qt@5/bin/qmake
-    #- run: qmake
+    - run: make
     - uses: actions/upload-artifact@v2
       with:
-        name: Makefile
-        path: Makefile
-    - run: make
+        name: AmongUsDecentralized
+        path: AmongUsDecentralized.app/Contents/MacOS/AmongUsDecentralized

@@ -32,7 +32,7 @@ win32 {
     copydata.commands = $(COPY_DIR) $$PWD_WIN\\assets $$DESTDIR_WIN\\assets
 }
 macx {
-    copydata.commands = $(COPY_DIR) $$PWD/assets $$OUT_PWD
+    copydata.commands =
 }
 linux {
     copydata.commands = $(COPY_DIR) $$PWD/assets $$OUT_PWD
