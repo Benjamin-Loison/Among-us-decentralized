@@ -1,20 +1,20 @@
 https://among-us.fandom.com/wiki/ aller dans elements puis tasks (https://among-us.fandom.com/wiki/Tasks)
 normal:
-- fix wiring : must click on wire of correspondings color
-- swipe card : swipe card from wallet to draw frame
-- Enter Id code : swipe id to see code and tap code
-- insert keys : self-descriptive
-- scan boarding pass : drag and wait until it becomes green
+- Fix Wiring: connect wires with same colors
+- Swipe Card: take card out of wallet and swipe it in the card reader
+- Enter Id Code: swipe id card to see code, then input it
+- Insert Keys: insert a key in a keyhole
+- Scan Boarding Pass: drag the boarding pass and wait until the reader becomes green
 short:
-- clean vent : tiping or clicking on the waste
-- Upload data : move first place 8.7s, move second place 8.7s, play warm cold
-- Submit scan : wait 10 seconds to prove innocence (maybe not do)
-- make burger : click to see and hide order, make burger with 5 ingredient
-- divert power : switch power up,tapping to complete the task in an other given location
-- garbage : pull and hold levier until no garbage, pull an other levier
-- unlock manifolds : clicking on the 10 number in the right order
+- Clean Vent: tap or click on waste in an air vent to clean it
+- Upload Data: move to a first place, wait 8.7s, move to a second place, wait 8.7s, possibly drag the mobile device around to improve connection quality
+- Submit Scan: wait 10 seconds to prove innocence (maybe not do)
+- Make Burger: click to see and hide order, make burger with 5 ingredients
+- Divert Power: switch power up, tap to complete the task in another location
+- Garbage: pull and hold lever until all the garbage goes out, do the same at another place
+- Unlock Manifolds: click on 1,2,...,10 in ascending order
 long :
-- unlock safe : enter 3 numbers, rotate 3 times
-- fix weather node : solve 6 maze on different locations
-- start reactor : replicate patter of up to 5 squares
-- clean asteroids : click on 20 asteroids
+- Unlock Safe: enter 3 numbers, rotate the handle 3 times
+- Fix Weather Node: solve a maze at one of 6 different locations
+- Start Reactor: replicate pattern of 1, then 2, then ..., then 5 squares on a grid of 9 squares
+- Clean Asteroids: click on 20 asteroids
