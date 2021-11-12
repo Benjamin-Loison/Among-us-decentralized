@@ -6,7 +6,8 @@
 
 #define DEFAULT_SERVER_PORT 10821
 #define NETWORK_SEPARATOR "#SEP#"
-#define TIME_S_ASSUME_DISCOVERED 3
+#define EMPTY_NETWORK_RESPONSE "#EMPTY#"
+#define TIME_S_ASSUME_DISCOVERED 1
 
 class Server : public QWidget
 {
@@ -27,8 +28,11 @@ class Server : public QWidget
         QString processMessageServer(QTcpSocket* socket, QString message);
 };
 
-void sendToSocket(QTcpSocket* socket, QString messageToSend);
-QString askAll(QString message), socketToString(QTcpSocket* socket);
+extern bool askingAll;
+extern QMap<QString, QString> askingAllMessages;
+extern quint16 askingAllMessagesCounter;
+void sendToSocket(QTcpSocket* socket, QString messageToSend), sendToAll(QString message);
+QString askAll(QString message), /*addressPortToString(QHostAddress address, quint16 port)*/serverSocketToString(), socketToString(QTcpSocket* socket);
 QList<QTcpSocket*> getPeers();
 
 #endif

@@ -62,6 +62,12 @@ void playSound(QString soundFile)
     soundEffectMap[soundFile]->play(); // run in a separate thread
 }
 
+bool getBool(QString title, QString label)
+{
+    int reponse = QMessageBox::question(inGameUI, title, label, QMessageBox ::Yes | QMessageBox::No);
+    return reponse == QMessageBox::Yes;
+}
+
 QString getText(QString title, QString label)
 {
     bool ok = false;

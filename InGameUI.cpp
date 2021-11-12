@@ -21,12 +21,12 @@ const QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
                              {QColor(244, 244, 86), QColor(194, 134, 34)}};
 
 // should make a function to get new player
-InGameUI::InGameUI(QString nickname, QLabel *parent) : QLabel(parent), currPlayer(Player(X_SPAWN, Y_SPAWN, nickname, colors[0][0], colors[0][1])), currentTask(nullptr), qLabel(nullptr)
+InGameUI::InGameUI(/*QString nickname, */QLabel *parent) : QLabel(parent), currentTask(nullptr), qLabel(nullptr)
 {
     // doing this at the very first window would be nice (when asking nickname etc)
     setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
     setWindowTitle("Among Us decentralized");
-    tasks = {
+    tasks = { // couldn't put all not necessary stuff in initialize not to delay user input ?
         new Task(TASK_FIX_WIRING, QPoint(4060, 360)),
         new Task(TASK_FIX_WIRING, QPoint(5433,2444)),
         new Task(TASK_FIX_WIRING, QPoint(7455,2055)),
@@ -43,8 +43,10 @@ InGameUI::InGameUI(QString nickname, QLabel *parent) : QLabel(parent), currPlaye
     currPlayer.bodyY = currPlayer.y;*/
 }
 
-void InGameUI::initialize()
+void InGameUI::initialize(QString nickname)
 {
+    quint16 otherPlayersSize = otherPlayers.size(); // used to be in constructor but likewise couldn't have already access to other players
+    currPlayer = Player(X_SPAWN, Y_SPAWN, nickname, colors[otherPlayersSize][0], colors[otherPlayersSize][1]);
     everyoneReady = false;
     //otherPlayers.push_back(Player(X_SPAWN+200, Y_SPAWN, "Test player", colors[0][0], colors[0][1]));
     // FOR TESTING
@@ -682,6 +684,6 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
 
 void InGameUI::spawnOtherPlayer(QString otherPlayerNickname)
 {
-    int otherPlayersSize = otherPlayers.size() + 1;
+    int otherPlayersSize = otherPlayers.size()/* + 1*/;
     otherPlayers.push_back(Player(X_SPAWN, Y_SPAWN, otherPlayerNickname, colors[otherPlayersSize][0], colors[otherPlayersSize][1]));
 }

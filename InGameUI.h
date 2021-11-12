@@ -48,7 +48,7 @@ class InGameUI : public QLabel
     public:
         Player currPlayer; // used to be private
         QLabel* qLabel;
-        void initialize();
+        void initialize(QString nickname);
         void initDisplay();
         void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
         void displayPlayer(const Player &player, QPainter* painter, bool showGhost);
@@ -68,7 +68,7 @@ class InGameUI : public QLabel
         void onClickReport();
         void onClickKill();
         void spawnOtherPlayer(QString otherPlayerNickname);
-        InGameUI(QString nickname, QLabel* parent = 0);
+        InGameUI(/*QString nickname,*/ QLabel* parent = 0);
 
     public slots:
         void redraw();

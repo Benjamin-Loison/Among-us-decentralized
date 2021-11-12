@@ -6,9 +6,9 @@ Client::Client(QString peerAddress)
 {
     socket = new QTcpSocket(this);
     connect(socket, SIGNAL(readyRead()), this, SLOT(dataReceived()));
-    //connect(socket, SIGNAL(connected()), this, SLOT(connecte()));
-    //connect(socket, SIGNAL(disconnected()), this, SLOT(deconnecte()));
-    //connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
+    connect(socket, SIGNAL(connected()), this, SLOT(connecte()));
+    connect(socket, SIGNAL(disconnected()), this, SLOT(deconnecte()));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
 
     messageSize = 0;
 
@@ -16,13 +16,27 @@ Client::Client(QString peerAddress)
     quint16 serverPort = DEFAULT_SERVER_PORT;
     if(peerAddress.contains(':'))
     {
-        serverPort = peerAddress.split(':')[1].toInt();
+        QStringList peerAddressParts = peerAddress.split(':');
+        serverPort = peerAddressParts[1].toInt();
+        peerAddress = peerAddressParts[0];
     }
     // Orange is so bad port opening doesn't work anymore but DMZ does :'(
+    qInfo(("client connecting to " + peerAddress + " on port " + QString::number(serverPort) + "...").toStdString().c_str());
     socket->connectToHost(peerAddress/*"2a01:cb00:774:4300:a4ba:9926:7e3a:b6c1"*//*"192.168.1.45"*//*"localhost"*//*"90.127.197.24"*//*"2a01:cb00:774:4300:531:8a76:deda:2b53"*//*a secret domain name*/, serverPort); // On se connecte au serveur demandé
+    qInfo("client connected ?");
 }
 
-void Client::sendToServer(QString messageToSend)
+void Client::connecte()
+{
+    qInfo("connecte");
+}
+
+void Client::deconnecte()
+{
+    qInfo("deconnecte");
+}
+
+void Client::sendToServer(QString messageToSend) // not very useful in theory...
 {
     sendToSocket(socket, messageToSend);
 }
@@ -50,7 +64,20 @@ void Client::dataReceived()
     in >> receivedMessage;
 
     qInfo(("client received: " + receivedMessage).toStdString().c_str());
-    processMessageClient(receivedMessage);
+    if(askingAll)
+    {
+        QString peerString = socketToString(socket);
+        if(askingAllMessages.find(peerString) != askingAllMessages.end() && askingAllMessages[peerString] == "") // second condition in order not to someone to revoke what he claimed
+        {
+            askingAllMessages[peerString] = receivedMessage;
+            askingAllMessagesCounter--;
+            qInfo(("askingAllMessagesCounter: " + QString::number(askingAllMessagesCounter)).toStdString().c_str());
+        }
+        else
+            processMessageClient(receivedMessage);
+    }
+    else
+        processMessageClient(receivedMessage);
 
     // On remet la taille du message à 0 pour pouvoir recevoir de futurs messages
     messageSize = 0;

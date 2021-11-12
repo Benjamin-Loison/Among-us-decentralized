@@ -18,16 +18,24 @@ QString nickname, peerAddress;
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    bool isFirstToRun = true,
-         runServer = isFirstToRun,
-         runClient = !isFirstToRun;
-
+    inGameUI = new InGameUI(/*nickname*/);
+    bool isFirstToRun = getBool("First to run", "Are you the first to run for this party ?"),
+         runServer = isFirstToRun/*should be true for more than 2 players*/,
+         runClient = /*!*/isFirstToRun;
+    QString isFirstToRunStr = isFirstToRun ? "true" : "false";
+    qInfo(("isFirstToRun: " + isFirstToRunStr).toStdString().c_str()); // clicking on exit button is like choosing no...
     quint16 serverPort = DEFAULT_SERVER_PORT;
     if(runServer)
-        serverPort = getText("Server port", "Your server port").toUInt();
+    {
+        QString serverPortStr = getText("Server port", "Your server port");
+        serverPort = serverPortStr.toUInt();
+        qInfo(("serverPort: " + serverPortStr).toStdString().c_str());
+    }
     if(runClient)
+    {
         peerAddress = getText("Peer address", "A peer address");
-    inGameUI = new InGameUI(nickname);
+        qInfo(("peerAddress: " + peerAddress).toStdString().c_str());
+    }
     /*QString languageFile = "among_us_decentralized_fr";
         if(translator.load(languageFile))
             app.installTranslator(&translator);
@@ -45,18 +53,35 @@ int main(int argc, char *argv[])
     // exemple pratique: jeu où les joueurs participent avec des arbitres vérifiant que personne ne triche
     if(runServer)
     {
+        qInfo("Starting server...");
         server = new Server(serverPort);
+        qInfo("Server started !");
     }
     if(runClient)
     {
         discoverClient(peerAddress);
-        qInfo(socketToString(clients.back()->socket).toStdString().c_str());
+        qInfo("Waiting discovery...");
         sleep(TIME_S_ASSUME_DISCOVERED);
-        askAll("nicknames");
+        QString socketString = socketToString(clients[0]/*.back()*/->socket);
+        qInfo(("this one: " + socketString).toStdString().c_str());
+        qInfo(("Discovered " + QString::number(/*clients*/getPeers().size()) + " peers !").toStdString().c_str());
+        qInfo("Waiting nicknames...");
+        QString nicknamesStr = askAll("nicknames"); // or should more precisely ask all nicknames at each nickname test ? but this assume to wait the maximum ping of someone ?
+        qInfo(("Received nicknames: " + nicknamesStr).toStdString().c_str());
+        //if(nicknamesStr != EMPTY_NETWORK_RESPONSE) // should at least contains the first running peer one...
+        QStringList nicknames = nicknamesStr.split(",");
+        quint16 nicknamesSize = nicknames.size();
+        for(quint16 nicknamesIndex = 0; nicknamesIndex < nicknamesSize; nicknamesIndex++)
+        {
+            QString nickname = nicknames[nicknamesIndex];
+            inGameUI->spawnOtherPlayer(nickname); // ah oui je vois bien pourquoi faire de la POO ça aide ici dans le nom des variables ça permet de se définir des namespace d'une certaine manière ^^
+        }
     }
     nickname = getText("Nickname", "Your nickname"); // should check with received one
+    qInfo(("nickname: " + nickname).toStdString().c_str());
+    sendToAll("nickname " + nickname);
 
-    inGameUI->initialize();
+    inGameUI->initialize(nickname);
     app.installEventFilter(inGameUI);
     inGameUI->resize(640, 480);
     inGameUI->showMaximized();

@@ -12,6 +12,7 @@ quint16 messageSize;
 void newConnection(),
      dataReceived(),
      clientDisconnected();*/
+bool askingAll = false;
 
 Server::Server(quint16 serverPort)
 {
@@ -22,7 +23,7 @@ Server::Server(quint16 serverPort)
     }
     else
     {
-        qWarning("Server started !");
+        //qWarning("Server started !");
         //QObject::connect(server, &QTcpServer::newConnection, [](){ newConnection(); });
         connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
     }
@@ -38,7 +39,7 @@ void Server::newConnection()
     //QObject::connect(newClient, &QIODevice::readyRead, [](){ dataReceived(); });
     //QObject::connect(newClient, &QAbstractSocket::disconnected, [](){ clientDisconnected(); });
     connect(newClient, SIGNAL(readyRead()), this, SLOT(dataReceived()));
-    ///connect(newClient, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
+    connect(newClient, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
 }
 
 void Server::dataReceived()
@@ -124,6 +125,16 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
             }
             //res += "nickname " + inGameUI->currPlayer.nickname; // no not trustable data until
         }
+        else if(messagePart == "nicknames")
+        {
+            res += serverSocketToString() + " " + inGameUI->currPlayer.nickname; // should also send others nicknames, order is important here
+        }
+        else if(messagePart.startsWith("nickname "))
+        {
+            // What difference QList/QVector ?
+            QString otherPlayerNickname = messagePart.replace("nickname ", "");
+            inGameUI->spawnOtherPlayer(otherPlayerNickname); // could almost save players one per client/server and loop through this and not the list stored in InGameUI
+        }
         if(messagePartsIndex < messagePartsSize - 1)
             res += NETWORK_SEPARATOR;
     }
@@ -134,6 +145,8 @@ void Server::clientDisconnected()
 {
     // On détermine quel client se déconnecte
     QTcpSocket* socket = qobject_cast<QTcpSocket*>(sender());
+    QString socketString = socketToString(socket);
+    qInfo(("Socket " + socketString + " disconnected !").toStdString().c_str());
     if(socket == 0) // Si par hasard on n'a pas trouvé le client à l'origine du signal, on arrête la méthode
         return;
 
@@ -144,7 +157,9 @@ void Server::clientDisconnected()
 
 void sendToSocket(QTcpSocket* socket, QString messageToSend)
 {
-    if(messageToSend == "") return;
+    QString socketString = socketToString(socket);
+    qInfo(("sending to " + socketString + ": " + messageToSend + " !").toStdString().c_str());
+    if(messageToSend == "") messageToSend = EMPTY_NETWORK_RESPONSE; // warning user injection...
     QByteArray paquet;
     QDataStream out(&paquet, QIODevice::WriteOnly);
 
@@ -158,40 +173,99 @@ void sendToSocket(QTcpSocket* socket, QString messageToSend)
     socket->write(paquet); // On envoie le paquet
 }
 
+QMap<QString, QString> askingAllMessages;
+quint16 askingAllMessagesCounter = 0;
+
 QString askAll(QString message)
 {
     QList<QTcpSocket*> peers = getPeers();
-    QStringList verificatorsAddresses;
+    //QStringList verificatorsAddresses;
     quint16 peersSize = peers.size();
+    askingAllMessagesCounter = peersSize;
     for(quint16 peersIndex = 0; peersIndex < peersSize; peersIndex++)
     {
         QTcpSocket* peer = peers[peersIndex];
-        verificatorsAddresses.push_back(socketToString(peer));
+        QString peerString = socketToString(peer);
+        //verificatorsAddresses.push_back(peerString);
+        sendToSocket(peer, message);
+        askingAllMessages[peerString] = ""; // assume always returns a non empty string
     }
+    askingAll = true;
     //QPair<QString, QString> key = qMakePair("localhost", "askAll");
     ///waitingMessages[key] = verificatorsAddresses;
-    while(true)
+    while(askingAllMessagesCounter > 0)
     {
         usleep(1000);
         //if(waitingMessages[key].empty())
-            break;
+        //    break;
     }
-
+    quint16 askingAllMessagesSize = askingAllMessages.size();
+    QMap<QString, quint16> scores;
+    QList<QString> askingAllMessagesValues = askingAllMessages.values();
+    for(quint16 askingAllMessagesIndex = 0; askingAllMessagesIndex < askingAllMessagesSize; askingAllMessagesIndex++)
+    {
+        QString askingMessage = askingAllMessagesValues[askingAllMessagesIndex];
+        if(scores.find(askingMessage) != scores.end())
+            scores[askingMessage]++;
+        else
+            scores[askingMessage] = 1;
+    }
+    askingAllMessages.clear();
+    // askingAllMessagesCounter already null
+    QString majorMessage;
+    quint16 scoresSize = scores.size(), maxScore = 0;
+    QList<QString> scoresKeys = scores.keys();
+    for(quint16 scoresIndex = 0; scoresIndex < scoresSize; scoresIndex++)
+    {
+        QString currentScoreKey = scoresKeys[scoresIndex];
+        quint16 currentScore = scores[currentScoreKey];
+        if(currentScore > maxScore/* || maxScore == 0*/) // not necessary
+        {
+            maxScore = currentScore;
+            majorMessage = currentScoreKey;
+        }
+    }
+    return majorMessage;
 }
 
 QList<QTcpSocket*> getPeers()
 {
-    QList<QTcpSocket*> res = server->clients;
+    QList<QTcpSocket*> res;
+    if(server != nullptr) // if code was clear shouldn't be here
+        res.append(server->clients);
     quint16 clientsSize = clients.size();
     for(quint16 clientsIndex = 0; clientsIndex < clientsSize; clientsIndex++)
     {
-        QTcpSocket* client = clients[clientsIndex]->socket;
-        res.append(client);
+        Client* client = clients[clientsIndex];
+        QTcpSocket* clientSocket = client->socket;
+        res.append(clientSocket);
     }
     return res;
 }
 
+QString addressPortToString(QHostAddress address, quint16 port)
+{
+    return address.toString()/*not sure about this*/ + ":" + QString::number(port);
+}
+
+QString serverSocketToString()
+{
+    return addressPortToString(server->server->serverAddress(), server->server->serverPort());
+}
+
 QString socketToString(QTcpSocket* socket)
 {
-    return socket->peerAddress().toString()/*not sure about this*/ + ":" + QString::number(socket->peerPort());
+    return addressPortToString(socket->peerAddress(), socket->peerPort());
+}
+
+void sendToAll(QString message)
+{
+    QList<QTcpSocket*> peers = getPeers();
+    // can't do this in a single line ?
+    quint16 peersSize = peers.size();
+    for(quint16 peersIndex = 0; peersIndex < peersSize; peersIndex++)
+    {
+        QTcpSocket* peer = peers[peersIndex];
+        sendToSocket(peer, message);
+    }
 }

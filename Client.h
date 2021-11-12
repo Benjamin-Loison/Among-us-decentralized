@@ -15,6 +15,8 @@ class Client : public QWidget
 
     private slots:
         void dataReceived();
+        void connecte();
+        void deconnecte();
         void socketError(QAbstractSocket::SocketError error);
 
     private:
