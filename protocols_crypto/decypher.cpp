@@ -9,6 +9,8 @@ using namespace helib;
 
 // using skey json file, decypher a given data 
 
+
+
 int main(int argc, char* argv[]){
     if (argc<5 ){
         cout << "[skey path] [context path] [cypher data path] [decyphered path]" << endl;
@@ -39,6 +41,7 @@ int main(int argc, char* argv[]){
         ofstream ptxtfile;
         ptxtfile.open(argv[4]);
         ptxtfile << ptxt.writeToJSON();
+        ptxtfile.close();
 
     } ;
 
