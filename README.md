@@ -58,3 +58,26 @@ Pour utiliser le multijoueur il est supposé que lorsque vous vous connectez à 
 <!-- Pour utiliser le multijoueur il est supposé que chaque joueur ait son port ouvert--><!-- ou qu'à l'aide de l'UPnp se soit possible de l'ouvrir. -->
 <!-- Pour utiliser le multijoueur il est supposé qu'au moins un joueur ait son port ouvert ou qu'à l'aide de l'UPnP se soit possible de l'ouvrir. -->
 <!-- avec l'IPv6 les ports sont ouverts par défaut ?! -->
+
+
+----------
+
+Ideas for protocols and methods 
+killed people wait at their bodies the round's end
+dead people are declared at the end of each round, then becomes phantoms: they only send their info to other phantom    s,but they can still make tasks
+
+chacun choisit un antécédent de fonction de hachage aléatoirement
+chacun envoie aux autres son haché
+Le random commun est donné par les hachés
+Les antécédents définissent l'ordre des taches de chacun
+En fin de partie, on peut vérifier les antécédents de tout de monde
+
+Due to helib limitations, it is not possible to know whether 2 players can see each other, just the distance between     both
+Thus, when they reach a certain distance, they agree on a a protocol to see each other in clear
+
+
+dealing with doors is optionnal
+
+
+the main objective is to make sure that no one cheated at the end of the round/game
+~                                                                                         
