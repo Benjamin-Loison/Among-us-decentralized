@@ -1,14 +1,13 @@
 #include "Server.h"
 #include <QTcpServer>
 #include "main.h"
-#include <unistd.h> // only linux...
+//#include <unistd.h> // only linux...
 
 // should use IPv6 by default
 
 /*QTcpServer* server;
 QList<QTcpSocket*> clients;
 quint16 messageSize;
-
 void newConnection(),
      dataReceived(),
      clientDisconnected();*/
@@ -34,12 +33,12 @@ Server::Server(quint16 serverPort)
 void Server::newConnection()
 {
     QTcpSocket* newClient = server->nextPendingConnection();
-    clients << newClient;
+        clients << newClient;
 
-    //QObject::connect(newClient, &QIODevice::readyRead, [](){ dataReceived(); });
-    //QObject::connect(newClient, &QAbstractSocket::disconnected, [](){ clientDisconnected(); });
-    connect(newClient, SIGNAL(readyRead()), this, SLOT(dataReceived()));
-    connect(newClient, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
+        //QObject::connect(newClient, &QIODevice::readyRead, [](){ dataReceived(); });
+        //QObject::connect(newClient, &QAbstractSocket::disconnected, [](){ clientDisconnected(); });
+        connect(newClient, SIGNAL(readyRead()), this, SLOT(dataReceived()));
+        connect(newClient, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
 }
 
 void Server::dataReceived()
@@ -70,7 +69,7 @@ void Server::dataReceived()
     QString message;
     in >> message;
     qInfo(("server received: " + message).toStdString().c_str());
-    message = processMessageServer(socket, message);
+    ///message = processMessageServer(socket, message);
 
     //message = processMessage(message);
     sendToSocket(socket, message);
@@ -145,8 +144,6 @@ void Server::clientDisconnected()
 {
     // On détermine quel client se déconnecte
     QTcpSocket* socket = qobject_cast<QTcpSocket*>(sender());
-    QString socketString = socketToString(socket);
-    qInfo(("Socket " + socketString + " disconnected !").toStdString().c_str());
     if(socket == 0) // Si par hasard on n'a pas trouvé le client à l'origine du signal, on arrête la méthode
         return;
 
@@ -193,12 +190,16 @@ QString askAll(QString message)
     askingAll = true;
     //QPair<QString, QString> key = qMakePair("localhost", "askAll");
     ///waitingMessages[key] = verificatorsAddresses;
+    //return "";
     while(askingAllMessagesCounter > 0)
     {
-        usleep(1000);
+        //usleep(1000);
+        qInfo("msleep 1");
+        QThread::msleep(1);
         //if(waitingMessages[key].empty())
         //    break;
     }
+    return "";
     quint16 askingAllMessagesSize = askingAllMessages.size();
     QMap<QString, quint16> scores;
     QList<QString> askingAllMessagesValues = askingAllMessages.values();

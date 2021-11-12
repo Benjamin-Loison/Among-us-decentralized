@@ -7,7 +7,7 @@
 #include <QMediaPlayer>
 #include "main.h"
 #include "InGameUI.h"
-#include <unistd.h> // only linux...
+//#include <unistd.h> // only linux...
 #include <QtGlobal>
 
 
@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
     // on fait l'hypothèse que les gens laissent du temps s'écouler entre les actions réseaux lorsque cela est nécessaire
     // ou par rapport à la ligne précédente, faisons un modèle où chaque participant envoie aux autres juste ses actions (donc confiance entière envers les autres)
     // exemple pratique: jeu où les joueurs participent avec des arbitres vérifiant que personne ne triche
+    // waiting a given time and not waiting all to answers and take majority is better I think (likewise if one doesn't cooperate it's not a problem)
     if(runServer)
     {
         qInfo("Starting server...");
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
     {
         discoverClient(peerAddress);
         qInfo("Waiting discovery...");
-        sleep(TIME_S_ASSUME_DISCOVERED);
+        QThread::sleep(TIME_S_ASSUME_DISCOVERED);
         QString socketString = socketToString(clients[0]/*.back()*/->socket);
         qInfo(("this one: " + socketString).toStdString().c_str());
         qInfo(("Discovered " + QString::number(/*clients*/getPeers().size()) + " peers !").toStdString().c_str());
