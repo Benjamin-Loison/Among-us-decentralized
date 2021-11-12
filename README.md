@@ -11,6 +11,8 @@ Crossplatform
 
 ## Objectives
 
+Course schedule: http://www.lsv.fr/~chatain/enseignement/GL/
+
 - [X] map/players (assets from native game for instance) - https://github.com/Perfare/AssetStudio
 - [X] Show the map
 - [X] Handle player movement
@@ -22,10 +24,18 @@ Crossplatform
 - [ ] Tasks:
     - [X] Fix Wiring
     - [X] Asteroids
-    - [ ] Other tasks
+    - [ ] Swipe Card
+    - [ ] Other tasks?
     - [X] Set places for tasks (currently not very user-friendly, as players need to know where the tasks are)
-- [ ] vocal chat during "meetings" (not prioritary)
-- [ ] extra anti cheat (not prioritary)
+- [ ] Vocal chat during "meetings" (not prioritary)
+- [ ] Extra anti cheat (not prioritary)
+- [ ] Packaging
+- Tests :
+    - Continuous integration:
+        - [ ] Windows (?)
+        - [X] Linux
+        - [ ] MacOS
+    - [ ] Other tests
 
 Realtime game similar to (C++ Qt decentralized...) https://github.com/Benjamin-Loison/Travian-blockchained
 
