@@ -7,8 +7,6 @@
 Language: C++  
 Graphics library: Qt
 
-Crossplatform
-
 ## Objectives
 
 Course schedule: http://www.lsv.fr/~chatain/enseignement/GL/
@@ -25,19 +23,19 @@ Course schedule: http://www.lsv.fr/~chatain/enseignement/GL/
     - [X] Fix Wiring
     - [X] Asteroids
     - [ ] Swipe Card
-    - [ ] Other tasks?
+    - [ ] Enter Id Code
+    - [ ] Scan Boarding Pass
+    - [ ] Unlock Manifolds
     - [X] Set places for tasks (currently not very user-friendly, as players need to know where the tasks are)
 - [ ] Vocal chat during "meetings" (not prioritary)
 - [ ] Extra anti cheat (not prioritary)
-- [ ] Packaging
+- [ ] Packaging (documentation ?)
 - Tests :
     - Continuous integration:
         - [X] Windows (Helib incompatible?)
         - [X] Linux
         - [X] MacOS
     - [ ] Other tests
-
-Realtime game similar to (C++ Qt decentralized...) https://github.com/Benjamin-Loison/Travian-blockchained
 
 ## Building
 Requires Qt 5.12.11 (or probably any other recent version). To build on Ubuntu, you can either:
@@ -48,8 +46,6 @@ Requires Qt 5.12.11 (or probably any other recent version). To build on Ubuntu, 
 
 For network maybe just working with Discord Rich Presence with a high level of abstraction would be nice
 
-5.1 s pour faire upper engine vers cafetaria (arrêt table) en "frotant" le mur du bas 2 431 pixels d'après ma mesure relativement précise donc une vitesse de 477 pixels par seconde
-
 make some tests (by a human for tasks for instance but precise a procedure)
 
 faire une option (booléenne dans le code par exemple) pour ne pas utiliser tout ce qui touche à QMediaPlayer qui pose parfois problème chez Benjamin par exemple.
@@ -59,12 +55,11 @@ Pour utiliser le multijoueur il est supposé que lorsque vous vous connectez à 
 <!-- Pour utiliser le multijoueur il est supposé qu'au moins un joueur ait son port ouvert ou qu'à l'aide de l'UPnP se soit possible de l'ouvrir. -->
 <!-- avec l'IPv6 les ports sont ouverts par défaut ?! -->
 
-
 ----------
 
 Ideas for protocols and methods 
 killed people wait at their bodies the round's end
-dead people are declared at the end of each round, then becomes phantoms: they only send their info to other phantom    s,but they can still make tasks
+dead people are declared at the end of each round, then becomes phantoms: they only send their info to other phantoms, but they can still make tasks
 
 chacun choisit un antécédent de fonction de hachage aléatoirement
 chacun envoie aux autres son haché
