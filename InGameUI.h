@@ -25,7 +25,6 @@ class InGameUI : public QLabel
     Q_OBJECT
 
     private:
-        Player currPlayer;
         QVector<Player> otherPlayers;
         QVector<Task*> tasks;
         int topBackground, leftBackground;
@@ -47,6 +46,7 @@ class InGameUI : public QLabel
         Task* currentTask;
 
     public:
+        Player currPlayer; // used to be private
         QLabel* qLabel;
         void initialize();
         void initDisplay();
@@ -67,6 +67,7 @@ class InGameUI : public QLabel
         void onClickUse();
         void onClickReport();
         void onClickKill();
+        void spawnOtherPlayer(QString otherPlayerNickname);
         InGameUI(QString nickname, QLabel* parent = 0);
 
     public slots:

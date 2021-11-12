@@ -26,3 +26,4 @@ Player::Player(): x(0), y(0), nickname("Player"), playerFacingLeft(false), playe
     flippedPixmap = new QPixmap(playerPixmap->transformed(QTransform().scale(-1,1)));
     flippedGhostPixmap = new QPixmap(ghostPixmap->transformed(QTransform().scale(-1,1)));
 }
+

@@ -20,8 +20,10 @@ const QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
                              {QColor(62, 71, 78), QColor(30, 30, 38)},
                              {QColor(244, 244, 86), QColor(194, 134, 34)}};
 
-InGameUI::InGameUI(QString nickname, QLabel *parent) : QLabel(parent), currPlayer(Player(X_SPAWN, Y_SPAWN, nickname, colors[1][0], colors[1][1])), currentTask(nullptr), qLabel(nullptr)
+// should make a function to get new player
+InGameUI::InGameUI(QString nickname, QLabel *parent) : QLabel(parent), currPlayer(Player(X_SPAWN, Y_SPAWN, nickname, colors[0][0], colors[0][1])), currentTask(nullptr), qLabel(nullptr)
 {
+    // doing this at the very first window would be nice (when asking nickname etc)
     setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
     setWindowTitle("Among Us decentralized");
     tasks = {
@@ -34,17 +36,17 @@ InGameUI::InGameUI(QString nickname, QLabel *parent) : QLabel(parent), currPlaye
     tasksLocations[TASK_ASTEROIDS] = {QPoint(6653,900)};*/
     readyButtonLayout = nullptr;
     // FOR TESTING
-    currPlayer.isImpostor = true;
+    /*currPlayer.isImpostor = true;
     currPlayer.isGhost = true;
     currPlayer.showBody = true;
     currPlayer.bodyX = currPlayer.x;
-    currPlayer.bodyY = currPlayer.y;
+    currPlayer.bodyY = currPlayer.y;*/
 }
 
 void InGameUI::initialize()
 {
     everyoneReady = false;
-    otherPlayers.push_back(Player(X_SPAWN+200, Y_SPAWN, "Test player", colors[0][0], colors[0][1]));
+    //otherPlayers.push_back(Player(X_SPAWN+200, Y_SPAWN, "Test player", colors[0][0], colors[0][1]));
     // FOR TESTING
     /*otherPlayers[0].isGhost = true;
     otherPlayers[0].showBody = true;
@@ -676,4 +678,10 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
         }
     }
     return false;
+}
+
+void InGameUI::spawnOtherPlayer(QString otherPlayerNickname)
+{
+    int otherPlayersSize = otherPlayers.size() + 1;
+    otherPlayers.push_back(Player(X_SPAWN, Y_SPAWN, otherPlayerNickname, colors[otherPlayersSize][0], colors[otherPlayersSize][1]));
 }

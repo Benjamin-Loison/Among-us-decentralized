@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include <QPixmap>
+#define MINIMAL_NUMBER_OF_PLAYERS 3
 
 class Player {
 public:

@@ -1,7 +1,8 @@
 #include "Client.h"
 #include "Server.h"
+#include "main.h"
 
-Client::Client()
+Client::Client(QString peerAddress)
 {
     socket = new QTcpSocket(this);
     connect(socket, SIGNAL(readyRead()), this, SLOT(dataReceived()));
@@ -12,24 +13,18 @@ Client::Client()
     messageSize = 0;
 
     socket->abort(); // On désactive les connexions précédentes s'il y en a
+    quint16 serverPort = DEFAULT_SERVER_PORT;
+    if(peerAddress.contains(':'))
+    {
+        serverPort = peerAddress.split(':')[1].toInt();
+    }
     // Orange is so bad port opening doesn't work anymore but DMZ does :'(
-    socket->connectToHost("2a01:cb00:774:4300:a4ba:9926:7e3a:b6c1"/*"192.168.1.45"*//*"localhost"*//*"90.127.197.24"*//*"2a01:cb00:774:4300:531:8a76:deda:2b53"*//*a secret domain name*/, SERVER_PORT); // On se connecte au serveur demandé
+    socket->connectToHost(peerAddress/*"2a01:cb00:774:4300:a4ba:9926:7e3a:b6c1"*//*"192.168.1.45"*//*"localhost"*//*"90.127.197.24"*//*"2a01:cb00:774:4300:531:8a76:deda:2b53"*//*a secret domain name*/, serverPort); // On se connecte au serveur demandé
 }
 
-// Envoi d'un message au serveur
 void Client::sendToServer(QString messageToSend)
 {
-    QByteArray paquet;
-    QDataStream out(&paquet, QIODevice::WriteOnly);
-
-    // On prépare le paquet à envoyer
-
-    out << (quint16)0;
-    out << messageToSend;
-    out.device()->seek(0);
-    out << (quint16)(paquet.size() - sizeof(quint16));
-
-    socket->write(paquet); // On envoie le paquet
+    sendToSocket(socket, messageToSend);
 }
 
 // On a reçu un paquet (ou un sous-paquet)
@@ -55,9 +50,38 @@ void Client::dataReceived()
     in >> receivedMessage;
 
     qInfo(("client received: " + receivedMessage).toStdString().c_str());
+    processMessageClient(receivedMessage);
 
     // On remet la taille du message à 0 pour pouvoir recevoir de futurs messages
     messageSize = 0;
+}
+
+void processMessageClient(QString message)
+{
+    QStringList messageParts = message.split(NETWORK_SEPARATOR);
+    quint32 messagePartsSize = messageParts.size();
+    for(quint32 messagePartsIndex = 0; messagePartsIndex < messagePartsSize; messagePartsIndex++)
+    {
+        QString messagePart = messageParts[messagePartsIndex];
+        if(messagePart.startsWith("peers "))
+        {
+            QString connected = messagePart.replace("peers ", "");
+            QStringList connectedParts = connected.split(" ");
+            quint32 connectedPartsSize = connectedParts.size();
+            for(quint32 connectedPartsIndex = 0; connectedPartsIndex < connectedPartsSize; connectedPartsIndex++)
+            {
+                QString connectedPart = connectedParts[connectedPartsIndex];
+                discoverClient(connectedPart);
+                //sendToSocket();
+            }
+        }
+        /*else if(messagePart.startsWith("nickname "))
+        {
+            QString otherPlayeNickname = messagePart.replace("nickname ", "");
+            inGameUI->spawnOtherPlayer(otherPlayeNickname);
+        }*/
+
+    }
 }
 
 void Client::socketError(QAbstractSocket::SocketError error) // not used
@@ -76,4 +100,13 @@ void Client::socketError(QAbstractSocket::SocketError error) // not used
         default:
             qWarning(("Error: " + socket->errorString()).toStdString().c_str());
     }
+}
+
+void discoverClient(QString peerAddress)
+{
+    Client* client = new Client(peerAddress);
+    clients.push_back(client);
+    //client->sendToServer("nickname " + nickname);
+    //client->sendToServer("discovering " + inGameUI->currPlayer.nickname);
+    client->sendToServer("discovering" /*+ inGameUI->currPlayer.nickname*/);
 }

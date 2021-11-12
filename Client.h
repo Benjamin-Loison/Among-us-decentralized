@@ -9,17 +9,19 @@ class Client : public QWidget
     Q_OBJECT
 
     public:
-        Client();
+        Client(QString peerAddress);
         void sendToServer(QString messageToSend);
+        QTcpSocket* socket;
 
     private slots:
         void dataReceived();
         void socketError(QAbstractSocket::SocketError error);
 
     private:
-        QTcpSocket* socket;
         quint16 messageSize;
 };
 
+void processMessageClient(QString message);
+void discoverClient(QString peerAddress);
 
 #endif
