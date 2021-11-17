@@ -50,6 +50,8 @@ void InGameUI::initialize(QString nickname)
     //qInfo(("playersNumber: " + QString::number(playersNumber)).toStdString().c_str());
     currPlayer = Player(X_SPAWN, Y_SPAWN, nickname, colors[playersNumber][0], colors[playersNumber][1]);
     everyoneReady = false;
+    lastNx = 0;
+    lastNy = 0;
     //otherPlayers.push_back(Player(X_SPAWN+200, Y_SPAWN, "Test player", colors[0][0], colors[0][1]));
     // FOR TESTING
     /*otherPlayers[0].isGhost = true;
@@ -162,7 +164,7 @@ void InGameUI::setCenterBorderLimit(int x, int y, QPainter *painter = nullptr)
  * @param dirHoriz Horizontal direction. Can be +1 for positive x, 0 for unchanged x or -1 for negative x.
  * @return Whether the movement was successful (i.e. not prevented by map borders or an obstacle).
  */
-bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz)
+bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz) // seems to be executed even if not using movement keys... leading to existence of lastNx/y
 {
     int delta;
     if (dirVert && dirHoriz)
@@ -214,7 +216,17 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz)
             currPlayer.playerFacingLeft = false;
         currPlayer.x = nx;
         currPlayer.y = ny;
-        sendToAll("position " + QString::number(nx) + " " + QString::number(ny));
+        if(lastNx == 0 && lastNy == 0)
+        {
+            lastNx = nx;
+            lastNy = ny;
+        }
+        if(lastNx != nx || lastNy != ny)
+        {
+            sendToAll("position " + QString::number(nx) + " " + QString::number(ny));
+            lastNx = nx;
+            lastNy = ny;
+        }
         return true;
     }
     else
@@ -499,12 +511,41 @@ void InGameUI::resizeEvent(QResizeEvent *ev)
 }
 
 void InGameUI::onReadyClicked() {
+    if(!currPlayer.isReady)
+    {
+        if(getPlayersNumber() >= MINIMAL_NUMBER_OF_PLAYERS)
+        {
+            qDebug() << "Ready clicked";
+            currPlayer.isReady = true;
+            readyButton->setText("Waiting other players");
+            sendToAll("ready");
+            checkEverybodyReady();
+        }
+        else
+        {
+            qDebug() << "Still waiting some players..."; // could display it on the button by default how many we are waiting
+        }
+    }
+}
+
+void InGameUI::onEverybodyReady()
+{
     everyoneReady = true;
     readyButtonLayout->removeWidget(readyButton);
     delete readyButton;
     delete readyButtonLayout;
     readyButtonLayout = nullptr;
-    qDebug() << "Ready clicked";
+
+    QList<QString> peerAddresses = otherPlayers.keys();
+    quint8 peerAddressesSize = peerAddresses.size();
+    for(quint8 peerAddressesIndex = 0; peerAddressesIndex < peerAddressesSize; peerAddressesIndex++)
+    {
+        QString peerAddress = peerAddresses[peerAddressesIndex];
+        movePlayer(peerAddress, X_SPAWN, Y_SPAWN, true);
+    }
+    currPlayer.x = X_SPAWN;
+    currPlayer.y = Y_SPAWN;
+    currPlayer.playerFacingLeft = false;
 }
 
 void InGameUI::finishTask() {
@@ -690,10 +731,58 @@ quint8 InGameUI::getPlayersNumber()
     return otherPlayers.size() + (currPlayer.nickname == "" ? 0 : 1);
 }
 
-void InGameUI::spawnOtherPlayer(QString otherPlayerNickname)
+void InGameUI::spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname)
 {
     //int otherPlayersSize = otherPlayers.size()/* + 1*/;
     //otherPlayers.push_back(Player(X_SPAWN, Y_SPAWN, otherPlayerNickname, colors[otherPlayersSize][0], colors[otherPlayersSize][1]));
     quint8 playersNumber = getPlayersNumber();
-    otherPlayers.push_back(Player(X_SPAWN, Y_SPAWN, otherPlayerNickname, colors[playersNumber][0], colors[playersNumber][1]));
+    otherPlayers[peerAddress] = Player(X_SPAWN, Y_SPAWN, otherPlayerNickname, colors[playersNumber][0], colors[playersNumber][1]);
+}
+
+void InGameUI::movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp)
+{
+    /*QList<QString> peerAddresses = otherPlayers.keys();
+    quint8 peerAddressesSize = peerAddresses.size();
+    qInfo(("peerAddress: " + peerAddress).toStdString().c_str());
+    for(quint8 peerAddressesIndex = 0; peerAddressesIndex < peerAddressesSize; peerAddressesIndex++)
+    {
+        QString peerAddress = peerAddresses[peerAddressesIndex];
+        qInfo((QString::number(peerAddressesIndex) + " " + peerAddress).toStdString().c_str());
+    }*/
+    Player* player = &otherPlayers[peerAddress];
+    if(tp)
+        player->playerFacingLeft = false;
+    else if(x != player->x) // otherwise if just change vertically not logical
+        player->playerFacingLeft = x < player->x;
+    player->x = x;
+    player->y = y;
+    /*player->bodyX = x;
+    player->bodyY = y;*/
+}
+
+void InGameUI::checkEverybodyReady()
+{
+    //qInfo("a");
+    if(!currPlayer.isReady) return;
+    //qInfo("b");
+    QList<QString> peerAddresses = otherPlayers.keys();
+    quint8 peerAddressesSize = peerAddresses.size();
+    for(quint8 peerAddressesIndex = 0; peerAddressesIndex < peerAddressesSize; peerAddressesIndex++)
+    {
+        QString peerAddress = peerAddresses[peerAddressesIndex];
+        if(!otherPlayers[peerAddress].isReady)
+        {
+            //qInfo((peerAddress + " " + QString::number(peerAddressesSize)).toStdString().c_str());
+            return;
+        }
+    }
+    //qInfo("c");
+    onEverybodyReady();
+}
+
+void InGameUI::setPlayerReady(QString peerAddress)
+{
+    Player* player = &otherPlayers[peerAddress];
+    player->isReady = true;
+    checkEverybodyReady();
 }

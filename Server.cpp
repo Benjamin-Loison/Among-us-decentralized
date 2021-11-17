@@ -81,6 +81,23 @@ void Server::dataReceived()
 // assume not same message a second time until others validated
 QMap<QPair<QString, QString>, QMap<QString, QString>> waitingMessages; // QMap<QPair<peerAddress, message>, verificatorsAddresses>
 
+void processMessageCommon(QTcpSocket* socket, QString messagePart)
+{
+    QString socketString = socketToString(socket);
+    if(messagePart.startsWith("position "))
+    {
+        messagePart = messagePart.replace("position ", "");
+        QStringList coordinates = messagePart.split(' ');
+        quint32 x = coordinates[0].toUInt(), y = coordinates[1].toUInt();
+        inGameUI->movePlayer(socketString, x, y);
+        //inGameUI->redraw(); // what if called a lot of time ?
+    }
+    else if(messagePart == "ready")
+    {
+        inGameUI->setPlayerReady(socketString);
+    }
+}
+
 QString Server::processMessageServer(QTcpSocket* socket, QString message)
 {
     QStringList messageParts = message.split(NETWORK_SEPARATOR);
@@ -132,14 +149,11 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
         {
             // What difference QList/QVector ?
             QString otherPlayerNickname = messagePart.replace("nickname ", "");
-            inGameUI->spawnOtherPlayer(otherPlayerNickname); // could almost save players one per client/server and loop through this and not the list stored in InGameUI
+            inGameUI->spawnOtherPlayer(socketToString(socket), otherPlayerNickname); // could almost save players one per client/server and loop through this and not the list stored in InGameUI
         }
-        else if(messagePart.startsWith("position "))
+        else
         {
-            messagePart = messagePart.replace("position ", "");
-            QStringList coordinates = messagePart.split(' ');
-            quint32 x = coordinates[0].toUInt(), y = coordinates[1].toUInt();
-
+            processMessageCommon(socket, messagePart);
         }
         if(messagePartsIndex < messagePartsSize - 1)
             res += NETWORK_SEPARATOR;
@@ -163,7 +177,7 @@ void sendToSocket(QTcpSocket* socket, QString messageToSend)
 {
     QString socketString = socketToString(socket);
     qInfo(("sending to " + socketString + ": " + messageToSend + " !").toStdString().c_str());
-    if(messageToSend == "") messageToSend = EMPTY_NETWORK_RESPONSE; // warning user injection...
+    if(messageToSend == "") return; //messageToSend = EMPTY_NETWORK_RESPONSE; // warning user injection...
     QByteArray paquet;
     QDataStream out(&paquet, QIODevice::WriteOnly);
 
@@ -254,7 +268,7 @@ QList<QTcpSocket*> getPeers()
 
 QString addressPortToString(QHostAddress address, quint16 port)
 {
-    return address.toString()/*not sure about this*/ + ":" + QString::number(port);
+    return address.toString().replace("0.0.0.0", "127.0.0.1")/*not sure about this*/ + ":" + QString::number(port);
 }
 
 QString serverSocketToString()

@@ -34,5 +34,6 @@ extern quint16 askingAllMessagesCounter;
 void sendToSocket(QTcpSocket* socket, QString messageToSend), sendToAll(QString message);
 QString askAll(QString message), /*addressPortToString(QHostAddress address, quint16 port)*/serverSocketToString(), socketToString(QTcpSocket* socket);
 QList<QTcpSocket*> getPeers();
+void processMessageCommon(QTcpSocket* socket, QString messagePart);
 
 #endif

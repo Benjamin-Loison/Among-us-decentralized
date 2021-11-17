@@ -90,7 +90,7 @@ void Client::dataReceived()
     messageSize = 0;
 }
 
-void processMessageClient(QString message)
+void Client::processMessageClient(QString message)
 {
     QStringList messageParts = message.split(NETWORK_SEPARATOR);
     quint32 messagePartsSize = messageParts.size();
@@ -114,7 +114,10 @@ void processMessageClient(QString message)
             QString otherPlayeNickname = messagePart.replace("nickname ", "");
             inGameUI->spawnOtherPlayer(otherPlayeNickname);
         }*/
-
+        else
+        {
+            processMessageCommon(socket, messagePart);
+        }
     }
 }
 

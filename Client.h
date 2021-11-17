@@ -13,6 +13,7 @@ class Client : public QWidget
         void sendToServer(QString messageToSend);
         QTcpSocket* socket;
         bool isConnected;
+        void processMessageClient(QString message);
 
     private slots:
         void dataReceived();
@@ -24,7 +25,6 @@ class Client : public QWidget
         quint16 messageSize;
 };
 
-void processMessageClient(QString message);
 void discoverClient(QString peerAddress);
 
 #endif

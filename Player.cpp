@@ -11,7 +11,8 @@ Player::Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor c
     playerFacingLeft(false),
     isImpostor(false),
     isGhost(false),
-    showBody(false) {
+    showBody(false),
+    isReady(false) {
     playerPixmap = getQPixmap("player.png");
     deadPixmap = getQPixmap("Dead0042.png");
     ghostPixmap = getQPixmap("ghost0001.png");

@@ -25,9 +25,10 @@ class InGameUI : public QLabel
     Q_OBJECT
 
     private:
-        QVector<Player> otherPlayers;
+        QMap<QString, Player> otherPlayers;
         QVector<Task*> tasks;
         int topBackground, leftBackground;
+        quint32 lastNx, lastNy;
         bool everyoneReady;
         QPixmap* backgroundPixmap;
         QPixmap* collisionPixmap;
@@ -67,7 +68,11 @@ class InGameUI : public QLabel
         void onClickUse();
         void onClickReport();
         void onClickKill();
-        void spawnOtherPlayer(QString otherPlayerNickname);
+        void spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname);
+        void movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp = false);
+        void onEverybodyReady();
+        void checkEverybodyReady();
+        void setPlayerReady(QString peerAddress);
         quint8 getPlayersNumber();
         InGameUI(/*QString nickname,*/ QLabel* parent = 0);
 

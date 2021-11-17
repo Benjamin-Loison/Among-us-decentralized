@@ -1,7 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include <QPixmap>
-#define MINIMAL_NUMBER_OF_PLAYERS 3
+// should be 3 below
+#define MINIMAL_NUMBER_OF_PLAYERS 2
 
 class Player {
 public:
@@ -12,6 +13,7 @@ public:
     bool isImpostor;
     bool isGhost;
     bool showBody;
+    bool isReady;
 
     Player();
     Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor color2);

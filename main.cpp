@@ -73,11 +73,12 @@ int main(int argc, char *argv[])
         //if(nicknamesStr != EMPTY_NETWORK_RESPONSE) // should at least contains the first running peer one...
         QStringList nicknames = nicknamesStr.split(",");
         quint16 nicknamesSize = nicknames.size();
+        // assume everybody using external IPv6
         for(quint16 nicknamesIndex = 0; nicknamesIndex < nicknamesSize; nicknamesIndex++)
         {
             QString nicknameStr = nicknames[nicknamesIndex];
             QStringList nicknameParts = nicknameStr.split(' '); // warning wouldn't work if space in username
-            inGameUI->spawnOtherPlayer(nicknameParts[1]); // ah oui je vois bien pourquoi faire de la POO ça aide ici dans le nom des variables ça permet de se définir des namespace d'une certaine manière ^^
+            inGameUI->spawnOtherPlayer(nicknameParts[0], nicknameParts[1]); // ah oui je vois bien pourquoi faire de la POO ça aide ici dans le nom des variables ça permet de se définir des namespace d'une certaine manière ^^
         }
     }
 
