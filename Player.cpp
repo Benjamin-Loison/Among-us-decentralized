@@ -22,7 +22,7 @@ Player::Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor c
     flippedGhostPixmap = new QPixmap(ghostPixmap->transformed(QTransform().scale(-1,1)));
 }
 
-Player::Player(): x(0), y(0), nickname("Player"), playerFacingLeft(false), playerPixmap(getQPixmap("player.png")), deadPixmap(getQPixmap("Dead0042.png")), ghostPixmap(getQPixmap("ghost0001.png")) {
+Player::Player(): x(0), y(0), nickname(/*"Player"*/""), playerFacingLeft(false), playerPixmap(getQPixmap("player.png")), deadPixmap(getQPixmap("Dead0042.png")), ghostPixmap(getQPixmap("ghost0001.png")) {
     flippedPixmap = new QPixmap(playerPixmap->transformed(QTransform().scale(-1,1)));
     flippedGhostPixmap = new QPixmap(ghostPixmap->transformed(QTransform().scale(-1,1)));
 }

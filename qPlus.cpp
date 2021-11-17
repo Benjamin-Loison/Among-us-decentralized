@@ -79,3 +79,18 @@ QString getText(QString title, QString label)
     }
     return text;
 }
+
+void msleepWithEvents(quint32 ms)
+{
+    qint64 endTime = QDateTime::currentMSecsSinceEpoch() + ms;
+    while(QDateTime::currentMSecsSinceEpoch() < endTime)
+    {
+        QCoreApplication::processEvents();
+        QThread::msleep(1);
+    }
+}
+
+void sleepWithEvents(quint16 s)
+{
+    msleepWithEvents(s * 1000);
+}

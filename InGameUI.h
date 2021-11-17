@@ -68,6 +68,7 @@ class InGameUI : public QLabel
         void onClickReport();
         void onClickKill();
         void spawnOtherPlayer(QString otherPlayerNickname);
+        quint8 getPlayersNumber();
         InGameUI(/*QString nickname,*/ QLabel* parent = 0);
 
     public slots:

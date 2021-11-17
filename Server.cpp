@@ -33,12 +33,12 @@ Server::Server(quint16 serverPort)
 void Server::newConnection()
 {
     QTcpSocket* newClient = server->nextPendingConnection();
-        clients << newClient;
+    clients << newClient;
 
-        //QObject::connect(newClient, &QIODevice::readyRead, [](){ dataReceived(); });
-        //QObject::connect(newClient, &QAbstractSocket::disconnected, [](){ clientDisconnected(); });
-        connect(newClient, SIGNAL(readyRead()), this, SLOT(dataReceived()));
-        connect(newClient, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
+    //QObject::connect(newClient, &QIODevice::readyRead, [](){ dataReceived(); });
+    //QObject::connect(newClient, &QAbstractSocket::disconnected, [](){ clientDisconnected(); });
+    connect(newClient, SIGNAL(readyRead()), this, SLOT(dataReceived()));
+    connect(newClient, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
 }
 
 void Server::dataReceived()
@@ -69,7 +69,7 @@ void Server::dataReceived()
     QString message;
     in >> message;
     qInfo(("server received: " + message).toStdString().c_str());
-    ///message = processMessageServer(socket, message);
+    message = processMessageServer(socket, message);
 
     //message = processMessage(message);
     sendToSocket(socket, message);
@@ -134,6 +134,13 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
             QString otherPlayerNickname = messagePart.replace("nickname ", "");
             inGameUI->spawnOtherPlayer(otherPlayerNickname); // could almost save players one per client/server and loop through this and not the list stored in InGameUI
         }
+        else if(messagePart.startsWith("position "))
+        {
+            messagePart = messagePart.replace("position ", "");
+            QStringList coordinates = messagePart.split(' ');
+            quint32 x = coordinates[0].toUInt(), y = coordinates[1].toUInt();
+
+        }
         if(messagePartsIndex < messagePartsSize - 1)
             res += NETWORK_SEPARATOR;
     }
@@ -194,12 +201,13 @@ QString askAll(QString message)
     while(askingAllMessagesCounter > 0)
     {
         //usleep(1000);
+        QCoreApplication::processEvents();
         qInfo("msleep 1");
         QThread::msleep(1);
         //if(waitingMessages[key].empty())
         //    break;
     }
-    return "";
+    //return "";
     quint16 askingAllMessagesSize = askingAllMessages.size();
     QMap<QString, quint16> scores;
     QList<QString> askingAllMessagesValues = askingAllMessages.values();

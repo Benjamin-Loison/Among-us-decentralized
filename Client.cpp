@@ -11,6 +11,7 @@ Client::Client(QString peerAddress)
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
 
     messageSize = 0;
+    isConnected = false;
 
     socket->abort(); // On désactive les connexions précédentes s'il y en a
     quint16 serverPort = DEFAULT_SERVER_PORT;
@@ -23,11 +24,17 @@ Client::Client(QString peerAddress)
     // Orange is so bad port opening doesn't work anymore but DMZ does :'(
     qInfo(("client connecting to " + peerAddress + " on port " + QString::number(serverPort) + "...").toStdString().c_str());
     socket->connectToHost(peerAddress/*"2a01:cb00:774:4300:a4ba:9926:7e3a:b6c1"*//*"192.168.1.45"*//*"localhost"*//*"90.127.197.24"*//*"2a01:cb00:774:4300:531:8a76:deda:2b53"*//*a secret domain name*/, serverPort); // On se connecte au serveur demandé
-    qInfo("client connected ?");
+    //qInfo("client connected ?");
+    /*while(!isConnected) // looping seems important instead of single call to processEvents, doing this bloquant way assume that all remote peers trying to be connected to will succeed quickly or will have to wait for timeout (if there is any)
+    {
+        QCoreApplication::processEvents();
+        QThread::msleep(1);
+    }*/
 }
 
 void Client::connecte()
 {
+    isConnected = true;
     qInfo("connecte");
 }
 

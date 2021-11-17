@@ -45,8 +45,10 @@ InGameUI::InGameUI(/*QString nickname, */QLabel *parent) : QLabel(parent), curre
 
 void InGameUI::initialize(QString nickname)
 {
-    quint16 otherPlayersSize = otherPlayers.size(); // used to be in constructor but likewise couldn't have already access to other players
-    currPlayer = Player(X_SPAWN, Y_SPAWN, nickname, colors[otherPlayersSize][0], colors[otherPlayersSize][1]);
+    //quint16 otherPlayersSize = otherPlayers.size(); // used to be in constructor but likewise couldn't have already access to other players
+    quint8 playersNumber = getPlayersNumber();
+    //qInfo(("playersNumber: " + QString::number(playersNumber)).toStdString().c_str());
+    currPlayer = Player(X_SPAWN, Y_SPAWN, nickname, colors[playersNumber][0], colors[playersNumber][1]);
     everyoneReady = false;
     //otherPlayers.push_back(Player(X_SPAWN+200, Y_SPAWN, "Test player", colors[0][0], colors[0][1]));
     // FOR TESTING
@@ -212,7 +214,7 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz)
             currPlayer.playerFacingLeft = false;
         currPlayer.x = nx;
         currPlayer.y = ny;
-
+        sendToAll("position " + QString::number(nx) + " " + QString::number(ny));
         return true;
     }
     else
@@ -224,7 +226,7 @@ QVector<Player *> InGameUI::getOtherPlayersByDistance() {
     for(Player &player : otherPlayers)
         players.push_back(&player);
     int x = currPlayer.x, y = currPlayer.y;
-    sort(players.begin(), players.end(), [&](const Player *a, const Player *b) {
+    qSort(players.begin(), players.end(), [&](const Player *a, const Player *b) {
         int sqDistA = (a->x-x) * (a->x-x) + (a->y-y) * (a->y-y);
         int sqDistB = (b->x-x) * (b->x-x) + (b->y-y) * (b->y-y);
         if(sqDistA != sqDistB)
@@ -250,7 +252,7 @@ QVector<Task*> InGameUI::getUsableTasksByDistance() {
         if(dist <= TASK_RANGE_SQUARED)
             ret.push_back(task);
     }
-    sort(ret.begin(), ret.end(), [&](const Task* task1, const Task* task2) {
+    qSort(ret.begin(), ret.end(), [&](const Task* task1, const Task* task2) {
         QPoint pt1 = task1->location;
         QPoint pt2 = task2->location;
         int dist1 = (pt1.x()-x)*(pt1.x()-x) + (pt1.y()-y)*(pt1.y()-y);
@@ -431,7 +433,7 @@ void InGameUI::redraw()
     players.push_back(&currPlayer);
     for (Player &player : otherPlayers)
         players.push_back(&player);
-    sort(players.begin(), players.end(), [](const Player *a, const Player *b)
+    qSort(players.begin(), players.end(), [](const Player *a, const Player *b)
           {
               if (a->y != b->y)
                   return a->y < b->y;
@@ -682,8 +684,16 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
     return false;
 }
 
+quint8 InGameUI::getPlayersNumber()
+{
+    //qInfo(("gettingPlayersNumber: " + QString::number(otherPlayers.size()) + " " + currPlayer.nickname + " ! " + QString::number(currPlayer.nickname == "" ? 0 : 1)).toStdString().c_str());
+    return otherPlayers.size() + (currPlayer.nickname == "" ? 0 : 1);
+}
+
 void InGameUI::spawnOtherPlayer(QString otherPlayerNickname)
 {
-    int otherPlayersSize = otherPlayers.size()/* + 1*/;
-    otherPlayers.push_back(Player(X_SPAWN, Y_SPAWN, otherPlayerNickname, colors[otherPlayersSize][0], colors[otherPlayersSize][1]));
+    //int otherPlayersSize = otherPlayers.size()/* + 1*/;
+    //otherPlayers.push_back(Player(X_SPAWN, Y_SPAWN, otherPlayerNickname, colors[otherPlayersSize][0], colors[otherPlayersSize][1]));
+    quint8 playersNumber = getPlayersNumber();
+    otherPlayers.push_back(Player(X_SPAWN, Y_SPAWN, otherPlayerNickname, colors[playersNumber][0], colors[playersNumber][1]));
 }

@@ -8,8 +8,6 @@
 #include "main.h"
 #include "InGameUI.h"
 //#include <unistd.h> // only linux...
-#include <QtGlobal>
-
 
 QMediaPlayer* player;
 InGameUI* inGameUI;
@@ -20,13 +18,11 @@ QString nickname, peerAddress;
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QImageReader::setAllocationLimit(256);
-#endif
     inGameUI = new InGameUI(/*nickname*/);
+    app.installEventFilter(inGameUI);
     bool isFirstToRun = getBool("First to run", "Are you the first to run for this party ?"),
          runServer = isFirstToRun/*should be true for more than 2 players*/,
-         runClient = /*!*/isFirstToRun;
+         runClient = !isFirstToRun;
     QString isFirstToRunStr = isFirstToRun ? "true" : "false";
     qInfo(("isFirstToRun: " + isFirstToRunStr).toStdString().c_str()); // clicking on exit button is like choosing no...
     quint16 serverPort = DEFAULT_SERVER_PORT;
@@ -67,7 +63,7 @@ int main(int argc, char *argv[])
     {
         discoverClient(peerAddress);
         qInfo("Waiting discovery...");
-        QThread::sleep(TIME_S_ASSUME_DISCOVERED);
+        sleepWithEvents(TIME_S_ASSUME_DISCOVERED);
         QString socketString = socketToString(clients[0]/*.back()*/->socket);
         qInfo(("this one: " + socketString).toStdString().c_str());
         qInfo(("Discovered " + QString::number(/*clients*/getPeers().size()) + " peers !").toStdString().c_str());
@@ -79,16 +75,19 @@ int main(int argc, char *argv[])
         quint16 nicknamesSize = nicknames.size();
         for(quint16 nicknamesIndex = 0; nicknamesIndex < nicknamesSize; nicknamesIndex++)
         {
-            QString nickname = nicknames[nicknamesIndex];
-            inGameUI->spawnOtherPlayer(nickname); // ah oui je vois bien pourquoi faire de la POO ça aide ici dans le nom des variables ça permet de se définir des namespace d'une certaine manière ^^
+            QString nicknameStr = nicknames[nicknamesIndex];
+            QStringList nicknameParts = nicknameStr.split(' '); // warning wouldn't work if space in username
+            inGameUI->spawnOtherPlayer(nicknameParts[1]); // ah oui je vois bien pourquoi faire de la POO ça aide ici dans le nom des variables ça permet de se définir des namespace d'une certaine manière ^^
         }
     }
+
+    QString nickname;
     nickname = getText("Nickname", "Your nickname"); // should check with received one
     qInfo(("nickname: " + nickname).toStdString().c_str());
-    sendToAll("nickname " + nickname);
+    if(runClient)
+        sendToAll("nickname " + nickname);
 
     inGameUI->initialize(nickname);
-    app.installEventFilter(inGameUI);
     inGameUI->resize(640, 480);
     inGameUI->showMaximized();
 
