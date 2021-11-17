@@ -14,6 +14,20 @@ QString assetsFolder = "assets/";
 
 QMap<QString, QSoundEffect*> soundEffectMap;
 
+bool DebugEventFilter::eventFilter(QObject *obj, QEvent *ev) {
+    if(ev->type() == QEvent::KeyPress)
+        qDebug() << "Key press sent to object of type" << obj->metaObject()->className();
+    else if(ev->type() == QEvent::KeyRelease)
+        qDebug() << "Key release sent to object of type" << obj->metaObject()->className();
+    else if(ev->type() == QEvent::MouseMove)
+        qDebug() << "Mouse move sent to object of type" << obj->metaObject()->className();
+    else if(ev->type() == QEvent::MouseButtonPress)
+        qDebug() << "Mouse button press sent to object of type" << obj->metaObject()->className();
+    else if(ev->type() == QEvent::MouseButtonDblClick)
+        qDebug() << "Mouse double click sent to object of type" << obj->metaObject()->className();
+    return false;
+}
+
 double distance(quint16 x0, quint16 y0, quint16 x1, quint16 y1)
 {
     return qSqrt(qPow(x0 - x1, 2) + qPow(y0 - y1, 2));
@@ -78,6 +92,10 @@ QString getText(QString title, QString label)
         text = QInputDialog::getText(inGameUI, title, label, QLineEdit::Normal, QString(), &ok);
     }
     return text;
+}
+
+void showWarningMessage(QString title, QString label) {
+    QMessageBox(QMessageBox::Icon::Warning, title, label).exec();
 }
 
 void msleepWithEvents(quint32 ms)

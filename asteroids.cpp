@@ -43,7 +43,7 @@ QPair<QPixmap*, QPainter*> getAsteroidsPixmapPainter()
     return qMakePair(qBackgroundPixmap, painter);
 }
 
-QLabel* getAsteroids(qint64 now)
+QLabel* getAsteroids(qint64 now, QObject* filterObj)
 {
     QLabel* qFrame = new QLabel;
     QHBoxLayout* hbox = new QHBoxLayout(qFrame);
@@ -70,6 +70,7 @@ QLabel* getAsteroids(qint64 now)
         asteroidPixmaps.push_back(getQPixmap("Asteroid.png"));
     }
     asteroidsLastUpdate = now;
+    qLabel->installEventFilter(filterObj);
     return qFrame;
 }
 

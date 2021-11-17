@@ -494,6 +494,7 @@ void InGameUI::redraw()
             qDebug() << "Creating ready button";
             readyButtonLayout = new QGridLayout;
             readyButton = new QPushButton("Ready");
+            readyButton->installEventFilter(this);
             connect(readyButton, &QPushButton::released, this, &InGameUI::onReadyClicked);
             readyButtonLayout->addWidget(readyButton, 0, 0, Qt::AlignBottom | Qt::AlignRight);
             setLayout(readyButtonLayout);
@@ -532,6 +533,7 @@ void InGameUI::onEverybodyReady()
 {
     everyoneReady = true;
     readyButtonLayout->removeWidget(readyButton);
+    readyButton->removeEventFilter(this);
     delete readyButton;
     delete readyButtonLayout;
     readyButtonLayout = nullptr;
@@ -567,6 +569,7 @@ void InGameUI::closeTask() {
     }
     currentTask = nullptr;
     currentInGameGUI = IN_GAME_GUI_NONE;
+    qLabel->removeEventFilter(this);
     delete currLayout;
     delete qLabel;
     qLabel = nullptr;
@@ -580,12 +583,12 @@ void InGameUI::onClickUse() {
         case TASK_FIX_WIRING:
             currentTask = task;
             currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
-            qLabel = getFixWiring();
+            qLabel = getFixWiring(this);
             break;
         case TASK_ASTEROIDS:
             currentTask = task;
             currentInGameGUI = IN_GAME_GUI_ASTEROIDS;
-            qLabel = getAsteroids(elapsedTimer->elapsed());
+            qLabel = getAsteroids(elapsedTimer->elapsed(), this);
             break;
         default:
             return;
@@ -615,13 +618,15 @@ void InGameUI::onClickKill() {
  * @brief InGameUI::eventFilter
  * @param obj The object that received the event.
  * @param event The event.
- * @return
+ * @return false to pass the event to further filters and obj, true to stop processing the event
  */
 bool InGameUI::eventFilter(QObject *obj, QEvent *event)
 {
-
+    /*if(obj != parent())
+        return false;*/
     if (event->type() == QEvent::KeyPress)
     {
+        qDebug() << "Key press sent to object of type" << obj->metaObject()->className();
         QKeyEvent *key = static_cast<QKeyEvent *>(event);
         if (!(key->isAutoRepeat()))
         {
@@ -658,12 +663,9 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                 }
                 break;
             default:
-                return false;
+                break;
             }
-            return true;
         }
-        else
-            return false;
     }
     else if (event->type() == QEvent::KeyRelease)
     {
@@ -680,12 +682,9 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                 isPressed[keycode] = false;
                 break;
             default:
-                return false;
+                break;
             }
-            return true;
         }
-        else
-            return false;
     }
     else if (event->type() == QEvent::MouseMove)
     {
@@ -695,7 +694,6 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
         {
             if (currentInGameGUI == IN_GAME_GUI_FIX_WIRING)
                 onMouseEventFixWiring(mouseEvent);
-            return true;
         }
     }
     else if (event->type() == QEvent::MouseButtonDblClick || event->type() == QEvent::MouseButtonPress)
@@ -714,12 +712,11 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
                     onClickReport();
                 else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && getUsableTasksByDistance().size() > 0)
                     onClickUse();
-                return true;
+                return false;
             }
             else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS) {
                 onMouseEventAsteroids(mouseEvent);
             }
-            return false;
         }
     }
     return false;

@@ -5,6 +5,12 @@
 #include <QString>
 #include <QPixmap>
 
+class DebugEventFilter : public QObject {
+protected:
+    bool eventFilter(QObject* obj, QEvent* event);
+
+};
+
 double distance(quint16 x0, quint16 y0, quint16 x1, quint16 y1);
 extern QString assetsFolder;
 QPixmap* getQPixmap(QString filePath);
@@ -13,6 +19,7 @@ void playSound(QString soundFile);
 void msleepWithEvents(quint32 ms);
 void sleepWithEvents(quint16 s);
 QString getText(QString title, QString label);
+void showWarningMessage(QString title, QString label);
 QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2);
 bool getBool(QString title, QString label);
 

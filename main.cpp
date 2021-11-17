@@ -19,7 +19,9 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     inGameUI = new InGameUI(/*nickname*/);
-    app.installEventFilter(inGameUI);
+    inGameUI->installEventFilter(inGameUI);
+    // Uncomment this to see to what type of objects various events are sent
+    //app.installEventFilter(new DebugEventFilter);
     bool isFirstToRun = getBool("First to run", "Are you the first to run for this party ?"),
          runServer = isFirstToRun/*should be true for more than 2 players*/,
          runClient = !isFirstToRun;
@@ -28,9 +30,18 @@ int main(int argc, char *argv[])
     quint16 serverPort = DEFAULT_SERVER_PORT;
     if(runServer)
     {
-        QString serverPortStr = getText("Server port", "Your server port");
-        serverPort = serverPortStr.toUInt();
-        qInfo(("serverPort: " + serverPortStr).toStdString().c_str());
+        bool ok = false;
+        while(!ok) {
+            QString serverPortStr = getText("Server port", "Your server port");
+            uint port = serverPortStr.toUInt(&ok);
+            if(port == 0 || port >= 65535)
+                ok = false;
+            if(!ok)
+                showWarningMessage("Invalid port", "Invalid port number.\nThe port number must be an integer between 1 and 65535 (inclusive).");
+            else
+                serverPort = (quint16) port;
+        }
+        qInfo("serverPort: %hu", serverPort);
     }
     if(runClient)
     {

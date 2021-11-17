@@ -17,7 +17,7 @@
 
 enum WiringColor{Yellow, Blue, Red, Magenta};
 QPair<QPixmap*, QPainter*> getFixWiringPixmapPainter();
-QLabel* getFixWiring();
+QLabel* getFixWiring(QObject* filterObj);
 extern quint8 links[COLORS_NUMBER];
 quint16 getYForWiring(quint8 nodesIndex);
 quint8 getIndex(WiringColor color);

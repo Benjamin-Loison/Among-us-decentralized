@@ -132,7 +132,7 @@ QPair<QPixmap*, QPainter*> getFixWiringPixmapPainter()
     return qMakePair(pixmap, painter);
 }
 
-QLabel* getFixWiring()
+QLabel* getFixWiring(QObject* filterObj)
 {
     if(!fixWiringBackgroundPixmap)
         fixWiringBackgroundPixmap = getQPixmap("fixWiring.png");
@@ -169,12 +169,12 @@ QLabel* getFixWiring()
     }
     currFixWiringLabel = qLabel;
 
+    qLabel->installEventFilter(filterObj);
     return qFrame;
 }
 
 void onMouseEventFixWiring(QMouseEvent* mouseEvent)
 {
-    QLabel* qImage = new QLabel;
     quint8 range = qFloor(FIX_WIRING_DELTA_Y / 2);
     QPair<QPixmap*, QPainter*> pixmapPainter = getFixWiringPixmapPainter();
     QPixmap* qBackgroundPixmap = pixmapPainter.first;
@@ -242,15 +242,8 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
 
     painter->end();
 
-    qImage->setPixmap(*qBackgroundPixmap);
-    QHBoxLayout* hbox = (QHBoxLayout*)inGameUI->qLabel->layout();
-    hbox->takeAt(1);
-    hbox->takeAt(1);
-    hbox->addWidget(qImage);
-    hbox->addStretch();
     if(currFixWiringLabel)
-        delete currFixWiringLabel;
-    currFixWiringLabel = qImage;
+        currFixWiringLabel->setPixmap(*qBackgroundPixmap);
     if(currFixWiringPixmap)
         delete currFixWiringPixmap;
     currFixWiringPixmap = qBackgroundPixmap;
