@@ -132,7 +132,7 @@ QPair<QPixmap*, QPainter*> getFixWiringPixmapPainter()
     return qMakePair(pixmap, painter);
 }
 
-QLabel* getFixWiring(QObject* filterObj)
+QLabel* getFixWiring()
 {
     if(!fixWiringBackgroundPixmap)
         fixWiringBackgroundPixmap = getQPixmap("fixWiring.png");
@@ -169,7 +169,6 @@ QLabel* getFixWiring(QObject* filterObj)
     }
     currFixWiringLabel = qLabel;
 
-    qLabel->installEventFilter(filterObj);
     return qFrame;
 }
 

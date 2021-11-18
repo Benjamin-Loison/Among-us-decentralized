@@ -19,7 +19,6 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     inGameUI = new InGameUI(/*nickname*/);
-    inGameUI->installEventFilter(inGameUI);
     // Uncomment this to see to what type of objects various events are sent
     //app.installEventFilter(new DebugEventFilter);
     bool isFirstToRun = getBool("First to run", "Are you the first to run for this game?"),

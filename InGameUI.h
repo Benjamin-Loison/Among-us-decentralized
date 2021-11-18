@@ -81,7 +81,12 @@ class InGameUI : public QLabel
         void onReadyClicked();
 
     protected:
-        bool eventFilter(QObject* obj, QEvent* event);
+        void keyPressEvent(QKeyEvent *event);
+        void keyReleaseEvent(QKeyEvent *event);
+        void mouseMoveEvent(QMouseEvent *event);
+        void mousePressEvent(QMouseEvent *event);
+        void mouseDoubleClickEvent(QMouseEvent *event);
+        void mousePressOrDoubleClick(QMouseEvent *event);
 };
 
 #endif

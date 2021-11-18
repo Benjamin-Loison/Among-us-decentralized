@@ -15,7 +15,7 @@ struct Asteroid {
 };
 
 QPair<QPixmap*, QPainter*> getAsteroidsPixmapPainter();
-QLabel* getAsteroids(qint64 now, QObject* filterObj);
+QLabel* getAsteroids(qint64 now);
 void fillAsteroids(QPainter* painter, quint8 start, quint16 y, quint16 x),
      onMouseEventAsteroids(QMouseEvent* mouseEvent),
      redrawAsteroids(qint64 now),

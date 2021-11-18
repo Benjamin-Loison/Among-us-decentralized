@@ -533,7 +533,6 @@ void InGameUI::onEverybodyReady()
 {
     everyoneReady = true;
     readyButtonLayout->removeWidget(readyButton);
-    readyButton->removeEventFilter(this);
     delete readyButton;
     delete readyButtonLayout;
     readyButtonLayout = nullptr;
@@ -569,7 +568,6 @@ void InGameUI::closeTask() {
     }
     currentTask = nullptr;
     currentInGameGUI = IN_GAME_GUI_NONE;
-    qLabel->removeEventFilter(this);
     delete currLayout;
     delete qLabel;
     qLabel = nullptr;
@@ -583,12 +581,12 @@ void InGameUI::onClickUse() {
         case TASK_FIX_WIRING:
             currentTask = task;
             currentInGameGUI = IN_GAME_GUI_FIX_WIRING;
-            qLabel = getFixWiring(this);
+            qLabel = getFixWiring();
             break;
         case TASK_ASTEROIDS:
             currentTask = task;
             currentInGameGUI = IN_GAME_GUI_ASTEROIDS;
-            qLabel = getAsteroids(elapsedTimer->elapsed(), this);
+            qLabel = getAsteroids(elapsedTimer->elapsed());
             break;
         default:
             return;
@@ -613,112 +611,102 @@ void InGameUI::onClickKill() {
         killPlayer(*killable);
 }
 
-/**
- * Filters key presses used in the game, and mouse events for tasks. (there may be a more efficient implementation)
- * @brief InGameUI::eventFilter
- * @param obj The object that received the event.
- * @param event The event.
- * @return false to pass the event to further filters and obj, true to stop processing the event
- */
-bool InGameUI::eventFilter(QObject *obj, QEvent *event)
-{
-    /*if(obj != parent())
-        return false;*/
-    if (event->type() == QEvent::KeyPress)
+void InGameUI::keyPressEvent(QKeyEvent *key) {
+    if (!(key->isAutoRepeat()))
     {
-        QKeyEvent *key = static_cast<QKeyEvent *>(event);
-        if (!(key->isAutoRepeat()))
+        int keycode = key->key();
+        switch (keycode)
         {
-            int keycode = key->key();
-            switch (keycode)
-            {
-            case Qt::Key_Down:
-            case Qt::Key_Up:
-            case Qt::Key_Left:
-            case Qt::Key_Right:
-                isPressed[keycode] = true;
-                break;
-            // https://nerdschalk.com/among-us-keyboard-controls/
-            case Qt::Key_E:
-                if(everyoneReady) {
-                    if (qLabel == nullptr)
-                    {
-                        onClickUse();
-                    }
-                    else
-                    {
-                        closeTask();
-                    }
-                }
-                break;
-            case Qt::Key_K:
-                if(everyoneReady && currentInGameGUI == IN_GAME_GUI_NONE) {
-                    onClickKill();
-                }
-                break;
-            case Qt::Key_R:
-                if(everyoneReady && currentInGameGUI == IN_GAME_GUI_NONE) {
-                    onClickReport();
-                }
-                break;
-            default:
-                break;
-            }
-        }
-    }
-    else if (event->type() == QEvent::KeyRelease)
-    {
-        QKeyEvent *key = static_cast<QKeyEvent *>(event);
-        if (!key->isAutoRepeat())
-        {
-            int keycode = key->key();
-            switch (keycode)
-            {
-            case Qt::Key_Down:
-            case Qt::Key_Up:
-            case Qt::Key_Left:
-            case Qt::Key_Right:
-                isPressed[keycode] = false;
-                break;
-            default:
-                break;
-            }
-        }
-    }
-    else if (event->type() == QEvent::MouseMove)
-    {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-
-        if (qLabel != nullptr && mouseEvent->buttons() & Qt::LeftButton)
-        {
-            if (currentInGameGUI == IN_GAME_GUI_FIX_WIRING)
-                onMouseEventFixWiring(mouseEvent);
-        }
-    }
-    else if (event->type() == QEvent::MouseButtonDblClick || event->type() == QEvent::MouseButtonPress)
-    {
-        if(!everyoneReady || obj != this)
-            return false;
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        
-        if(mouseEvent->button() == Qt::LeftButton) {
-            int mouseX = mouseEvent->x(), mouseY = mouseEvent->y();
-            int width = size().width(), height = size().height();
-            if(currentInGameGUI == IN_GAME_GUI_NONE) {
-                if(mouseX >= width-220 && mouseX < width-110 && mouseY >= height-110 && mouseY < height && findKillablePlayer())
-                    onClickKill();
-                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-110 && mouseY < height && findReportableBody())
-                    onClickReport();
-                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && getUsableTasksByDistance().size() > 0)
+        case Qt::Key_Down:
+        case Qt::Key_Up:
+        case Qt::Key_Left:
+        case Qt::Key_Right:
+            isPressed[keycode] = true;
+            break;
+        // https://nerdschalk.com/among-us-keyboard-controls/
+        case Qt::Key_E:
+            if(everyoneReady) {
+                if (qLabel == nullptr)
+                {
                     onClickUse();
-                return false;
+                }
+                else
+                {
+                    closeTask();
+                }
             }
-            else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS) {
-                onMouseEventAsteroids(mouseEvent);
+            break;
+        case Qt::Key_K:
+            if(everyoneReady && currentInGameGUI == IN_GAME_GUI_NONE) {
+                onClickKill();
             }
+            break;
+        case Qt::Key_R:
+            if(everyoneReady && currentInGameGUI == IN_GAME_GUI_NONE) {
+                onClickReport();
+            }
+            break;
+        default:
+            break;
         }
     }
-    return false;
+    QLabel::keyPressEvent(key);
+}
+
+void InGameUI::keyReleaseEvent(QKeyEvent* key) {
+    if (!key->isAutoRepeat())
+    {
+        int keycode = key->key();
+        switch (keycode)
+        {
+        case Qt::Key_Down:
+        case Qt::Key_Up:
+        case Qt::Key_Left:
+        case Qt::Key_Right:
+            isPressed[keycode] = false;
+            break;
+        default:
+            break;
+        }
+    }
+    QLabel::keyReleaseEvent(key);
+}
+
+void InGameUI::mouseMoveEvent(QMouseEvent *mouseEvent) {
+    if (qLabel != nullptr && mouseEvent->buttons() & Qt::LeftButton)
+    {
+        if (currentInGameGUI == IN_GAME_GUI_FIX_WIRING)
+            onMouseEventFixWiring(mouseEvent);
+    }
+    QLabel::mouseMoveEvent(mouseEvent);
+}
+
+void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
+    if(everyoneReady && mouseEvent->button() == Qt::LeftButton) {
+        int mouseX = mouseEvent->x(), mouseY = mouseEvent->y();
+        int width = size().width(), height = size().height();
+        if(currentInGameGUI == IN_GAME_GUI_NONE) {
+            if(mouseX >= width-220 && mouseX < width-110 && mouseY >= height-110 && mouseY < height && findKillablePlayer())
+                onClickKill();
+            else if(mouseX >= width-110 && mouseX < width && mouseY >= height-110 && mouseY < height && findReportableBody())
+                onClickReport();
+            else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && getUsableTasksByDistance().size() > 0)
+                onClickUse();
+        }
+        else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS) {
+            onMouseEventAsteroids(mouseEvent);
+        }
+    }
+}
+
+void InGameUI::mousePressEvent(QMouseEvent *mouseEvent) {
+    mousePressOrDoubleClick(mouseEvent);
+    QLabel::mousePressEvent(mouseEvent);
+}
+
+void InGameUI::mouseDoubleClickEvent(QMouseEvent *mouseEvent) {
+    mousePressOrDoubleClick(mouseEvent);
+    QLabel::mouseDoubleClickEvent(mouseEvent);
 }
 
 quint8 InGameUI::getPlayersNumber()
