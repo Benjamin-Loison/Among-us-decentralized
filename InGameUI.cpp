@@ -494,7 +494,7 @@ void InGameUI::redraw()
             qDebug() << "Creating ready button";
             readyButtonLayout = new QGridLayout;
             readyButton = new QPushButton("Ready");
-            readyButton->installEventFilter(this);
+            readyButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
             connect(readyButton, &QPushButton::released, this, &InGameUI::onReadyClicked);
             readyButtonLayout->addWidget(readyButton, 0, 0, Qt::AlignBottom | Qt::AlignRight);
             setLayout(readyButtonLayout);
@@ -518,13 +518,13 @@ void InGameUI::onReadyClicked() {
         {
             qDebug() << "Ready clicked";
             currPlayer.isReady = true;
-            readyButton->setText("Waiting other players");
+            readyButton->setText("Waiting for other players");
             sendToAll("ready");
             checkEverybodyReady();
         }
         else
         {
-            qDebug() << "Still waiting some players..."; // could display it on the button by default how many we are waiting
+            qDebug() << "Still waiting for players..."; // could display it on the button by default how many we are waiting
         }
     }
 }
@@ -626,7 +626,6 @@ bool InGameUI::eventFilter(QObject *obj, QEvent *event)
         return false;*/
     if (event->type() == QEvent::KeyPress)
     {
-        qDebug() << "Key press sent to object of type" << obj->metaObject()->className();
         QKeyEvent *key = static_cast<QKeyEvent *>(event);
         if (!(key->isAutoRepeat()))
         {

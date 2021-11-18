@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     inGameUI->installEventFilter(inGameUI);
     // Uncomment this to see to what type of objects various events are sent
     //app.installEventFilter(new DebugEventFilter);
-    bool isFirstToRun = getBool("First to run", "Are you the first to run for this party ?"),
+    bool isFirstToRun = getBool("First to run", "Are you the first to run for this game?"),
          runServer = isFirstToRun/*should be true for more than 2 players*/,
          runClient = !isFirstToRun;
     QString isFirstToRunStr = isFirstToRun ? "true" : "false";
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     {
         bool ok = false;
         while(!ok) {
-            QString serverPortStr = getText("Server port", "Your server port");
+            QString serverPortStr = getText("Server port", "Your server port", QString::number(DEFAULT_SERVER_PORT));
             uint port = serverPortStr.toUInt(&ok);
             if(port == 0 || port >= 65535)
                 ok = false;
@@ -68,19 +68,19 @@ int main(int argc, char *argv[])
     {
         qInfo("Starting server...");
         server = new Server(serverPort);
-        qInfo("Server started !");
+        qInfo("Server started!");
     }
     if(runClient)
     {
         discoverClient(peerAddress);
-        qInfo("Waiting discovery...");
+        qInfo("Waiting for discovery...");
         sleepWithEvents(TIME_S_ASSUME_DISCOVERED);
         QString socketString = socketToString(clients[0]/*.back()*/->socket);
-        qInfo(("this one: " + socketString).toStdString().c_str());
-        qInfo(("Discovered " + QString::number(/*clients*/getPeers().size()) + " peers !").toStdString().c_str());
-        qInfo("Waiting nicknames...");
+        qInfo("this one: %s", socketString.toStdString().c_str());
+        qInfo("Discovered %d peers!", getPeers().size());
+        qInfo("Waiting for nicknames...");
         QString nicknamesStr = askAll("nicknames"); // or should more precisely ask all nicknames at each nickname test ? but this assume to wait the maximum ping of someone ?
-        qInfo(("Received nicknames: " + nicknamesStr).toStdString().c_str());
+        qInfo("Received nicknames: %s", nicknamesStr.toStdString().c_str());
         //if(nicknamesStr != EMPTY_NETWORK_RESPONSE) // should at least contains the first running peer one...
         QStringList nicknames = nicknamesStr.split(",");
         quint16 nicknamesSize = nicknames.size();
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
     }
 
     QString nickname;
-    nickname = getText("Nickname", "Your nickname"); // should check with received one
+    nickname = getText("Nickname", "Your nickname"); // should check if the given nickname collides with received ones
     qInfo(("nickname: " + nickname).toStdString().c_str());
     if(runClient)
         sendToAll("nickname " + nickname);

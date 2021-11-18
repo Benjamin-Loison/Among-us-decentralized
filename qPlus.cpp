@@ -82,14 +82,14 @@ bool getBool(QString title, QString label)
     return reponse == QMessageBox::Yes;
 }
 
-QString getText(QString title, QString label)
+QString getText(QString title, QString label, QString defaultText)
 {
     bool ok = false;
     QString text = "";
 
     while(!ok || text.isEmpty()) // could also check that this username isn't used
     {
-        text = QInputDialog::getText(inGameUI, title, label, QLineEdit::Normal, QString(), &ok);
+        text = QInputDialog::getText(inGameUI, title, label, QLineEdit::Normal, defaultText, &ok);
     }
     return text;
 }

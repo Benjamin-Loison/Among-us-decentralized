@@ -18,7 +18,7 @@ Server::Server(quint16 serverPort)
     server = new QTcpServer();
     if(!server->listen(QHostAddress::Any, serverPort))
     {
-        qWarning(("Server couldn't start for reason: " + server->errorString()).toStdString().c_str());
+        qWarning("Server couldn't start for reason: %s", server->errorString().toStdString().c_str());
     }
     else
     {
@@ -68,7 +68,7 @@ void Server::dataReceived()
     // Si ces lignes s'exécutent, c'est qu'on a reçu tout le message : on peut le récupérer !
     QString message;
     in >> message;
-    qInfo(("server received: " + message).toStdString().c_str());
+    qInfo("server received: %s", message.toStdString().c_str());
     message = processMessageServer(socket, message);
 
     //message = processMessage(message);
@@ -176,7 +176,7 @@ void Server::clientDisconnected()
 void sendToSocket(QTcpSocket* socket, QString messageToSend)
 {
     QString socketString = socketToString(socket);
-    qInfo(("sending to " + socketString + ": " + messageToSend + " !").toStdString().c_str());
+    qInfo("sending to %s: %s!", socketString.toStdString().c_str(), messageToSend.toStdString().c_str());
     if(messageToSend == "") return; //messageToSend = EMPTY_NETWORK_RESPONSE; // warning user injection...
     QByteArray paquet;
     QDataStream out(&paquet, QIODevice::WriteOnly);
