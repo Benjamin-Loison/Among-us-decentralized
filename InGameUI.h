@@ -17,8 +17,11 @@
 #include "qPlus.h"
 #include "Player.h"
 #include "Task.h"
+#include "GameMap.h"
 
 const int FPS = 30;
+
+class GameMap;
 
 class InGameUI : public QLabel
 {
@@ -45,6 +48,7 @@ class InGameUI : public QLabel
         QGridLayout* readyButtonLayout;
         QPushButton* readyButton;
         Task* currentTask;
+        GameMap* gameMap;
 
     public:
         Player currPlayer; // used to be private
@@ -68,12 +72,16 @@ class InGameUI : public QLabel
         void onClickUse();
         void onClickReport();
         void onClickKill();
+        void openMap();
+        void closeMap();
         void spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname);
         void movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp = false);
         void onEverybodyReady();
         void checkEverybodyReady();
         void setPlayerReady(QString peerAddress);
         quint8 getPlayersNumber();
+        QPixmap* getBackgroundPixmap();
+        QVector<Task*> getTasks();
         InGameUI(/*QString nickname,*/ QLabel* parent = 0);
 
     public slots:

@@ -14,6 +14,7 @@ public:
     bool isGhost;
     bool showBody;
     bool isReady;
+    QColor color1, color2;
 
     Player();
     Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor color2);
@@ -22,6 +23,7 @@ public:
     QPixmap* deadPixmap;
     QPixmap* ghostPixmap;
     QPixmap* flippedGhostPixmap;
+    QPixmap* iconOnMapPixmap;
 
 };
 
