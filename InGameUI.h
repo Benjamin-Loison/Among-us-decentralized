@@ -28,7 +28,6 @@ class InGameUI : public QLabel
     Q_OBJECT
 
     private:
-        QMap<QString, Player> otherPlayers;
         QVector<Task*> tasks;
         int topBackground, leftBackground;
         quint32 lastNx, lastNy;
@@ -52,6 +51,7 @@ class InGameUI : public QLabel
 
     public:
         Player currPlayer; // used to be private
+        QMap<QString, Player> otherPlayers; //same
         QLabel* qLabel;
         void initialize(QString nickname);
         void initDisplay();

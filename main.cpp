@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     // Uncomment this to see to what type of objects various events are sent
     //app.installEventFilter(new DebugEventFilter);
     bool isFirstToRun = getBool("First to run", "Are you the first to run for this game?"),
-         runServer = isFirstToRun/*should be true for more than 2 players*/,
+         runServer = true,//isFirstToRun/*should be true for more than 2 players*/,
          runClient = !isFirstToRun;
     QString isFirstToRunStr = isFirstToRun ? "true" : "false";
     qInfo(("isFirstToRun: " + isFirstToRunStr).toStdString().c_str()); // clicking on exit button is like choosing no...
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
     {
         qInfo("Starting server...");
         server = new Server(serverPort);
-        qInfo("Server started!");
+        qInfo(("Server started on: " + serverSocketToString()).toStdString().c_str());
     }
     if(runClient)
     {
