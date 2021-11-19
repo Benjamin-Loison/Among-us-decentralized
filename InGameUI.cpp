@@ -668,6 +668,12 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
         if(everyoneReady && currentInGameGUI == IN_GAME_GUI_NONE)
             onClickReport();
         break;
+    case Qt::Key_M:
+        if(currentInGameGUI == IN_GAME_GUI_NONE)
+            openMap();
+        else if(gameMap)
+            closeMap();
+        break;
     default:
         break;
     }
