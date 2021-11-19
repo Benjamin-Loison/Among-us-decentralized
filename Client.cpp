@@ -18,8 +18,14 @@ Client::Client(QString peerAddress)
     if(peerAddress.contains(':'))
     {
         QStringList peerAddressParts = peerAddress.split(':');
-        serverPort = peerAddressParts[1].toInt();
-        peerAddress = peerAddressParts[0];
+        quint8 peerAddressPartsSize = peerAddressParts.size();
+        quint16 potentialPort = peerAddressParts.last().toUInt();
+        if(potentialPort > 255)
+        {
+            serverPort = potentialPort;
+        }
+        peerAddressParts.removeLast();
+        peerAddress = peerAddressParts.join(':');
     }
     // Orange is so bad port opening doesn't work anymore but DMZ does :'(
     qInfo(("client connecting to " + peerAddress + " on port " + QString::number(serverPort) + "...").toStdString().c_str());
@@ -105,7 +111,20 @@ void Client::processMessageClient(QString message)
             for(quint32 connectedPartsIndex = 0; connectedPartsIndex < connectedPartsSize; connectedPartsIndex++)
             {
                 QString connectedPart = connectedParts[connectedPartsIndex];
-                discoverClient(connectedPart);
+                quint8 clientsSize = clients.size();
+                bool alreadyInContacts = false;
+                for(quint8 clientsIndex = 0; clientsIndex < clientsSize; clientsIndex++)
+                {
+                    Client* client = clients[clientsIndex];
+                    QString clientAddress = socketToString(client->socket);
+                    if(clientAddress == connectedPart)
+                    {
+                        alreadyInContacts = true;
+                        break;
+                    }
+                }
+                if(!alreadyInContacts)
+                    discoverClient(connectedPart);
                 //sendToSocket();
             }
         }
@@ -143,7 +162,8 @@ void discoverClient(QString peerAddress)
 {
     Client* client = new Client(peerAddress);
     clients.push_back(client);
+    peersPorts[client->socket] = peerAddress.split(':').last().toUInt();
     //client->sendToServer("nickname " + nickname);
     //client->sendToServer("discovering " + inGameUI->currPlayer.nickname);
-    client->sendToServer("discovering" /*+ inGameUI->currPlayer.nickname*/);
+    client->sendToServer("discovering " + serverSocketToString().split(':').last() /*+ inGameUI->currPlayer.nickname*/);
 }

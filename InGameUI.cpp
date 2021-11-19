@@ -734,7 +734,9 @@ void InGameUI::movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp)
     {
         QString peerAddress = peerAddresses[peerAddressesIndex];
         qInfo((QString::number(peerAddressesIndex) + " " + peerAddress).toStdString().c_str());
-    }*/
+    }
+    Player* player = &otherPlayers[peerAddress];
+    qInfo(("moving: " + player->nickname + " !").toStdString().c_str());*/
     Player* player = &otherPlayers[peerAddress];
     if(tp)
         player->playerFacingLeft = false;
