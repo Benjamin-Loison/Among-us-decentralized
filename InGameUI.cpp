@@ -592,7 +592,9 @@ void InGameUI::onClickUse() {
             return;
         }
         currLayout = new QHBoxLayout;
+        currLayout->addStretch();
         currLayout->addWidget(qLabel);
+        currLayout->addStretch();
         setLayout(currLayout);
     }
 

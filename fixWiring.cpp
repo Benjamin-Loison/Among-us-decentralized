@@ -138,13 +138,7 @@ QLabel* getFixWiring()
         fixWiringBackgroundPixmap = getQPixmap("fixWiring.png");
     //qInfo("a");
     playSound("Fix_Wiring_task_open_sound.wav");
-    QLabel* qFrame = new QLabel;
-    QHBoxLayout* hbox = new QHBoxLayout(qFrame);
-    QLabel* qLabel = new QLabel(qFrame);
-    hbox->addStretch();
-    hbox->addWidget(qLabel);
-    hbox->addStretch();
-    qFrame->setLayout(hbox);
+    QLabel* qLabel = new QLabel;
 
     // 2 * COLORS_NUMBER! possibilities
     randomWires(lefts);
@@ -169,7 +163,7 @@ QLabel* getFixWiring()
     }
     currFixWiringLabel = qLabel;
 
-    return qFrame;
+    return qLabel;
 }
 
 void onMouseEventFixWiring(QMouseEvent* mouseEvent)
@@ -278,7 +272,6 @@ void onCloseFixWiring() {
     playSound("Fix_Wiring_task_close_sound.wav");
     resetFixWiring();
     if(currFixWiringLabel) {
-        delete currFixWiringLabel;
         currFixWiringLabel = nullptr;
     }
     if(currFixWiringPixmap) {

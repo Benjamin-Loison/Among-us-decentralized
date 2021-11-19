@@ -45,13 +45,7 @@ QPair<QPixmap*, QPainter*> getAsteroidsPixmapPainter()
 
 QLabel* getAsteroids(qint64 now)
 {
-    QLabel* qFrame = new QLabel;
-    QHBoxLayout* hbox = new QHBoxLayout(qFrame);
-    QLabel* qLabel = new QLabel(qFrame);
-    hbox->addStretch();
-    hbox->addWidget(qLabel);
-    hbox->addStretch();
-    qFrame->setLayout(hbox);
+    QLabel* qLabel = new QLabel;
     QPair<QPixmap*, QPainter*> pixmapPainter = getAsteroidsPixmapPainter();
     QPixmap* qBackgroundPixmap = pixmapPainter.first;
     QPainter* painter = pixmapPainter.second;
@@ -70,11 +64,16 @@ QLabel* getAsteroids(qint64 now)
         asteroidPixmaps.push_back(getQPixmap("Asteroid.png"));
     }
     asteroidsLastUpdate = now;
-    return qFrame;
+    return qLabel;
 }
 
 void replaceAsteroidsPixmap(QPixmap* pixmap) {
-    QLabel* qImage = new QLabel;
+    if(currAsteroidsLabel)
+        currAsteroidsLabel->setPixmap(*pixmap);
+    if(currAsteroidsPixmap)
+        delete currAsteroidsPixmap;
+    currAsteroidsPixmap = pixmap;
+    /*QLabel* qImage = new QLabel;
     qImage->setPixmap(*pixmap);
     QHBoxLayout* hbox = (QHBoxLayout*)inGameUI->qLabel->layout();
     hbox->takeAt(1);
@@ -86,7 +85,7 @@ void replaceAsteroidsPixmap(QPixmap* pixmap) {
     currAsteroidsLabel = qImage;
     if(currAsteroidsPixmap)
         delete currAsteroidsPixmap;
-    currAsteroidsPixmap = pixmap;
+    currAsteroidsPixmap = pixmap;*/
 }
 
 void redrawAsteroids(qint64 now) {
@@ -181,7 +180,6 @@ void resetAsteroids() {
 void onCloseAsteroids() {
     resetAsteroids();
     if(currAsteroidsLabel) {
-        delete currAsteroidsLabel;
         currAsteroidsLabel = nullptr;
     }
     if(currAsteroidsPixmap) {
