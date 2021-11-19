@@ -14,11 +14,22 @@ InGameUI* inGameUI;
 InGameGUI currentInGameGUI = IN_GAME_GUI_NONE;
 Server* server;
 QList<Client*> clients;
-QString nickname, peerAddress;
+QString nickname, peerAddress, shareIP;
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+
+    QList<QHostAddress> allAddresses = QNetworkInterface::allAddresses();
+    quint32 allAddressesSize = allAddresses.size();
+    /*for(quint32 allAddressesIndex = 0; allAddressesIndex < allAddressesSize; allAddressesIndex++)
+    {
+        QHostAddress address = allAddresses[allAddressesIndex];
+        qInfo((addressPortToString(address, 0).toStdString().c_str()));
+    }*/
     inGameUI = new InGameUI(/*nickname*/);
+    shareIP = allAddresses[2].toString();
+    qInfo(("shareIP: " + shareIP).toStdString().c_str());
     // Uncomment this to see to what type of objects various events are sent
     //app.installEventFilter(new DebugEventFilter);
     bool isFirstToRun = getBool("First to run", "Are you the first to run for this game?"),

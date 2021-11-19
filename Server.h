@@ -36,5 +36,6 @@ QString askAll(QString message), /*addressPortToString(QHostAddress address, qui
 QList<QTcpSocket*> getPeers();
 void processMessageCommon(QTcpSocket* socket, QString messagePart);
 extern QMap<QTcpSocket*, quint16> peersPorts;
+QString addressPortToString(QHostAddress address, quint16 port);
 
 #endif

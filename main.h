@@ -9,10 +9,11 @@
 
 extern QMediaPlayer* player;
 extern InGameUI* inGameUI;
-enum InGameGUI{IN_GAME_GUI_NONE, IN_GAME_GUI_FIX_WIRING, IN_GAME_GUI_ASTEROIDS, IN_GAME_GUI_MAP};
+enum InGameGUI{IN_GAME_GUI_NONE, IN_GAME_GUI_FIX_WIRING, IN_GAME_GUI_ASTEROIDS};
 extern InGameGUI currentInGameGUI;
 extern QMap<Task,QVector<QPoint>> tasksLocations;
 extern QList<Client*> clients;
 extern Server* server;
+extern QString shareIP;
 
 #endif

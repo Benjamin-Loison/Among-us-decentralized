@@ -21,7 +21,7 @@ const QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
                              {QColor(244, 244, 86), QColor(194, 134, 34)}};
 
 // should make a function to get new player
-InGameUI::InGameUI(/*QString nickname, */QLabel *parent) : QLabel(parent), currentTask(nullptr), qLabel(nullptr), gameMap(nullptr)
+InGameUI::InGameUI(/*QString nickname, */QLabel *parent) : QLabel(parent), currentTask(nullptr), qLabel(nullptr)
 {
     // doing this at the very first window would be nice (when asking nickname etc)
     setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
@@ -406,7 +406,7 @@ void InGameUI::redraw()
     qint64 now = elapsedTimer->elapsed();
     qint64 elapsed = now - lastUpdate;
     lastUpdate = now;
-    if (currentInGameGUI == IN_GAME_GUI_NONE || currentInGameGUI == IN_GAME_GUI_MAP)
+    if (currentInGameGUI == IN_GAME_GUI_NONE)
     {
         bool moveVert = isPressed[Qt::Key_Up] != isPressed[Qt::Key_Down];
         bool moveHoriz = isPressed[Qt::Key_Left] != isPressed[Qt::Key_Right];
@@ -501,10 +501,6 @@ void InGameUI::redraw()
         }
     }
 
-    // Game map
-    if(gameMap)
-        gameMap->redraw();
-
     setPixmap(*windowPixmap);
     delete oldPixmap;
 }
@@ -568,7 +564,7 @@ void InGameUI::closeTask() {
         onCloseAsteroids();
         break;
         default:
-        return;
+        break;
     }
     currentTask = nullptr;
     currentInGameGUI = IN_GAME_GUI_NONE;
@@ -617,65 +613,44 @@ void InGameUI::onClickKill() {
         killPlayer(*killable);
 }
 
-void InGameUI::openMap() {
-    if(gameMap || currentInGameGUI != IN_GAME_GUI_NONE || !everyoneReady)
-        return;
-    gameMap = new GameMap(this);
-    currLayout = new QHBoxLayout;
-    currLayout->addStretch();
-    currLayout->addWidget(gameMap);
-    currLayout->addStretch();
-    setLayout(currLayout);
-    currentInGameGUI = IN_GAME_GUI_MAP;
-}
-
-void InGameUI::closeMap() {
-    if(!gameMap)
-        return;
-    delete gameMap;
-    delete currLayout;
-    gameMap = nullptr;
-    currLayout = nullptr;
-    currentInGameGUI = IN_GAME_GUI_NONE;
-}
-
 void InGameUI::keyPressEvent(QKeyEvent *key) {
-    if (key->isAutoRepeat())
-        return;
-    int keycode = key->key();
-    switch (keycode)
+    if (!(key->isAutoRepeat()))
     {
-    case Qt::Key_Down:
-    case Qt::Key_Up:
-    case Qt::Key_Left:
-    case Qt::Key_Right:
-        isPressed[keycode] = true;
-        break;
-    // https://nerdschalk.com/among-us-keyboard-controls/
-    case Qt::Key_E:
-        if(everyoneReady) {
-            if (qLabel == nullptr && currentInGameGUI == IN_GAME_GUI_NONE)
-                onClickUse();
-            else if(qLabel)
-                closeTask();
+        int keycode = key->key();
+        switch (keycode)
+        {
+        case Qt::Key_Down:
+        case Qt::Key_Up:
+        case Qt::Key_Left:
+        case Qt::Key_Right:
+            isPressed[keycode] = true;
+            break;
+        // https://nerdschalk.com/among-us-keyboard-controls/
+        case Qt::Key_E:
+            if(everyoneReady) {
+                if (qLabel == nullptr)
+                {
+                    onClickUse();
+                }
+                else
+                {
+                    closeTask();
+                }
+            }
+            break;
+        case Qt::Key_K:
+            if(everyoneReady && currentInGameGUI == IN_GAME_GUI_NONE) {
+                onClickKill();
+            }
+            break;
+        case Qt::Key_R:
+            if(everyoneReady && currentInGameGUI == IN_GAME_GUI_NONE) {
+                onClickReport();
+            }
+            break;
+        default:
+            break;
         }
-        break;
-    case Qt::Key_K:
-        if(everyoneReady && currentInGameGUI == IN_GAME_GUI_NONE)
-            onClickKill();
-        break;
-    case Qt::Key_R:
-        if(everyoneReady && currentInGameGUI == IN_GAME_GUI_NONE)
-            onClickReport();
-        break;
-    case Qt::Key_M:
-        if(currentInGameGUI == IN_GAME_GUI_NONE)
-            openMap();
-        else if(gameMap)
-            closeMap();
-        break;
-    default:
-        break;
     }
     QLabel::keyPressEvent(key);
 }
@@ -798,13 +773,4 @@ void InGameUI::setPlayerReady(QString peerAddress)
     Player* player = &otherPlayers[peerAddress];
     player->isReady = true;
     checkEverybodyReady();
-}
-
-
-QPixmap* InGameUI::getBackgroundPixmap() {
-    return backgroundPixmap;
-}
-
-QVector<Task*> InGameUI::getTasks() {
-    return tasks;
 }
