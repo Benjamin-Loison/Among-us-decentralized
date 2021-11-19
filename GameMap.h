@@ -12,7 +12,7 @@ class GameMap: public QLabel {
 private:
     InGameUI* ui;
     QPixmap* currPixmap;
-    QPoint toMapLayoutPoint(const QPoint &mapPoint);
+    QPoint toMinimapPoint(const QPoint &mapPoint);
 
 public:
     GameMap(InGameUI* ui);

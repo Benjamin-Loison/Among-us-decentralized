@@ -22,7 +22,7 @@ void drawPixmapCentered(QPainter* painter, const QPoint &pt, const QPixmap &pixm
     drawPixmapCentered(painter, pt.x(), pt.y(), pixmap);
 }
 
-QPoint GameMap::toMapLayoutPoint(const QPoint &mapPoint) {
+QPoint GameMap::toMinimapPoint(const QPoint &mapPoint) {
     QPixmap* bgPixmap = ui->getBackgroundPixmap();
     return QPoint(mapPoint.x()*mapLayoutPixmap->width()/bgPixmap->width(), mapPoint.y()*mapLayoutPixmap->height()/bgPixmap->height());
 }
@@ -34,9 +34,11 @@ void GameMap::redraw() {
     painter->drawPixmap(0, 0, *mapLayoutPixmap);
     for(Task* task : ui->getTasks())
         if(!task->finished)
-            drawPixmapCentered(painter, toMapLayoutPoint(task->location), *taskIconPixmap);
-    QPoint playerPos(ui->currPlayer.x, ui->currPlayer.y);
-    drawPixmapCentered(painter, toMapLayoutPoint(playerPos), *ui->currPlayer.iconOnMapPixmap);
+            drawPixmapCentered(painter, toMinimapPoint(task->location), *taskIconPixmap);
+    QPoint playerPosMinimap = toMinimapPoint(QPoint(ui->currPlayer.x, ui->currPlayer.y));
+    QSize iconSize = ui->currPlayer.iconOnMapPixmap->size();
+    QPoint topLeftCorner(playerPosMinimap.x() - iconSize.width()/2, playerPosMinimap.y() - iconSize.height());
+    painter->drawPixmap(topLeftCorner, *ui->currPlayer.iconOnMapPixmap);
     delete painter;
     setPixmap(*newPixmap);
     if(currPixmap)
