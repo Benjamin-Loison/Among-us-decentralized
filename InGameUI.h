@@ -49,6 +49,7 @@ class InGameUI : public QLabel
         QPushButton* readyButton;
         Task* currentTask;
         GameMap* gameMap;
+        QString privateRandom;
 
     public:
         Player currPlayer; // used to be private
