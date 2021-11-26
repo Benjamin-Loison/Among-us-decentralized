@@ -26,12 +26,12 @@ InGameUI::InGameUI(/*QString nickname, */QLabel *parent) : QLabel(parent), curre
     // doing this at the very first window would be nice (when asking nickname etc)
     setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
     setWindowTitle("Among Us decentralized");
-    tasks = { // couldn't put all not necessary stuff in initialize not to delay user input ?
+    /*tasks = { // couldn't put all not necessary stuff in initialize not to delay user input ?
         new Task(TASK_FIX_WIRING, QPoint(4060, 360)),
         new Task(TASK_FIX_WIRING, QPoint(5433,2444)),
         new Task(TASK_FIX_WIRING, QPoint(7455,2055)),
         new Task(TASK_ASTEROIDS,  QPoint(6653, 900))
-    };
+    };*/
     /*tasksLocations[TASK_FIX_WIRING] = {QPoint(4060, 360), QPoint(5433,2444),QPoint(7455,2055)};
     tasksLocations[TASK_ASTEROIDS] = {QPoint(6653,900)};*/
     readyButtonLayout = nullptr;
@@ -560,6 +560,7 @@ void InGameUI::onEverybodyReadySub(bool threadSafe)
         QCoreApplication::processEvents();
         QThread::msleep(1);
     }*/
+    tasks = getTasksAsPointers(getRandomTasks(privateRandom)); // should be salted with common random
 
     if(isFirstToRun) // temporary
     {
@@ -591,8 +592,8 @@ void InGameUI::onEverybodyReadySub(bool threadSafe)
 void InGameUI::onEverybodyReady(bool threadSafe)
 {
     everyoneReady = true;
-    QString privateRandom = randomHex(128),
-            randomHashed = SHA512(privateRandom);
+    privateRandom = randomHex(128);
+    QString randomHashed = SHA512(privateRandom);
     //sendToAll("RandomHashed " + randomHashed);
     waitingAnswersNumber = otherPlayers.size();
     //if(threadSafe)
