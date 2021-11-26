@@ -10,3 +10,5 @@ v2:
 doors
 who is where
 bonus: vent
+
+pour présentation, préparer diapo expliquant : architecture + fonctionnement en groupe...
