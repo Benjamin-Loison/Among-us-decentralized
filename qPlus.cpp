@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QSoundEffect>
+#include <QVBoxLayout>
 #include "main.h"
 
 QString assetsFolder = "assets/";
@@ -134,4 +135,16 @@ QString SHA512(QString input)
                hashedByteArray = cryptographicHash.hash(byteArray, QCryptographicHash::Sha512); // why have to repeat it ?!
     QString hashed = hashedByteArray.toHex();
     return hashed;
+}
+
+QHBoxLayout* makeCenteredLayout(QWidget* widget) {
+    QVBoxLayout* vLayout = new QVBoxLayout;
+    vLayout->addStretch();
+    vLayout->addWidget(widget);
+    vLayout->addStretch();
+    QHBoxLayout* ret = new QHBoxLayout;
+    ret->addStretch();
+    ret->addLayout(vLayout);
+    ret->addStretch();
+    return ret;
 }

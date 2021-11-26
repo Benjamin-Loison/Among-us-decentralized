@@ -8,9 +8,9 @@ using namespace std;
 const int MOVEMENT_SPEED_SEC = 477;
 const int X_SPAWN = 5500;
 const int Y_SPAWN = 1100;
-const int KILL_RANGE_SQUARED = 200*200; // 200 pixels
-const int TASK_RANGE_SQUARED = 200*200; // 200 pixels
-const int REPORT_RANGE_SQUARED = 200*200; // 200 pixels
+const int KILL_RANGE_SQUARED = 200*200;
+const int TASK_RANGE_SQUARED = 200*200;
+const int REPORT_RANGE_SQUARED = 200*200;
 const QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
              colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
                              {QColor(20, 156, 20), QColor(8, 99, 64)},
@@ -283,7 +283,7 @@ QVector<Task*> InGameUI::getUsableTasksByDistance() {
  * Looks for a corpse to report.
  */
 Player* InGameUI::findReportableBody() {
-    // Confirm: ghosts can't report bodies, right?
+    // Ghost cannot report bodies
     if(currPlayer.isGhost)
         return nullptr;
     int x = currPlayer.x, y = currPlayer.y;
@@ -302,9 +302,8 @@ Player* InGameUI::findReportableBody() {
  * Reports a corpse. Does not perform checks.
  */
 bool InGameUI::reportBody(Player &p) {
-    // TODO
     qDebug() << "Reported player" << p.nickname;
-    p.showBody = false;
+    triggerMeeting(&p);
     return true;
 }
 
@@ -609,6 +608,8 @@ void InGameUI::finishTask() {
 }
 
 void InGameUI::closeTask() {
+    if(!currentTask)
+        return;
     switch(currentInGameGUI) {
         case IN_GAME_GUI_FIX_WIRING:
         onCloseFixWiring();
@@ -621,7 +622,7 @@ void InGameUI::closeTask() {
     }
     currentTask = nullptr;
     currentInGameGUI = IN_GAME_GUI_NONE;
-    delete currLayout;
+    delete currHLayout;
     delete qLabel;
     qLabel = nullptr;
 }
@@ -644,11 +645,11 @@ void InGameUI::onClickUse() {
         default:
             return;
         }
-        currLayout = new QHBoxLayout;
-        currLayout->addStretch();
-        currLayout->addWidget(qLabel);
-        currLayout->addStretch();
-        setLayout(currLayout);
+        currHLayout = new QHBoxLayout;
+        currHLayout->addStretch();
+        currHLayout->addWidget(qLabel);
+        currHLayout->addStretch();
+        setLayout(currHLayout);
     }
 
 }
@@ -673,11 +674,11 @@ void InGameUI::openMap() {
     if(gameMap || currentInGameGUI != IN_GAME_GUI_NONE || !everyoneReady)
         return;
     gameMap = new GameMap(this);
-    currLayout = new QHBoxLayout;
-    currLayout->addStretch();
-    currLayout->addWidget(gameMap);
-    currLayout->addStretch();
-    setLayout(currLayout);
+    currHLayout = new QHBoxLayout;
+    currHLayout->addStretch();
+    currHLayout->addWidget(gameMap);
+    currHLayout->addStretch();
+    setLayout(currHLayout);
     currentInGameGUI = IN_GAME_GUI_MAP;
 }
 
@@ -685,9 +686,48 @@ void InGameUI::closeMap() {
     if(!gameMap)
         return;
     delete gameMap;
-    delete currLayout;
+    delete currHLayout;
     gameMap = nullptr;
-    currLayout = nullptr;
+    currHLayout = nullptr;
+    currentInGameGUI = IN_GAME_GUI_NONE;
+}
+
+void InGameUI::triggerMeeting(Player* reportedPlayer) {
+    // TODO: networking
+    if(reportedPlayer)
+        sendToAll("Report " + reportedPlayer->nickname);
+    else
+        sendToAll("Emergency_meeting");
+    openMeetingUI(reportedPlayer);
+}
+
+/**
+ * Opens meeting UI either when a corresponding packet is received from
+ * some other client, or the current player reports a player.
+ * If the meeting is triggered by a dead body report, the corresponding
+ * body is made invisible.
+ */
+void InGameUI::openMeetingUI(Player* reportedPlayer) {
+    if(currentTask)
+        closeTask();
+    if(currentInGameGUI == IN_GAME_GUI_MAP)
+        closeMap();
+    if(reportedPlayer)
+        reportedPlayer->showBody = false;
+    meetingWidget = new MeetingUI(this, reportedPlayer);
+
+    currHLayout = makeCenteredLayout(meetingWidget);;
+    setLayout(currHLayout);
+    currentInGameGUI = IN_GAME_GUI_MEETING;
+}
+
+void InGameUI::closeMeetingUI() {
+    if(!meetingWidget)
+        return;
+    delete meetingWidget;
+    delete currHLayout;
+    meetingWidget = nullptr;
+    currHLayout = nullptr;
     currentInGameGUI = IN_GAME_GUI_NONE;
 }
 
@@ -762,9 +802,9 @@ void InGameUI::mouseMoveEvent(QMouseEvent *mouseEvent) {
 
 void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
     if(everyoneReady && mouseEvent->button() == Qt::LeftButton) {
-        int mouseX = mouseEvent->x(), mouseY = mouseEvent->y();
-        int width = size().width(), height = size().height();
         if(currentInGameGUI == IN_GAME_GUI_NONE) {
+            int mouseX = mouseEvent->x(), mouseY = mouseEvent->y();
+            int width = size().width(), height = size().height();
             if(mouseX >= width-220 && mouseX < width-110 && mouseY >= height-110 && mouseY < height && findKillablePlayer())
                 onClickKill();
             else if(mouseX >= width-110 && mouseX < width && mouseY >= height-110 && mouseY < height && findReportableBody())

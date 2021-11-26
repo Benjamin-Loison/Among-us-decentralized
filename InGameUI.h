@@ -14,10 +14,11 @@
 #include <QElapsedTimer>
 #include <QPushButton>
 #include "fixWiring.h"
-#include "qPlus.h"
-#include "Player.h"
-#include "Task.h"
 #include "GameMap.h"
+#include "meetings.h"
+#include "Player.h"
+#include "qPlus.h"
+#include "Task.h"
 #include <QThread>
 
 const int FPS = 30;
@@ -44,7 +45,7 @@ class InGameUI : public QLabel
         QElapsedTimer* elapsedTimer;
         QMap<int, bool> isPressed;
         qint64 lastUpdate;
-        QHBoxLayout* currLayout;
+        QHBoxLayout* currHLayout;
         QGridLayout* readyButtonLayout;
         QPushButton* readyButton;
         Task* currentTask;
@@ -54,6 +55,7 @@ class InGameUI : public QLabel
         Player currPlayer; // used to be private
         QMap<QString, Player> otherPlayers; //same
         QLabel* qLabel;
+        QWidget* meetingWidget; // may be merged with qLabel
         void initialize(QString nickname);
         void initDisplay();
         void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
@@ -75,6 +77,9 @@ class InGameUI : public QLabel
         void onClickKill();
         void openMap();
         void closeMap();
+        void triggerMeeting(Player* reportedPlayer); // Called by the client who reports the body
+        void openMeetingUI(Player* reportedPlayer); // Also called by other clients upon receipt of the corresponding packet
+        void closeMeetingUI();
         void spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname);
         void movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp = false);
         void onEverybodyReady(bool threadSafe);

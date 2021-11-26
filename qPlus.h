@@ -4,6 +4,7 @@
 #include <QtGlobal>
 #include <QString>
 #include <QPixmap>
+#include <QHBoxLayout>
 
 class DebugEventFilter : public QObject {
 protected:
@@ -24,5 +25,6 @@ QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2);
 bool getBool(QString title, QString label);
 QString randomHex(quint16 length);
 QString SHA512(QString input);
+QHBoxLayout* makeCenteredLayout(QWidget* widget);
 
 #endif

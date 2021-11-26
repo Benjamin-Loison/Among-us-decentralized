@@ -110,8 +110,9 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
     }
     else if(messagePart.startsWith("Kill "))
     {
-        messagePart = messagePart.replace("Kill ", "");
-        Player* player = inGameUI->getPlayer(messagePart);
+        const int prefixSize = QString("Kill ").size();
+        QString nickname = messagePart.mid(prefixSize);
+        Player* player = inGameUI->getPlayer(nickname);
         inGameUI->killPlayer(*player);
     }
     else if(messagePart.startsWith("Imposter "))
@@ -125,6 +126,18 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
         //WorkerThread* workerThread = new WorkerThread();
         //workerThread->start();
     }
+    else if(messagePart.startsWith("Report "))
+    {
+        const int prefixSize = QString("Report ").size();
+        QString nickname = messagePart.mid(prefixSize);
+        Player* player = inGameUI->getPlayer(nickname);
+        inGameUI->openMeetingUI(player);
+    }
+    else if(messagePart == "Emergency_meeting")
+    {
+        inGameUI->openMeetingUI(nullptr);
+    }
+    // TODO: other votes
 }
 
 QString Server::processMessageServer(QTcpSocket* socket, QString message)
