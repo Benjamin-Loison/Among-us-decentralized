@@ -8,7 +8,7 @@ class Player {
 public:
     int x, y;
     int bodyX, bodyY; // Only used if player has died: location of the dead body
-    QString nickname;
+    QString nickname, privateRandomHashed;
     bool playerFacingLeft;
     bool isImpostor;
     bool isGhost;

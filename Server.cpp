@@ -1,6 +1,7 @@
 #include "Server.h"
 #include <QTcpServer>
 #include "main.h"
+#include <WorkerThread.h>
 //#include <unistd.h> // only linux...
 
 // should use IPv6 by default
@@ -11,7 +12,7 @@ quint16 messageSize;
 void newConnection(),
      dataReceived(),
      clientDisconnected();*/
-bool askingAll = false;
+bool askingAll = false, needEverybodyReadyCall = false;
 QMap<QTcpSocket*, quint16> peersPorts;
 
 Server::Server(quint16 serverPort)
@@ -85,17 +86,44 @@ QMap<QPair<QString, QString>, QMap<QString, QString>> waitingMessages; // QMap<Q
 void processMessageCommon(QTcpSocket* socket, QString messagePart)
 {
     QString socketString = socketToString(socket);
-    if(messagePart.startsWith("position "))
+    if(messagePart.startsWith("Position ")) // using uppercase allow us to make quickly sure that it is the start of a sentence
     {
-        messagePart = messagePart.replace("position ", "");
+        messagePart = messagePart.replace("Position ", "");
         QStringList coordinates = messagePart.split(' ');
         quint32 x = coordinates[0].toUInt(), y = coordinates[1].toUInt();
         inGameUI->movePlayer(socketString, x, y);
         //inGameUI->redraw(); // what if called a lot of time ?
     }
+    else if(messagePart.startsWith("RandomHashed "))
+    {
+        Player* player = &inGameUI->otherPlayers[socketString];
+        if(player->privateRandomHashed == "")
+        {
+            messagePart = messagePart.replace("RandomHashed ", "");
+            player->privateRandomHashed = messagePart;
+            inGameUI->waitingAnswersNumber--;
+            /*if(needEverybodyReadyCall)
+            {
+                inGameUI->onEverybodyReadySub(false);
+            }*/
+        }
+    }
+    else if(messagePart.startsWith("Kill "))
+    {
+        messagePart = messagePart.replace("Kill ", "");
+        Player* player = inGameUI->getPlayer(messagePart);
+        inGameUI->killPlayer(*player);
+    }
+    else if(messagePart.startsWith("Imposter "))
+    {
+        messagePart = messagePart.replace("Imposter ", "");
+        inGameUI->setImposter(messagePart);
+    }
     else if(messagePart == "ready")
     {
-        inGameUI->setPlayerReady(socketString);
+        inGameUI->setPlayerReady(socketString, true); // second argument is useless because this function is only called here
+        //WorkerThread* workerThread = new WorkerThread();
+        //workerThread->start();
     }
 }
 

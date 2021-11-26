@@ -28,7 +28,7 @@ class Server : public QWidget
         QString processMessageServer(QTcpSocket* socket, QString message);
 };
 
-extern bool askingAll;
+extern bool askingAll, needEverybodyReadyCall;
 extern QMap<QString, QString> askingAllMessages;
 extern quint16 askingAllMessagesCounter;
 void sendToSocket(QTcpSocket* socket, QString messageToSend), sendToAll(QString message);

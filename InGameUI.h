@@ -18,6 +18,7 @@
 #include "Player.h"
 #include "Task.h"
 #include "GameMap.h"
+#include <QThread>
 
 const int FPS = 30;
 
@@ -76,12 +77,16 @@ class InGameUI : public QLabel
         void closeMap();
         void spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname);
         void movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp = false);
-        void onEverybodyReady();
-        void checkEverybodyReady();
-        void setPlayerReady(QString peerAddress);
+        void onEverybodyReady(bool threadSafe);
+        void onEverybodyReadySub(bool threadSafe);
+        void checkEverybodyReady(bool threadSafe = false);
+        void setPlayerReady(QString peerAddress, bool threadSafe = false);
         quint8 getPlayersNumber();
         QPixmap* getBackgroundPixmap();
         QVector<Task*> getTasks();
+        Player* getPlayer(QString nickname);
+        void setImposter(QString nickname);
+        quint8 waitingAnswersNumber;
         InGameUI(/*QString nickname,*/ QLabel* parent = 0);
 
     public slots:

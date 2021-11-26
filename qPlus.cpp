@@ -13,6 +13,7 @@
 QString assetsFolder = "assets/";
 
 QMap<QString, QSoundEffect*> soundEffectMap;
+QChar hexs[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
 bool DebugEventFilter::eventFilter(QObject *obj, QEvent *ev) {
     if(ev->type() == QEvent::KeyPress)
@@ -111,4 +112,26 @@ void msleepWithEvents(quint32 ms)
 void sleepWithEvents(quint16 s)
 {
     msleepWithEvents(s * 1000);
+}
+
+QString randomHex(quint16 length)
+{
+    QString res = "";
+    for(quint16 i = 0; i < length / 4; i++)
+    {
+        quint32 randomNb = QRandomGenerator::global()->bounded(16);
+        QChar hex = hexs[randomNb];
+        res.append(hex);
+    }
+    return res;
+}
+
+QString SHA512(QString input)
+{
+    // ifdef depending on Qt version seems the best way to make it compatible
+    QCryptographicHash cryptographicHash(QCryptographicHash::Sha512)/* = QCryptographicHash(QCryptographicHash::Sha512)*/; // can't do classical " = QCryptographicHash" on Linux... (Qt < 6.1.1) (use of deleted function QCryptographicHash::QCryptographicHash(const QCryptographicHash&) with Qt 5.12.8)
+    QByteArray byteArray = input.toUtf8(),
+               hashedByteArray = cryptographicHash.hash(byteArray, QCryptographicHash::Sha512); // why have to repeat it ?!
+    QString hashed = hashedByteArray.toHex();
+    return hashed;
 }

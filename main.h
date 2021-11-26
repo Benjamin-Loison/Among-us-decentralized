@@ -15,5 +15,6 @@ extern QMap<Task,QVector<QPoint>> tasksLocations;
 extern QList<Client*> clients;
 extern Server* server;
 extern QString shareIP;
+extern bool isFirstToRun;
 
 #endif

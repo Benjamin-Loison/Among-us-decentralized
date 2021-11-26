@@ -15,10 +15,12 @@ InGameGUI currentInGameGUI = IN_GAME_GUI_NONE;
 Server* server;
 QList<Client*> clients;
 QString nickname, peerAddress, shareIP;
+bool isFirstToRun;
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    //qInfo(QString::number(QRandomGenerator::global()->bounded(2)).toStdString().c_str()); // not determinist without seeding
 
     QList<QHostAddress> allAddresses = QNetworkInterface::allAddresses();
     quint32 allAddressesSize = allAddresses.size();
@@ -32,13 +34,13 @@ int main(int argc, char *argv[])
     qInfo(("shareIP: " + shareIP).toStdString().c_str());
     // Uncomment this to see to what type of objects various events are sent
     //app.installEventFilter(new DebugEventFilter);
-    bool isFirstToRun = getBool("First to run", "Are you the first to run for this game?"),
-         runServer = true,//isFirstToRun/*should be true for more than 2 players*/,
+    isFirstToRun = getBool("First to run", "Are you the first to run for this game?");
+    bool runServer = true,//isFirstToRun/*should be true for more than 2 players*/,
          runClient = !isFirstToRun;
     QString isFirstToRunStr = isFirstToRun ? "true" : "false";
     qInfo(("isFirstToRun: " + isFirstToRunStr).toStdString().c_str()); // clicking on exit button is like choosing no...
     quint16 serverPort = DEFAULT_SERVER_PORT;
-    if(runServer)
+    /*if(runServer) // why would someone want to customize server port or run two servers at the same time ? making interface or configuration file would be more appropriate
     {
         bool ok = false;
         while(!ok) {
@@ -52,10 +54,12 @@ int main(int argc, char *argv[])
                 serverPort = (quint16) port;
         }
         qInfo("serverPort: %hu", serverPort);
-    }
+    }*/
     if(runClient)
     {
         peerAddress = getText("Peer address", "A peer address");
+        if(QRegExp("\\d+").exactMatch(peerAddress))
+            peerAddress = "localhost:" + peerAddress;
         qInfo(("peerAddress: " + peerAddress).toStdString().c_str());
     }
     /*QString languageFile = "among_us_decentralized_fr";
@@ -64,7 +68,9 @@ int main(int argc, char *argv[])
         else
             qInfo("languageFile couldn't be loaded !");*/
     // QSettings like TravianBlockchained
+    qInfo("Loading QMediaPlayer ...");
     player = new QMediaPlayer;
+    qInfo("QMediaPlayer loaded !");
 
     // les nouveaux se connectent aux anciens
     // disons que l'on cherche à découvrir tout le monde (dans le cas précis de ce jeu)

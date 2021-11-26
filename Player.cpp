@@ -8,6 +8,7 @@ Player::Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor c
     bodyX(-1),
     bodyY(-1),
     nickname(nickname),
+    privateRandomHashed(""),
     playerFacingLeft(false),
     isImpostor(false),
     isGhost(false),

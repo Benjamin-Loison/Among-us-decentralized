@@ -22,5 +22,7 @@ QString getText(QString title, QString label, QString defaultText = "");
 void showWarningMessage(QString title, QString label);
 QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2);
 bool getBool(QString title, QString label);
+QString randomHex(quint16 length);
+QString SHA512(QString input);
 
 #endif

@@ -223,7 +223,7 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz) // see
         }
         if(lastNx != nx || lastNy != ny)
         {
-            sendToAll("position " + QString::number(nx) + " " + QString::number(ny));
+            sendToAll("Position " + QString::number(nx) + " " + QString::number(ny));
             lastNx = nx;
             lastNy = ny;
         }
@@ -289,7 +289,8 @@ Player* InGameUI::findReportableBody() {
     int x = currPlayer.x, y = currPlayer.y;
     for(Player* player : getOtherPlayersByDistance()) {
         if(player->showBody) {
-            int sqDist = (player->x-x)*(player->x-x) + (player->y-y)*(player->y-y);
+            // used to use player->x/y instead of bodyX/Y
+            int sqDist = qPow(player->bodyX-x, 2) + qPow(player->bodyY-y, 2);
             if(sqDist <= REPORT_RANGE_SQUARED)
                 return player;
         }
@@ -331,8 +332,8 @@ Player* InGameUI::findKillablePlayer() {
  * Kills the given Player.
  */
 bool InGameUI::killPlayer(Player &p) {
-    if(!currPlayer.isImpostor || p.isGhost)
-        return false;
+    //if(!currPlayer.isImpostor || p.isGhost) // should be done at a higher level
+    //    return false;
     // TODO
     p.isGhost = true;
     p.bodyX = p.x;
@@ -447,10 +448,16 @@ void InGameUI::redraw()
         players.push_back(&player);
     qSort(players.begin(), players.end(), [](const Player *a, const Player *b)
           {
-              if (a->y != b->y)
-                  return a->y < b->y;
-              else
-                  return a->x < b->x;
+              bool isCurrPlayerGhost = inGameUI->currPlayer.isGhost;
+              int aY = isCurrPlayerGhost ? a->y : a->bodyY, // used to use a->isGhost
+                  aX = isCurrPlayerGhost ? a->x : a->bodyX,
+                  bY = isCurrPlayerGhost ? b->y : b->bodyY,
+                  bX = isCurrPlayerGhost ? b->x : b->bodyX;
+              if(aY != bY)
+                  return aY < bY;
+              else if(aX != bX)
+                  return aX < bX;
+              return a->nickname.compare(b->nickname) < 0;
           });
     for (Player *player : players)
         displayPlayer(*player, &painter);
@@ -480,11 +487,11 @@ void InGameUI::redraw()
     painter.drawText(boundingRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y));
 
     // Game buttons
-    if(findKillablePlayer())
+    if(everyoneReady && findKillablePlayer())
         painter.drawImage(size().width()-220, size().height()-110, killButtonImage);
     if(findReportableBody())
         painter.drawImage(size().width()-110, size().height()-110, reportButtonImage);
-    if(getUsableTasksByDistance().size() > 0)
+    if(everyoneReady && getUsableTasksByDistance().size() > 0)
         painter.drawImage(size().width()-110, size().height()-220, useButtonImage);
 
     // Ready button
@@ -533,9 +540,38 @@ void InGameUI::onReadyClicked() {
     }
 }
 
-void InGameUI::onEverybodyReady()
+void InGameUI::setImposter(QString nickname)
 {
-    everyoneReady = true;
+    Player* player = getPlayer(nickname);
+    player->isImpostor = true;
+}
+
+void InGameUI::onEverybodyReadySub(bool threadSafe)
+{
+    //if(!threadSafe && waitingAnswersNumber > 0) return;
+    /*while(waitingAnswersNumber > 0) // should do this but it's not working... the problem is that we have to wait network but we are in the network thread
+    {
+        QCoreApplication::processEvents();
+        QThread::msleep(1);
+    }*/
+    /*sendToAll("Random " + privateRandom); /// TODO check the privateRandom at the end of the game
+    waitingAnswersNumber = otherPlayers.size();
+    while(waitingAnswersNumber > 0)
+    {
+        QCoreApplication::processEvents();
+        QThread::msleep(1);
+    }*/
+
+    if(isFirstToRun) // temporary
+    {
+        quint8 imposterPlayerIndex = QRandomGenerator::global()->bounded(getPlayersNumber());
+        QString nickname = currPlayer.nickname;
+        QList<QString> peerAddresses = otherPlayers.keys();
+        if(imposterPlayerIndex > 0)
+            nickname = otherPlayers[peerAddresses[imposterPlayerIndex - 1]].nickname;
+        setImposter(nickname);
+        sendToAll("Imposter " + nickname);
+    }
     readyButtonLayout->removeWidget(readyButton);
     delete readyButton;
     delete readyButtonLayout;
@@ -551,6 +587,19 @@ void InGameUI::onEverybodyReady()
     currPlayer.x = X_SPAWN;
     currPlayer.y = Y_SPAWN;
     currPlayer.playerFacingLeft = false;
+}
+
+void InGameUI::onEverybodyReady(bool threadSafe)
+{
+    everyoneReady = true;
+    QString privateRandom = randomHex(128),
+            randomHashed = SHA512(privateRandom);
+    //sendToAll("RandomHashed " + randomHashed);
+    waitingAnswersNumber = otherPlayers.size();
+    //if(threadSafe)
+        onEverybodyReadySub(threadSafe);
+    //else
+    //    needEverybodyReadyCall = true;
 }
 
 void InGameUI::finishTask() {
@@ -614,7 +663,10 @@ void InGameUI::onClickKill() {
     // Game logic verifications are performed in the function calls
     Player* killable = findKillablePlayer();
     if(killable)
+    {
         killPlayer(*killable);
+        sendToAll("Kill " + killable->nickname);
+    }
 }
 
 void InGameUI::openMap() {
@@ -773,7 +825,7 @@ void InGameUI::movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp)
     player->bodyY = y;*/
 }
 
-void InGameUI::checkEverybodyReady()
+void InGameUI::checkEverybodyReady(bool threadSafe)
 {
     //qInfo("a");
     if(!currPlayer.isReady) return;
@@ -790,14 +842,15 @@ void InGameUI::checkEverybodyReady()
         }
     }
     //qInfo("c");
-    onEverybodyReady();
+    onEverybodyReady(threadSafe);
 }
 
-void InGameUI::setPlayerReady(QString peerAddress)
+void InGameUI::setPlayerReady(QString peerAddress, bool threadSafe)
 {
     Player* player = &otherPlayers[peerAddress];
     player->isReady = true;
-    checkEverybodyReady();
+    //if(!threadSafe)
+        checkEverybodyReady(/*threadSafe*/);
 }
 
 QPixmap* InGameUI::getBackgroundPixmap() {
@@ -806,4 +859,19 @@ QPixmap* InGameUI::getBackgroundPixmap() {
 
 QVector<Task*> InGameUI::getTasks() {
     return tasks;
-} 
+}
+
+Player* InGameUI::getPlayer(QString nickname)
+{
+    if(currPlayer.nickname == nickname) return &currPlayer;
+    QList<QString> peerAddresses = otherPlayers.keys();
+    quint8 peerAddressesSize = peerAddresses.size();
+    for(quint8 peerAddressesIndex = 0; peerAddressesIndex < peerAddressesSize; peerAddressesIndex++)
+    {
+        QString peerAddress = peerAddresses[peerAddressesIndex];
+        Player* player = &otherPlayers[peerAddress];
+        if(player->nickname == nickname)
+            return player;
+    }
+    return nullptr;
+}
