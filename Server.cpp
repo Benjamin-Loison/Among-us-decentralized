@@ -137,6 +137,11 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
     {
         inGameUI->openMeetingUI(nullptr);
     }
+    else if(messagePart.startsWith("YourAddress "))
+    {
+        messagePart = messagePart.replace("YourAddress ", "");
+        myAddress = messagePart; // should take the majority here too
+    }
     // TODO: other votes
 }
 
@@ -188,6 +193,7 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
                 }
                 res += fullAddresses.join(' ');
             }
+            res = "YourAddress " + socketWithoutPortToString(socket) + NETWORK_SEPARATOR + res;
             //res += "nickname " + inGameUI->currPlayer.nickname; // no not trustable data until
         }
         else if(messagePart == "nicknames")
@@ -214,7 +220,7 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
                 parts.append(address + " " + nickname);
             }
             /// order matters ! should do alphabetical one for instance
-            res += parts.join(','); // should also send others nicknames, order is important here
+            res += messagePart + "|" + parts.join(','); // should also send others nicknames, order is important here
         }
         else if(messagePart.startsWith("nickname "))
         {
@@ -337,17 +343,27 @@ QList<QTcpSocket*> getPeers()
     return res;
 }
 
+QString addressToString(QHostAddress address)
+{
+    return address.toString();
+}
+
 QString addressPortToString(QHostAddress address, quint16 port)
 {
-    QString addressStr = address.toString().replace("0.0.0.0", "127.0.0.1");
-    if(shareIP != "")
-            addressStr = addressStr.replace("127.0.0.1", shareIP);
+    QString addressStr = address.toString().replace("0.0.0.0", myAddress/*"127.0.0.1"*/);
+    //if(shareIP != "")
+    //        addressStr = addressStr.replace("127.0.0.1", shareIP);
     return addressStr.replace("::ffff:", "")/*.replace("::ffff:127.0.0.1", "127.0.0.1")*//*sometimes there is the prefix ::ffff:127.0.0.1*//*not sure about this*/ + ":" + QString::number(port);
 }
 
 QString serverSocketToString()
 {
     return addressPortToString(server->server->serverAddress(), server->server->serverPort());
+}
+
+QString socketWithoutPortToString(QTcpSocket* socket)
+{
+    return socket->peerAddress().toString();
 }
 
 QString socketToString(QTcpSocket* socket)
@@ -363,6 +379,13 @@ void sendToAll(QString message)
     for(quint16 peersIndex = 0; peersIndex < peersSize; peersIndex++)
     {
         QTcpSocket* peer = peers[peersIndex];
-        sendToSocket(peer, message);
+        //sendToSocket(peer, message); // doesn't used to have the following even if it isn't optimized, it works
+        QStringList messageParts = message.split(NETWORK_SEPARATOR);
+        quint8 messagePartsSize = messageParts.size();
+        for(quint8 messagePartsIndex = 0; messagePartsIndex < messagePartsSize; messagePartsIndex++)
+        {
+            QString messagePart = messageParts[messagePartsIndex];
+            sendToSocket(peer, messagePart);
+        }
     }
 }

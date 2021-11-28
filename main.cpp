@@ -14,7 +14,7 @@ InGameUI* inGameUI;
 InGameGUI currentInGameGUI = IN_GAME_GUI_NONE;
 Server* server;
 QList<Client*> clients;
-QString nickname, peerAddress, shareIP;
+QString nickname, peerAddress, shareIP, myAddress;
 bool isFirstToRun;
 
 int main(int argc, char *argv[])
@@ -27,14 +27,18 @@ int main(int argc, char *argv[])
 
     QList<QHostAddress> allAddresses = QNetworkInterface::allAddresses();
     quint32 allAddressesSize = allAddresses.size();
-    /*for(quint32 allAddressesIndex = 0; allAddressesIndex < allAddressesSize; allAddressesIndex++)
+    qInfo("My IPs:");
+    for(quint32 allAddressesIndex = 0; allAddressesIndex < allAddressesSize; allAddressesIndex++)
     {
         QHostAddress address = allAddresses[allAddressesIndex];
-        qInfo((addressPortToString(address, 0).toStdString().c_str()));
-    }*/
+        qInfo(addressToString(address).toStdString().c_str());
+        // broadcast global linkLocal loopback multicast siteLocal uniqueLocalUnicast
+        // for real users only global addresses seem interesting
+        //qInfo(((QString::number(address.isBroadcast()) + " " + QString::number(address.isGlobal()) + " " + QString::number(address.isLinkLocal()) + " " + QString::number(address.isLoopback()) + " " + QString::number(address.isMulticast()) + " " + QString::number(address.isSiteLocal()) + " " + QString::number(address.isUniqueLocalUnicast())).toStdString().c_str()));
+    }
     inGameUI = new InGameUI(/*nickname*/);
     shareIP = allAddresses[2].toString();
-    qInfo(("shareIP: " + shareIP).toStdString().c_str());
+    //qInfo(("shareIP: " + shareIP).toStdString().c_str());
     // Uncomment this to see to what type of objects various events are sent
     //app.installEventFilter(new DebugEventFilter);
     isFirstToRun = getBool("First to run", "Are you the first to run for this game?");
@@ -82,9 +86,9 @@ int main(int argc, char *argv[])
     // waiting a given time and not waiting all to answers and take majority is better I think (likewise if one doesn't cooperate it's not a problem)
     if(runServer)
     {
-        qInfo("Starting server...");
+        //qInfo("Starting server..."); // might be instant
         server = new Server(serverPort);
-        qInfo(("Server started on: " + serverSocketToString()).toStdString().c_str());
+        qInfo(("Server started on: " + /*serverSocketToString()*/QString::number(serverPort)).toStdString().c_str());
     }
     if(runClient)
     {

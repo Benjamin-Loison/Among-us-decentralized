@@ -8,7 +8,7 @@ Client::Client(QString peerAddress)
     connect(socket, SIGNAL(readyRead()), this, SLOT(dataReceived()));
     connect(socket, SIGNAL(connected()), this, SLOT(connecte()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(deconnecte()));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError))); // doesn't seem well supported in Qt 6
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
 
     messageSize = 0;
     isConnected = false;
@@ -30,12 +30,14 @@ Client::Client(QString peerAddress)
     // Orange is so bad port opening doesn't work anymore but DMZ does :'(
     qInfo(("client connecting to " + peerAddress + " on port " + QString::number(serverPort) + "...").toStdString().c_str());
     socket->connectToHost(peerAddress/*"2a01:cb00:774:4300:a4ba:9926:7e3a:b6c1"*//*"192.168.1.45"*//*"localhost"*//*"90.127.197.24"*//*"2a01:cb00:774:4300:531:8a76:deda:2b53"*//*a secret domain name*/, serverPort); // On se connecte au serveur demandé
+    // could wait connected before logging discovering otherwise IP is incorrect
+    // however it assumes we will connect to him quickly which may not be the case
     //qInfo("client connected ?");
-    /*while(!isConnected) // looping seems important instead of single call to processEvents, doing this bloquant way assume that all remote peers trying to be connected to will succeed quickly or will have to wait for timeout (if there is any)
+    while(!isConnected) // looping seems important instead of single call to processEvents, doing this bloquant way assume that all remote peers trying to be connected to will succeed quickly or will have to wait for timeout (if there is any)
     {
         QCoreApplication::processEvents();
         QThread::msleep(1);
-    }*/
+    }
 }
 
 void Client::connecte()
@@ -77,7 +79,7 @@ void Client::dataReceived()
     in >> receivedMessage;
 
     qInfo(("client received: " + receivedMessage).toStdString().c_str());
-    if(askingAll)
+    /*if(askingAll)
     {
         QString peerString = socketToString(socket);
         if(askingAllMessages.find(peerString) != askingAllMessages.end() && askingAllMessages[peerString] == "") // second condition in order not to someone to revoke what he claimed
@@ -89,7 +91,7 @@ void Client::dataReceived()
         else
             processMessageClient(receivedMessage);
     }
-    else
+    else*/
         processMessageClient(receivedMessage);
 
     // On remet la taille du message à 0 pour pouvoir recevoir de futurs messages
@@ -103,6 +105,22 @@ void Client::processMessageClient(QString message)
     for(quint32 messagePartsIndex = 0; messagePartsIndex < messagePartsSize; messagePartsIndex++)
     {
         QString messagePart = messageParts[messagePartsIndex];
+        if(askingAll) // copied from higher level
+        {
+            if(messagePart.contains('|'))
+            {
+                QString peerString = socketToString(socket);
+                if(askingAllMessages.find(peerString) != askingAllMessages.end() && askingAllMessages[peerString] == "")
+                {
+                    askingAllMessages[peerString] = messagePart.split('|')[1];
+                    askingAllMessagesCounter--;
+                    qInfo(("askingAllMessagesCounter: " + QString::number(askingAllMessagesCounter)).toStdString().c_str());
+                }
+                continue;
+            }
+        }
+
+
         if(messagePart.startsWith("peers "))
         {
             QString connected = messagePart.replace("peers ", "");
@@ -162,8 +180,10 @@ void discoverClient(QString peerAddress)
 {
     Client* client = new Client(peerAddress);
     clients.push_back(client);
-    peersPorts[client->socket] = peerAddress.split(':').last().toUInt();
+    QStringList peerAddressParts = peerAddress.split(':');
+    peersPorts[client->socket] = peerAddressParts.last().toUInt();
     //client->sendToServer("nickname " + nickname);
     //client->sendToServer("discovering " + inGameUI->currPlayer.nickname);
-    client->sendToServer("discovering " + serverSocketToString().split(':').last() /*+ inGameUI->currPlayer.nickname*/);
+    //peerAddressParts.removeLast();
+    client->sendToServer("YourAddress " + /*peerAddressParts.join(':')*/socketWithoutPortToString(client->socket) + NETWORK_SEPARATOR + "discovering " + serverSocketToString().split(':').last() /*+ inGameUI->currPlayer.nickname*/);
 }
