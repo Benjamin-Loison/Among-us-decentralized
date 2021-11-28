@@ -64,15 +64,15 @@ void Client::dataReceived()
     Une fois qu'on l'a, on attend d'avoir reçu le message entier (en se basant sur la taille annoncée messageSize)*/
     QDataStream in(socket);
 
-    if(messageSize == 0)
+    /*if(messageSize == 0)
     {
         if(socket->bytesAvailable() < (int)sizeof(quint16))
              return;
         in >> messageSize;
-    }
+    }*/
 
-    if(socket->bytesAvailable() < messageSize)
-        return;
+    //if(socket->bytesAvailable() < messageSize)
+    //    return;
 
     // Si on arrive jusqu'à cette ligne, on peut récupérer le message entier
     QString receivedMessage;
@@ -95,7 +95,7 @@ void Client::dataReceived()
         processMessageClient(receivedMessage);
 
     // On remet la taille du message à 0 pour pouvoir recevoir de futurs messages
-    messageSize = 0;
+    //messageSize = 0;
 }
 
 void Client::processMessageClient(QString message)
