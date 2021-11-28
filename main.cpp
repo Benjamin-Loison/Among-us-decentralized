@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     if(runClient)
     {
         peerAddress = getText("Peer address", "A peer address");
-        if(QRegExp("\\d+").exactMatch(peerAddress))
+        if(isAPositiveInteger(peerAddress))
             peerAddress = "localhost:" + peerAddress;
         qInfo(("peerAddress: " + peerAddress).toStdString().c_str());
     }
