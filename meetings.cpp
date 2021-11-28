@@ -8,7 +8,7 @@ MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer): QWidget(parent),
     titleLabel = new QLabel("<b>Who is the Impostor?</b>");
     layout->addWidget(titleLabel, 0, 0, 1, -1);
     if(reportedPlayer)
-        reportedPlayerLabel = new QLabel(QString("%1's body was found").arg(reportedPlayer->nickname));
+        reportedPlayerLabel = new QLabel(QString("%1's body was found").arg(reportedPlayer->nickname)); /// should display who activate the meeting
     else
         reportedPlayerLabel = new QLabel("No dead body reported");
     layout->addWidget(reportedPlayerLabel, 1, 0, 1, -1);
