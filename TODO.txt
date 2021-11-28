@@ -1,7 +1,7 @@
 win/end game meeting et déclenchement après avoir fait chacun ses tâches
 travis
 enter id code
-résoudre les bugs
+résoudre les bugs (réseau 3 ordinateurs différents (fait), tâches aléatoires (fait), synchronisation temps réel réseau 2 ordi ?)
 
 bonus: faire un release package et le tester sur les différents OS
 
