@@ -3,6 +3,8 @@ travis
 enter id code
 résoudre les bugs
 
+bonus: faire un release package et le tester sur les différents OS
+
 -------------
 
 v2:
