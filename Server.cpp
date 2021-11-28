@@ -345,7 +345,7 @@ QList<QTcpSocket*> getPeers()
 
 QString addressToString(QHostAddress address)
 {
-    return address.toString();
+    return address.toString().replace("::ffff:", "");
 }
 
 QString addressPortToString(QHostAddress address, quint16 port)
@@ -353,7 +353,7 @@ QString addressPortToString(QHostAddress address, quint16 port)
     QString addressStr = address.toString().replace("0.0.0.0", myAddress/*"127.0.0.1"*/);
     //if(shareIP != "")
     //        addressStr = addressStr.replace("127.0.0.1", shareIP);
-    return addressStr.replace("::ffff:", "")/*.replace("::ffff:127.0.0.1", "127.0.0.1")*//*sometimes there is the prefix ::ffff:127.0.0.1*//*not sure about this*/ + ":" + QString::number(port);
+    return addressToString(address)/*.replace("::ffff:127.0.0.1", "127.0.0.1")*//*sometimes there is the prefix ::ffff:127.0.0.1*//*not sure about this*/ + ":" + QString::number(port);
 }
 
 QString serverSocketToString()
@@ -363,7 +363,7 @@ QString serverSocketToString()
 
 QString socketWithoutPortToString(QTcpSocket* socket)
 {
-    return socket->peerAddress().toString();
+    return addressToString(socket->peerAddress());
 }
 
 QString socketToString(QTcpSocket* socket)
