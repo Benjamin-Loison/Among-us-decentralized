@@ -148,3 +148,14 @@ QHBoxLayout* makeCenteredLayout(QWidget* widget) {
     ret->addStretch();
     return ret;
 }
+
+bool isAPositiveInteger(QString s)
+{
+    quint8 sLength = s.length();
+    for(quint8 sIndex = 0; sIndex < sLength; sIndex++)
+    {
+        if(!s[sIndex].isDigit())
+            return false;
+    }
+    return true;
+}
