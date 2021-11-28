@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     QString isFirstToRunStr = isFirstToRun ? "true" : "false";
     qInfo(("isFirstToRun: " + isFirstToRunStr).toStdString().c_str()); // clicking on exit button is like choosing no...
     quint16 serverPort = DEFAULT_SERVER_PORT;
-    /*if(runServer) // why would someone want to customize server port or run two servers at the same time ? making interface or configuration file would be more appropriate
+    if(/*runServer*/!isFirstToRun) // why would someone want to customize server port or run two servers at the same time ? making interface or configuration file would be more appropriate - running two servers is equivalent to running two clients so for developing purpose it's needed - only the first to launch isn't that much useful to precise
     {
         bool ok = false;
         while(!ok) {
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
                 serverPort = (quint16) port;
         }
         qInfo("serverPort: %hu", serverPort);
-    }*/
+    }
     if(runClient)
     {
         peerAddress = getText("Peer address", "A peer address");
