@@ -238,7 +238,7 @@ QVector<Player *> InGameUI::getOtherPlayersByDistance() {
     for(Player &player : otherPlayers)
         players.push_back(&player);
     int x = currPlayer.x, y = currPlayer.y;
-    qSort(players.begin(), players.end(), [&](const Player *a, const Player *b) {
+    sort(players.begin(), players.end(), [&](const Player *a, const Player *b) {
         int sqDistA = (a->x-x) * (a->x-x) + (a->y-y) * (a->y-y);
         int sqDistB = (b->x-x) * (b->x-x) + (b->y-y) * (b->y-y);
         if(sqDistA != sqDistB)
@@ -264,7 +264,7 @@ QVector<Task*> InGameUI::getUsableTasksByDistance() {
         if(dist <= TASK_RANGE_SQUARED)
             ret.push_back(task);
     }
-    qSort(ret.begin(), ret.end(), [&](const Task* task1, const Task* task2) {
+    sort(ret.begin(), ret.end(), [&](const Task* task1, const Task* task2) {
         QPoint pt1 = task1->location;
         QPoint pt2 = task2->location;
         int dist1 = (pt1.x()-x)*(pt1.x()-x) + (pt1.y()-y)*(pt1.y()-y);
@@ -445,7 +445,7 @@ void InGameUI::redraw()
     players.push_back(&currPlayer);
     for (Player &player : otherPlayers)
         players.push_back(&player);
-    qSort(players.begin(), players.end(), [](const Player *a, const Player *b)
+    sort(players.begin(), players.end(), [](const Player *a, const Player *b)
           {
               bool isCurrPlayerGhost = inGameUI->currPlayer.isGhost;
               int aY = isCurrPlayerGhost ? a->y : a->bodyY, // used to use a->isGhost
