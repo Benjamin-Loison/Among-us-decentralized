@@ -2,7 +2,7 @@
 #define PLAYER_H
 #include <QPixmap>
 // should be 3 below
-#define MINIMAL_NUMBER_OF_PLAYERS 2
+#define MINIMAL_NUMBER_OF_PLAYERS 1
 
 class Player {
 public:

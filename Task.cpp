@@ -96,6 +96,7 @@ Task pickRandomTask(QRandomGenerator* qRandomGenerator, TaskTime taskTime)
     }
 
     quint8 tasksSize = tasks.size(), randomIndex = qRandomGenerator->bounded(tasksSize);
+    //qInfo((QString::number(randomIndex) + " / " + QString::number(tasksSize)).toStdString().c_str());
     Task task = tasks[randomIndex];
     return task;
 }
@@ -114,7 +115,12 @@ QVector<Task*> getTasksAsPointers(QVector<Task> tasks)
 
 QVector<Task> getRandomTasks(QString privateSaltedWithCommonRandom) // can't only depend on private random, it also have to depends on common random
 {
-    quint32 privateSaltedWithCommonRandomUint32 = privateSaltedWithCommonRandom.toUInt(nullptr, 16); /// warning cryptographic here 32 bits only...
+    bool ok;
+    privateSaltedWithCommonRandom = privateSaltedWithCommonRandom.toUpper();
+    privateSaltedWithCommonRandom.chop(120); // otherwise toUInt not working
+    quint32 privateSaltedWithCommonRandomUint32 = privateSaltedWithCommonRandom.toUInt(/*nullptr*/&ok, 16); /// warning cryptographic here 32 bits only...
+    //qInfo(("ok: " + QString::number(ok)).toStdString().c_str());
+    //qInfo(("privateSaltedWithCommonRandomUint32 " + QString::number(privateSaltedWithCommonRandomUint32) + " " + privateSaltedWithCommonRandom).toStdString().c_str());
     QRandomGenerator qRandomGenerator = QRandomGenerator(privateSaltedWithCommonRandomUint32);
     QVector<Task> tasks;
     while(!doTasksFitRequirements(tasks))

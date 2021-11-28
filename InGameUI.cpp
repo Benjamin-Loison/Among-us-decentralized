@@ -592,7 +592,7 @@ void InGameUI::onEverybodyReadySub(bool threadSafe)
 void InGameUI::onEverybodyReady(bool threadSafe)
 {
     everyoneReady = true;
-    privateRandom = randomHex(128);
+    privateRandom = randomHex(512);
     QString randomHashed = SHA512(privateRandom);
     //sendToAll("RandomHashed " + randomHashed);
     waitingAnswersNumber = otherPlayers.size();
