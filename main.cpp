@@ -7,9 +7,9 @@
 #include <QMediaPlayer>
 #include "main.h"
 #include "InGameUI.h"
+#include <QtGlobal>
 //#include <unistd.h> // only linux...
 
-QMediaPlayer* player;
 InGameUI* inGameUI;
 InGameGUI currentInGameGUI = IN_GAME_GUI_NONE;
 Server* server;
@@ -21,6 +21,9 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     //qInfo(QString::number(QRandomGenerator::global()->bounded(2)).toStdString().c_str()); // not determinist without seeding
+    #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QImageReader::setAllocationLimit(256);
+    #endif
 
     QList<QHostAddress> allAddresses = QNetworkInterface::allAddresses();
     quint32 allAddressesSize = allAddresses.size();
@@ -68,9 +71,6 @@ int main(int argc, char *argv[])
         else
             qInfo("languageFile couldn't be loaded !");*/
     // QSettings like TravianBlockchained
-    qInfo("Loading QMediaPlayer ...");
-    player = new QMediaPlayer;
-    qInfo("QMediaPlayer loaded !");
 
     // les nouveaux se connectent aux anciens
     // disons que l'on cherche à découvrir tout le monde (dans le cas précis de ce jeu)
