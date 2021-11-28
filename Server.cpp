@@ -253,8 +253,8 @@ void Server::clientDisconnected()
 void sendToSocket(QTcpSocket* socket, QString messageToSend)
 {
     QString socketString = socketToString(socket);
-    qInfo("sending to %s: %s!", socketString.toStdString().c_str(), messageToSend.toStdString().c_str());
     if(messageToSend == "") return; //messageToSend = EMPTY_NETWORK_RESPONSE; // warning user injection...
+    qInfo("sending to %s: %s!", socketString.toStdString().c_str(), messageToSend.toStdString().c_str());
     QByteArray paquet;
     QDataStream out(&paquet, QIODevice::WriteOnly);
 
