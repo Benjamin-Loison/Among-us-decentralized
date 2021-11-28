@@ -1,4 +1,4 @@
-win/end game meeting
+win/end game meeting et déclenchement après avoir fait chacun ses tâches
 travis
 enter id code
 résoudre les bugs
