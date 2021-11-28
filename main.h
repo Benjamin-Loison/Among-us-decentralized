@@ -7,7 +7,6 @@
 #include "Client.h"
 #include "Server.h"
 
-extern QMediaPlayer* player;
 extern InGameUI* inGameUI;
 enum InGameGUI{IN_GAME_GUI_NONE, IN_GAME_GUI_FIX_WIRING, IN_GAME_GUI_ASTEROIDS, IN_GAME_GUI_MAP, IN_GAME_GUI_MEETING};
 extern InGameGUI currentInGameGUI;
