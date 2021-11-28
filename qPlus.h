@@ -26,5 +26,6 @@ bool getBool(QString title, QString label);
 QString randomHex(quint16 length);
 QString SHA512(QString input);
 QHBoxLayout* makeCenteredLayout(QWidget* widget);
+bool isAPositiveInteger(QString s);
 
 #endif
