@@ -134,3 +134,25 @@ QVector<Task> getRandomTasks(QString privateSaltedWithCommonRandom) // can't onl
     }
     return tasks;
 }
+
+QString taskTimeToString(TaskTime taskTime)
+{
+    switch(taskTime)
+    {
+        case TASK_COMMON:
+            return "common";
+        case TASK_LONG:
+            return "long";
+        default: // TASK_SHORT
+            return "short";
+    }
+}
+
+TaskTime getTaskTime(QString taskTimeStr)
+{
+    if(taskTimeStr == "common")
+        return TASK_COMMON;
+    else if(taskTimeStr == "long")
+        return TASK_LONG;
+    return TASK_SHORT;
+}

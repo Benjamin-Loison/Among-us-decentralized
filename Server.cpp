@@ -55,20 +55,20 @@ void Server::dataReceived()
     // Si tout va bien, on continue : on récupère le message
     QDataStream in(socket);
 
-    /*if(messageSize == 0) // Si on ne connaît pas encore la taille du message, on essaie de la récupérer
+    if(messageSize == 0) // Si on ne connaît pas encore la taille du message, on essaie de la récupérer
     {
         if(socket->bytesAvailable() < (int)sizeof(quint16)) // On n'a pas reçu la taille du message en entier
              return;
 
         in >> messageSize; // Si on a reçu la taille du message en entier, on la récupère
-    }*/
+    }
 
     // Si on connaît la taille du message, on vérifie si on a reçu le message en entier
-    //if (socket->bytesAvailable() < messageSize) // Si on n'a pas encore tout reçu, on arrête la méthode
-    //    return;
+    if (socket->bytesAvailable() < messageSize) // Si on n'a pas encore tout reçu, on arrête la méthode
+        return;
 
     // Si ces lignes s'exécutent, c'est qu'on a reçu tout le message : on peut le récupérer !
-    QString message; // il va peut-être falloir attendre et mettre dans un buffer tant que l'on n'a pas le NETWORK_SEPARATOR
+    QString message;
     in >> message;
     qInfo("server received: %s", message.toStdString().c_str());
     message = processMessageServer(socket, message);
@@ -77,7 +77,7 @@ void Server::dataReceived()
     sendToSocket(socket, message);
 
     // 2 : remise de la taille du message à 0 pour permettre la réception des futurs messages
-    //messageSize = 0;
+    messageSize = 0;
 }
 
 // assume not same message a second time until others validated
@@ -108,12 +108,19 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
             }*/
         }
     }
+    else if(messagePart.startsWith("finished "))
+    {
+        messagePart = messagePart.replace("finished ", "");
+        TaskTime taskTime = getTaskTime(messagePart);
+        inGameUI->taskFinished(taskTime);
+    }
     else if(messagePart.startsWith("Kill "))
     {
         const int prefixSize = QString("Kill ").size();
         QString nickname = messagePart.mid(prefixSize);
         Player* player = inGameUI->getPlayer(nickname);
         inGameUI->killPlayer(*player);
+        inGameUI->checkEndOfTheGame();
     }
     else if(messagePart.startsWith("Imposter "))
     {
@@ -252,22 +259,20 @@ void Server::clientDisconnected()
 
 void sendToSocket(QTcpSocket* socket, QString messageToSend)
 {
-    if(messageToSend == "") return; //messageToSend = EMPTY_NETWORK_RESPONSE; // warning user injection...
     QString socketString = socketToString(socket);
-    messageToSend += NETWORK_SEPARATOR;
+    if(messageToSend == "") return; //messageToSend = EMPTY_NETWORK_RESPONSE; // warning user injection...
     qInfo("sending to %s: %s!", socketString.toStdString().c_str(), messageToSend.toStdString().c_str());
     QByteArray paquet;
     QDataStream out(&paquet, QIODevice::WriteOnly);
 
     // On prépare le paquet à envoyer
 
-    //out << (quint16)0;
+    out << (quint16)0;
     out << messageToSend;
-    //out.device()->seek(0);
-    //out << (quint16)(paquet.size() - sizeof(quint16));
+    out.device()->seek(0);
+    out << (quint16)(paquet.size() - sizeof(quint16));
 
     socket->write(paquet); // On envoie le paquet
-    //socket->flush();
 }
 
 QMap<QString, QString> askingAllMessages;

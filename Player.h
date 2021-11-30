@@ -3,6 +3,7 @@
 #include <QPixmap>
 // should be 3 below
 #define MINIMAL_NUMBER_OF_PLAYERS 1
+#define IMPOSTOR_NUMBER 1
 
 class Player {
 public:

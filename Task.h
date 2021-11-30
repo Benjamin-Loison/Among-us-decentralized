@@ -18,7 +18,10 @@ public:
 
 QVector<Task> getRandomTasks(QString privateSaltedWithCommonRandom);
 QVector<Task*> getTasksAsPointers(QVector<Task> tasks);
+QString taskTimeToString(TaskTime taskTime);
+TaskTime getTaskTime(QString taskTimeStr);
 
+extern QMap<TaskType, TaskTime> taskTimes;
 extern quint8 commonTasks, longTasks, shortTasks;
 
 #endif

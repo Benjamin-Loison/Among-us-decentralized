@@ -87,12 +87,17 @@ class InGameUI : public QLabel
         void onEverybodyReadySub(bool threadSafe);
         void checkEverybodyReady(bool threadSafe = false);
         void setPlayerReady(QString peerAddress, bool threadSafe = false);
+        void checkEndOfTheGame();
+        void taskFinished(TaskTime taskTime);
+        quint8 getAliveCrewmatesNumber();
+        quint8 getAliveImpostorsNumber();
         quint8 getPlayersNumber();
         QPixmap* getBackgroundPixmap();
         QVector<Task*> getTasks();
         Player* getPlayer(QString nickname);
         void setImposter(QString nickname);
         quint8 waitingAnswersNumber;
+        quint8 gameCommonTasks, gameLongTasks, gameShortTasks;
         InGameUI(/*QString nickname,*/ QLabel* parent = 0);
 
     public slots:

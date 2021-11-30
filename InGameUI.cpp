@@ -564,6 +564,7 @@ void InGameUI::onEverybodyReadySub(bool threadSafe)
 
     if(isFirstToRun) // temporary
     {
+        // TODO: use IMPOSTOR_NUMBER
         quint8 imposterPlayerIndex = QRandomGenerator::global()->bounded(getPlayersNumber());
         QString nickname = currPlayer.nickname;
         QList<QString> peerAddresses = otherPlayers.keys();
@@ -596,16 +597,82 @@ void InGameUI::onEverybodyReady(bool threadSafe)
     QString randomHashed = SHA512(privateRandom);
     //sendToAll("RandomHashed " + randomHashed);
     waitingAnswersNumber = otherPlayers.size();
+    quint8 crewmates = waitingAnswersNumber + 1 - IMPOSTOR_NUMBER;
+    gameCommonTasks = crewmates * commonTasks;
+    gameLongTasks = crewmates * longTasks;
+    gameShortTasks = crewmates * shortTasks;
     //if(threadSafe)
         onEverybodyReadySub(threadSafe);
     //else
     //    needEverybodyReadyCall = true;
 }
 
+bool isAliveCrewmate(Player* player)
+{
+    return !player->isGhost && !player->isImpostor;
+}
+
+quint8 InGameUI::getAliveCrewmatesNumber()
+{
+    QList<QString> keys = otherPlayers.keys();
+    quint8 aliveCrewmates = isAliveCrewmate(&currPlayer) ? 1 : 0, keysSize = keys.size();
+    for(quint8 keysIndex = 0; keysIndex < keysSize; keysIndex++)
+    {
+        QString key = keys[keysIndex];
+        Player* player = &otherPlayers[key];
+        if(isAliveCrewmate(player))
+            aliveCrewmates++;
+    }
+    return aliveCrewmates;
+}
+
+quint8 InGameUI::getAliveImpostorsNumber()
+{
+    return getPlayersNumber() - getAliveCrewmatesNumber();
+}
+
+void InGameUI::checkEndOfTheGame() // could optimize by precising which checkEndOfTheGame (task or death) to optimize
+{
+    if(gameCommonTasks + gameLongTasks + gameShortTasks == 0)
+    {
+
+    }
+    else
+    {
+        if(getAliveCrewmatesNumber() == 0)
+        {
+
+        }
+        else if(getAliveImpostorsNumber() == 0)
+        {
+
+        }
+    }
+}
+
+void InGameUI::taskFinished(TaskTime taskTime)
+{
+    switch(taskTime)
+    {
+        case TASK_COMMON:
+            inGameUI->gameCommonTasks--;
+            break;
+        case TASK_LONG:
+            inGameUI->gameLongTasks--;
+            break;
+        default:
+            inGameUI->gameShortTasks--;
+    }
+    checkEndOfTheGame();
+}
+
 void InGameUI::finishTask() {
     if(!currentTask)
         return;
     currentTask->finished = true;
+    TaskTime taskTime = taskTimes[currentTask->taskType];
+    taskFinished(taskTime);
+    sendToAll("finished " + taskTimeToString(taskTime));
 }
 
 void InGameUI::closeTask() {
@@ -667,6 +734,7 @@ void InGameUI::onClickKill() {
     if(killable)
     {
         killPlayer(*killable);
+        inGameUI->checkEndOfTheGame();
         sendToAll("Kill " + killable->nickname);
     }
 }
