@@ -1,0 +1,21 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    steps:
+    - uses: actions/checkout@v2
+    - run: sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
+    - run: sudo apt update
+    - run: sudo apt install qt515base qt515multimedia libgl-dev moreutils
+    - run: source /opt/qt515/bin/qt515-env.sh
+    - run: head -n -19 AmongUsDecentralized.pro | sponge AmongUsDecentralized.pro
+    - run: /opt/qt515/bin/qmake PREFIX=/usr
+    - run: make
+    - uses: actions/upload-artifact@v2
+      with:
+        name: AmongUsDecentralized
+        path: AmongUsDecentralized
