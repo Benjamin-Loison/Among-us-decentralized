@@ -6,6 +6,7 @@ on:
 
 jobs:
   build:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - run: sudo add-apt-repository ppa:beineri/opt-qt-5.15.2-focal -y
