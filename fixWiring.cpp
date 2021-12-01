@@ -1,7 +1,6 @@
 #include <QLabel>
 #include <QRandomGenerator>
 #include <QPainter>
-#include <QMediaPlayer>
 #include <QFileInfo>
 #include <QDateTime>
 #include <QHBoxLayout>

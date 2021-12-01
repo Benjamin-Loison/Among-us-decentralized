@@ -2,7 +2,6 @@
 #include <QtMath>
 #include <QString>
 #include <QPixmap>
-#include <QMediaPlayer>
 #include <QFileInfo>
 #include <QUrl>
 #include <QMessageBox>

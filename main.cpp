@@ -4,7 +4,6 @@
 #include <QColor>
 #include <QLabel>
 #include <QPainter>
-#include <QMediaPlayer>
 #include "main.h"
 #include "InGameUI.h"
 #include <QtGlobal>

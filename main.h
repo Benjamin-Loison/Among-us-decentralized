@@ -2,7 +2,6 @@
 #define MAIN_H
 
 #include <QString>
-#include <QMediaPlayer>
 #include "InGameUI.h"
 #include "Client.h"
 #include "Server.h"
