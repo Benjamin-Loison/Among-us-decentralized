@@ -1,16 +1,17 @@
 #include "meetings.h"
 #include "Server.h"
+#include "main.h"
 #include <QDebug>
 
-MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer): QWidget(parent), votedPlayer(nullptr), voted(false) {
+MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reportingPlayer): QWidget(parent), votedPlayer(nullptr), voted(false) {
     setAutoFillBackground(true);
     layout = new QGridLayout(this);
     titleLabel = new QLabel("<b>Who is the Impostor?</b>");
     layout->addWidget(titleLabel, 0, 0, 1, -1);
     if(reportedPlayer)
-        reportedPlayerLabel = new QLabel(QString("%1's body was found").arg(reportedPlayer->nickname)); /// should display who activate the meeting
+        reportedPlayerLabel = new QLabel(QString("%1's body was found by %2").arg(reportedPlayer->nickname).arg(reportingPlayer->nickname)); /// should display who activate the meeting
     else
-        reportedPlayerLabel = new QLabel("No dead body reported");
+        reportedPlayerLabel = new QLabel(QString("Emergency meeting asked by %1").arg(reportingPlayer->nickname)); // No dead body reported
     layout->addWidget(reportedPlayerLabel, 1, 0, 1, -1);
     int iPlayer = 0;
     QVector<Player*> players;
@@ -18,13 +19,9 @@ MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer): QWidget(parent),
     for(Player &player : parent->otherPlayers.values())
         players.push_back(&player);
     for(Player* player : players) {
-        QString playerLabel;
-        if(player->isGhost)
-            playerLabel = QString("%1 (dead)").arg(player->nickname);
-        else
-            playerLabel = QString(player->nickname);
+        QString playerLabel = player->isGhost ? QString("%1 (dead)").arg(player->nickname) : QString(player->nickname);
         QPushButton* button = new QPushButton(playerLabel);
-        if(player->isGhost)
+        if(player->isGhost || inGameUI->currPlayer.isGhost)
             button->setDisabled(true);
         else
             connect(button, &QPushButton::released, this, [=]() {voteFor(player);});
@@ -37,6 +34,8 @@ MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer): QWidget(parent),
     if(iPlayer % MEETING_PLAYERS_PER_ROW != 0)
         skipRow++;
     skipButton = new QPushButton("Skip vote");
+    if(inGameUI->currPlayer.isGhost)
+        skipButton->setDisabled(true);
     connect(skipButton, &QPushButton::clicked, this, [=]() {voteFor(nullptr);});
     layout->addWidget(skipButton, skipRow, 0, 1, -1);
 }
@@ -54,7 +53,7 @@ void MeetingUI::voteFor(Player* player) {
         button->setDisabled(true);
     skipButton->setDisabled(true);
     titleLabel->setText("<b>Waiting for other players...</b>");
-    sendToAll("Voted"); // TODO: delay votes till the end?
+    sendToAll(player ? "Voted " + player->nickname : "Skip"); // TODO: delay votes till the end?
     // TODO: perform voting logic
     /*InGameUI* parentUI = static_cast<InGameUI*>(parent());
     parentUI->closeMeetingUI();*/

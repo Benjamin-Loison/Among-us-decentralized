@@ -166,6 +166,7 @@ void onMouseEventAsteroids(QMouseEvent* mouseEvent)
         playSound("task_Complete.wav");
         inGameUI->finishTask();
         inGameUI->closeTask();
+        inGameUI->checkEndOfTheGame();
     }
     else if(hit)
         playSound("task_Inprogress.wav");

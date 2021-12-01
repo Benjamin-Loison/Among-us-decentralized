@@ -158,3 +158,10 @@ bool isAPositiveInteger(QString s)
     }
     return true;
 }
+
+QString firstUppercase(QString s)
+{
+    if(s == "") return s;
+    s[0] = s[0].toTitleCase();
+    return s;
+}

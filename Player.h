@@ -21,7 +21,7 @@ public:
     Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor color2);
     QPixmap* playerPixmap;
     QPixmap* flippedPixmap;
-    QPixmap* deadPixmap;
+    QPixmap* deadPixmap; // no flippedDead ?
     QPixmap* ghostPixmap;
     QPixmap* flippedGhostPixmap;
     QPixmap* iconOnMapPixmap;

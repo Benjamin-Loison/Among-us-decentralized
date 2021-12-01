@@ -86,6 +86,7 @@ QMap<QPair<QString, QString>, QMap<QString, QString>> waitingMessages; // QMap<Q
 void processMessageCommon(QTcpSocket* socket, QString messagePart)
 {
     QString socketString = socketToString(socket);
+    Player* player = inGameUI->otherPlayers.contains(socketString) ? &inGameUI->otherPlayers[socketString] : nullptr;
     if(messagePart.startsWith("Position ")) // using uppercase allow us to make quickly sure that it is the start of a sentence
     {
         messagePart = messagePart.replace("Position ", "");
@@ -94,9 +95,12 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
         inGameUI->movePlayer(socketString, x, y);
         //inGameUI->redraw(); // what if called a lot of time ?
     }
+    else if(messagePart == "Facing left")
+    {
+        inGameUI->setFacingLeftPlayer(socketString);
+    }
     else if(messagePart.startsWith("RandomHashed "))
     {
-        Player* player = &inGameUI->otherPlayers[socketString];
         if(player->privateRandomHashed == "")
         {
             messagePart = messagePart.replace("RandomHashed ", "");
@@ -113,6 +117,7 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
         messagePart = messagePart.replace("finished ", "");
         TaskTime taskTime = getTaskTime(messagePart);
         inGameUI->taskFinished(taskTime);
+        inGameUI->checkEndOfTheGame();
     }
     else if(messagePart.startsWith("Kill "))
     {
@@ -137,12 +142,12 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
     {
         const int prefixSize = QString("Report ").size();
         QString nickname = messagePart.mid(prefixSize);
-        Player* player = inGameUI->getPlayer(nickname);
-        inGameUI->openMeetingUI(player);
+        Player* reportedPlayer = inGameUI->getPlayer(nickname);
+        inGameUI->openMeetingUI(reportedPlayer, player);
     }
     else if(messagePart == "Emergency_meeting")
     {
-        inGameUI->openMeetingUI(nullptr);
+        inGameUI->openMeetingUI(nullptr, player);
     }
     else if(messagePart.startsWith("YourAddress "))
     {
@@ -227,13 +232,20 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
                 parts.append(address + " " + nickname);
             }
             /// order matters ! should do alphabetical one for instance
-            res += messagePart + "|" + parts.join(','); // should also send others nicknames, order is important here
+            res += messagePart + "|" + parts.join(',');
+            // should also send others nicknames, order is important here
         }
         else if(messagePart.startsWith("nickname "))
         {
             // What difference QList/QVector ?
             QString otherPlayerNickname = messagePart.replace("nickname ", "");
             inGameUI->spawnOtherPlayer(socketToString(socket), otherPlayerNickname); // could almost save players one per client/server and loop through this and not the list stored in InGameUI
+            if(inGameUI->currPlayer.x != X_SPAWN || inGameUI->currPlayer.y != Y_SPAWN)
+            {
+                res = "Position " + QString::number(inGameUI->currPlayer.x) + " " + QString::number(inGameUI->currPlayer.y);
+                if(inGameUI->currPlayer.playerFacingLeft)
+                    res += NETWORK_SEPARATOR"Facing left";
+            }
         }
         else
         {

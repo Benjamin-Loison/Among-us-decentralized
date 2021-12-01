@@ -25,7 +25,7 @@ private:
     bool voted;
 
 public:
-    MeetingUI(InGameUI* parent, Player* reportedPlayer);
+    MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reportingPlayer);
 };
 
 #endif

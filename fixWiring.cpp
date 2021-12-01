@@ -264,6 +264,7 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
         playSound("task_Complete.wav");
         inGameUI->finishTask();
         inGameUI->closeTask();
+        inGameUI->checkEndOfTheGame();
     }
 }
 

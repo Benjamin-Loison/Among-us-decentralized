@@ -21,6 +21,9 @@
 #include "Task.h"
 #include <QThread>
 
+#define X_SPAWN 5500
+#define Y_SPAWN 1100
+
 const int FPS = 30;
 
 class GameMap;
@@ -60,7 +63,7 @@ class InGameUI : public QLabel
         void initialize(QString nickname);
         void initDisplay();
         void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
-        void displayPlayer(const Player &player, QPainter* painter, bool showGhost);
+        void displayPlayer(const Player &player, QPainter *painter = nullptr, bool showGhost = false, quint16 forceX = 0, quint16 forceY = 0);
         bool performMovement(qint64 elapsed, int dirVert, int dirHoriz);
         void setCenterBorderLimit(int x, int y, QPainter* painter);
         bool isCollision(quint16 x, quint16 y);
@@ -79,10 +82,11 @@ class InGameUI : public QLabel
         void openMap();
         void closeMap();
         void triggerMeeting(Player* reportedPlayer); // Called by the client who reports the body
-        void openMeetingUI(Player* reportedPlayer); // Also called by other clients upon receipt of the corresponding packet
+        void openMeetingUI(Player* reportedPlayer = nullptr, Player* reportingPlayer = nullptr); // Also called by other clients upon receipt of the corresponding packet
         void closeMeetingUI();
         void spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname);
         void movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp = false);
+        void setFacingLeftPlayer(QString peerAddress);
         void onEverybodyReady(bool threadSafe);
         void onEverybodyReadySub(bool threadSafe);
         void checkEverybodyReady(bool threadSafe = false);

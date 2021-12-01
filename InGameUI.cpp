@@ -6,8 +6,6 @@
 using namespace std;
 
 const int MOVEMENT_SPEED_SEC = 477;
-const int X_SPAWN = 5500;
-const int Y_SPAWN = 1100;
 const int KILL_RANGE_SQUARED = 200*200;
 const int TASK_RANGE_SQUARED = 200*200;
 const int REPORT_RANGE_SQUARED = 200*200;
@@ -317,11 +315,10 @@ Player* InGameUI::findKillablePlayer() {
     int x = currPlayer.x, y = currPlayer.y;
     for(Player* player : getOtherPlayersByDistance()) {
         if(!player->isGhost) {
-            int sqDist = (player->x-x)*(player->x-x) + (player->y-y)*(player->y-y);
+            int sqDist = qPow(player->x - x, 2) + qPow(player->y - y, 2);
             if(sqDist <= KILL_RANGE_SQUARED)
                 return player;
-            else
-                break;
+            break;
         }
     }
     return nullptr;
@@ -348,16 +345,19 @@ bool InGameUI::killPlayer(Player &p) {
  * @param player
  * @param painter A QPainter that will be used for painting. A fresh one will be used if this is nullptr.
  */
-void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr, bool showGhost = false)
+void InGameUI::displayPlayer(const Player &player, QPainter *painter, bool showGhost, quint16 forceX, quint16 forceY)
 {
     // Only ghosts see ghosts
     if(showGhost && (!currPlayer.isGhost || !player.isGhost))
+    {
+        //qInfo("stoped");
         return;
+    }
     else if(player.isGhost && !player.showBody && !showGhost)
         displayPlayer(player, painter, true);
     else {
-        int x = (player.isGhost && !showGhost) ? player.bodyX : player.x;
-        int y = (player.isGhost && !showGhost) ? player.bodyY : player.y;
+        int x = forceX ? forceX : (player.isGhost && !showGhost) ? player.bodyX : player.x;
+        int y = forceY ? forceY : (player.isGhost && !showGhost) ? player.bodyY : player.y;
         QPixmap* toDraw;
         if(!showGhost) {
             if(player.isGhost)
@@ -373,12 +373,9 @@ void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr, 
             else
                 toDraw = player.ghostPixmap;
         }
+        //qInfo((QString::number(player.isGhost) + " " + QString::number(y - toDraw->size().height() / 2)).toStdString().c_str());
         displayAt(toDraw, x, y - toDraw->size().height() / 2, painter);
-        QPainter *newPainter;
-        if (painter)
-            newPainter = painter;
-        else
-            newPainter = new QPainter(windowPixmap);
+        QPainter* newPainter = painter ? painter : new QPainter(windowPixmap);
         int fontSizePt = 23;
         newPainter->setFont(QFont("Liberation Sans", fontSizePt));
         QRect textRect(leftBackground + x, topBackground + y - toDraw->size().height() - fontSizePt - 5, 1, fontSizePt);
@@ -402,6 +399,46 @@ void InGameUI::displayPlayer(const Player &player, QPainter *painter = nullptr, 
  */
 void InGameUI::redraw()
 {
+    if(currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES || currentInGameGUI == IN_GAME_GUI_WIN_IMPOSTORS)
+    {
+        QPixmap *oldPixmap = windowPixmap;
+        QSize qSize = size();
+        windowPixmap = new QPixmap(qSize);
+        QPainter painter(windowPixmap);
+        painter.fillRect(0, 0, qSize.width(), qSize.height(), Qt::black);
+        QString winningTeam = currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES ? "crewmates" : "impostors";
+        painter.setPen(currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES ? Qt::blue : Qt::red);
+        QString title = firstUppercase(QString("%1's victory").arg(winningTeam));
+        painter.setFont(QFont("arial", 25));
+        QFontMetrics fm(painter.font());
+        quint16 middleX = qSize.width() / 2, middleY = qSize.height() / 2;
+        painter.drawText(middleX - fm.width(title) / 2, qSize.height() / 10, title);
+
+        QList<Player*> players;
+        if((currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES) == (!currPlayer.isImpostor))
+            players.push_back(&currPlayer);
+        QList<QString> keys = otherPlayers.keys();
+        quint8 otherPlayersSize = keys.size();
+        for(quint8 otherPlayersIndex = 0; otherPlayersIndex < otherPlayersSize; otherPlayersIndex++)
+        {
+            QString key = keys[otherPlayersIndex];
+            Player* player = &otherPlayers[key];
+            if((currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES) == (!player->isImpostor))
+                players.push_back(player);
+        }
+
+        quint8 playersSize = players.size();
+        for(quint8 playersIndex = 0; playersIndex < playersSize; playersIndex++)
+        {
+            Player* player = players[playersIndex];
+            //qInfo(("winner: " + player->nickname + " " + QString::number(middleX) + " " + QString::number(middleY) + " " + QString::number(qSize.width()) + " " + QString::number(qSize.height())).toStdString().c_str());
+            displayPlayer(*player, &painter, false/*true*/, middleX + 50 * playersIndex, middleY);
+        }
+
+        setPixmap(*windowPixmap);
+        delete oldPixmap;
+        return;
+    }
     // Movement
     qint64 now = elapsedTimer->elapsed();
     qint64 elapsed = now - lastUpdate;
@@ -475,7 +512,7 @@ void InGameUI::redraw()
         //painter.setPen(oldPen);
     }
 
-    // For debugging purposes: show current location
+    // For debugging purposes: show current location - should make a boolean to choose whether or not to display location
     QRect textRect(size().width()-1, 0, 1, fontSizePt);
     QRect boundingRect;
     painter.setPen(Qt::white);
@@ -635,17 +672,20 @@ void InGameUI::checkEndOfTheGame() // could optimize by precising which checkEnd
 {
     if(gameCommonTasks + gameLongTasks + gameShortTasks == 0)
     {
-
+        qInfo("all crewmates tasks done !");
+        currentInGameGUI = IN_GAME_GUI_WIN_CREWMATES;
     }
     else
     {
         if(getAliveCrewmatesNumber() == 0)
         {
-
+            qInfo("impostors win !");
+            currentInGameGUI = IN_GAME_GUI_WIN_IMPOSTORS;
         }
         else if(getAliveImpostorsNumber() == 0)
         {
-
+            qInfo("crewmates win !");
+            currentInGameGUI = IN_GAME_GUI_WIN_CREWMATES;
         }
     }
 }
@@ -663,7 +703,6 @@ void InGameUI::taskFinished(TaskTime taskTime)
         default:
             inGameUI->gameShortTasks--;
     }
-    checkEndOfTheGame();
 }
 
 void InGameUI::finishTask() {
@@ -767,7 +806,7 @@ void InGameUI::triggerMeeting(Player* reportedPlayer) {
         sendToAll("Report " + reportedPlayer->nickname);
     else
         sendToAll("Emergency_meeting");
-    openMeetingUI(reportedPlayer);
+    openMeetingUI(reportedPlayer, &currPlayer);
 }
 
 /**
@@ -776,14 +815,14 @@ void InGameUI::triggerMeeting(Player* reportedPlayer) {
  * If the meeting is triggered by a dead body report, the corresponding
  * body is made invisible.
  */
-void InGameUI::openMeetingUI(Player* reportedPlayer) {
+void InGameUI::openMeetingUI(Player* reportedPlayer, Player* reportingPlayer) {
     if(currentTask)
         closeTask();
     if(currentInGameGUI == IN_GAME_GUI_MAP)
         closeMap();
     if(reportedPlayer)
         reportedPlayer->showBody = false;
-    meetingWidget = new MeetingUI(this, reportedPlayer);
+    meetingWidget = new MeetingUI(this, reportedPlayer, reportingPlayer);
 
     currHLayout = makeCenteredLayout(meetingWidget);;
     setLayout(currHLayout);
@@ -909,6 +948,11 @@ void InGameUI::spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname
     //otherPlayers.push_back(Player(X_SPAWN, Y_SPAWN, otherPlayerNickname, colors[otherPlayersSize][0], colors[otherPlayersSize][1]));
     quint8 playersNumber = getPlayersNumber();
     otherPlayers[peerAddress] = Player(X_SPAWN, Y_SPAWN, otherPlayerNickname, colors[playersNumber][0], colors[playersNumber][1]);
+}
+
+void InGameUI::setFacingLeftPlayer(QString peerAddress)
+{
+    otherPlayers[peerAddress].playerFacingLeft = true;
 }
 
 void InGameUI::movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp)
