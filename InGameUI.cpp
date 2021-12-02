@@ -10,60 +10,26 @@ const int KILL_RANGE_SQUARED = qPow(200, 2);
 const int TASK_RANGE_SQUARED = qPow(200, 2);
 const int REPORT_RANGE_SQUARED = qPow(200, 2);
 const int EMERGENCY_RANGE_SQUARED = qPow(250, 2);
-const QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
-             colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
-                             {QColor(20, 156, 20), QColor(8, 99, 64)},
-                             {QColor(17, 43, 192), QColor(8, 19, 131)},
-                             {QColor(102, 67, 27), QColor(87, 35, 21)},
-                             {QColor(193, 17, 17), QColor(120, 8, 57)},
-                             {QColor(62, 71, 78), QColor(30, 30, 38)},
-                             {QColor(244, 244, 86), QColor(194, 134, 34)}};
+const QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)};
 
 // should make a function to get new player
-InGameUI::InGameUI(/*QString nickname, */QLabel *parent) : QLabel(parent), currentTask(nullptr), qLabel(nullptr), gameMap(nullptr)
+InGameUI::InGameUI(QLabel* parent) : QLabel(parent), lastNx(0), lastNy(0), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr)
 {
     // doing this at the very first window would be nice (when asking nickname etc)
-    setWindowIcon(QIcon(assetsFolder + "logo.png")); // using an assets folder should be nice
+    setWindowIcon(QIcon(assetsFolder + "logo.png"));
     setWindowTitle("Among Us decentralized");
-    /*tasks = { // couldn't put all not necessary stuff in initialize not to delay user input ?
-        new Task(TASK_FIX_WIRING, QPoint(4060, 360)),
-        new Task(TASK_FIX_WIRING, QPoint(5433,2444)),
-        new Task(TASK_FIX_WIRING, QPoint(7455,2055)),
-        new Task(TASK_ASTEROIDS,  QPoint(6653, 900))
-    };*/
-    /*tasksLocations[TASK_FIX_WIRING] = {QPoint(4060, 360), QPoint(5433,2444),QPoint(7455,2055)};
-    tasksLocations[TASK_ASTEROIDS] = {QPoint(6653,900)};*/
-    readyButtonLayout = nullptr;
-    // FOR TESTING
-    /*currPlayer.isImpostor = true;
-    currPlayer.isGhost = true;
-    currPlayer.showBody = true;
-    currPlayer.bodyX = currPlayer.x;
-    currPlayer.bodyY = currPlayer.y;*/
+    // couldn't put all not necessary stuff in initialize not to delay user input ?
 }
 
 void InGameUI::initialize(QString nickname)
 {
-    //quint16 otherPlayersSize = otherPlayers.size(); // used to be in constructor but likewise couldn't have already access to other players
-    quint8 playersNumber = getPlayersNumber();
-    //qInfo(("playersNumber: " + QString::number(playersNumber)).toStdString().c_str());
-    currPlayer = Player(X_SPAWN, Y_SPAWN, nickname, colors[playersNumber][0], colors[playersNumber][1]);
-    everyoneReady = false;
-    lastNx = 0;
-    lastNy = 0;
-    //otherPlayers.push_back(Player(X_SPAWN+200, Y_SPAWN, "Test player", colors[0][0], colors[0][1]));
-    // FOR TESTING
-    /*otherPlayers[0].isGhost = true;
-    otherPlayers[0].showBody = true;
-    otherPlayers[0].bodyX = otherPlayers[0].x;
-    otherPlayers[0].bodyY = otherPlayers[0].y;*/
+    currPlayer = Player(nickname);
     windowPixmap = new QPixmap(size());
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &InGameUI::redraw);
     timer->start(1000 / FPS);
     elapsedTimer = new QElapsedTimer();
     elapsedTimer->start();
-    lastUpdate = 0;
     isPressed[Qt::Key_Up] = false;
     isPressed[Qt::Key_Down] = false;
     isPressed[Qt::Key_Left] = false;
@@ -239,9 +205,9 @@ QVector<Player *> InGameUI::getOtherPlayersByDistance() {
     for(Player &player : otherPlayers)
         players.push_back(&player);
     int x = currPlayer.x, y = currPlayer.y;
-    sort(players.begin(), players.end(), [&](const Player *a, const Player *b) {
-        int sqDistA = (a->x-x) * (a->x-x) + (a->y-y) * (a->y-y);
-        int sqDistB = (b->x-x) * (b->x-x) + (b->y-y) * (b->y-y);
+    sort(players.begin(), players.end(), [&/*why ampersand here ?*/](const Player *a, const Player *b) {
+        int sqDistA = qPow(a->x - x, 2) + qPow(a->y - y, 2);
+        int sqDistB = qPow(b->x - x, 2) + qPow(b->y - y, 2);
         if(sqDistA != sqDistB)
             return sqDistA < sqDistB;
         else if(a->x != b->x)
@@ -264,6 +230,11 @@ quint64 InGameUI::distanceToEmergencyButton()
     return qPow(currPlayer.x - EMERGENCY_BUTTON_X, 2) + qPow(currPlayer.y - EMERGENCY_BUTTON_Y, 2);
 }
 
+bool InGameUI::isThereAnyUsableTaskNear()
+{
+    return getUsableTasksByDistance().size() > 0;
+}
+
 QVector<Task*> InGameUI::getUsableTasksByDistance() {
     QVector<Task*> ret;
     int x = currPlayer.x, y = currPlayer.y;
@@ -271,21 +242,20 @@ QVector<Task*> InGameUI::getUsableTasksByDistance() {
         QPoint pt = task->location;
         if(task->finished)
             continue;
-        int dist = (pt.x()-x)*(pt.x()-x) + (pt.y()-y)*(pt.y()-y);
+        int dist = qPow(pt.x()-x, 2) + qPow(pt.y()-y, 2);
         if(dist <= TASK_RANGE_SQUARED)
             ret.push_back(task);
     }
     sort(ret.begin(), ret.end(), [&](const Task* task1, const Task* task2) {
         QPoint pt1 = task1->location;
         QPoint pt2 = task2->location;
-        int dist1 = (pt1.x()-x)*(pt1.x()-x) + (pt1.y()-y)*(pt1.y()-y);
-        int dist2 = (pt2.x()-x)*(pt2.x()-x) + (pt2.y()-y)*(pt2.y()-y);
+        int dist1 = qPow(pt1.x() - x, 2) + qPow(pt1.y() - y, 2);
+        int dist2 = qPow(pt2.x() - x, 2) + qPow(pt2.y() - y, 2);
         if(dist1 != dist2)
             return dist1 < dist2;
         else if(pt1.x() != pt2.x())
             return pt1.x() < pt2.x();
-        else
-            return pt1.y() < pt2.y();
+        return pt1.y() < pt2.y();
     });
     return ret;
 }
@@ -300,8 +270,7 @@ Player* InGameUI::findReportableBody() {
     int x = currPlayer.x, y = currPlayer.y;
     for(Player* player : getOtherPlayersByDistance()) {
         if(player->showBody) {
-            // used to use player->x/y instead of bodyX/Y
-            int sqDist = qPow(player->bodyX-x, 2) + qPow(player->bodyY-y, 2);
+            int sqDist = qPow(player->bodyX - x, 2) + qPow(player->bodyY - y, 2);
             if(sqDist <= REPORT_RANGE_SQUARED)
                 return player;
         }
@@ -343,7 +312,6 @@ Player* InGameUI::findKillablePlayer() {
 bool InGameUI::killPlayer(Player &p) {
     //if(!currPlayer.isImpostor || p.isGhost) // should be done at a higher level
     //    return false;
-    // TODO
     p.isGhost = true;
     p.bodyX = p.x;
     p.bodyY = p.y;
@@ -386,7 +354,7 @@ void InGameUI::displayPlayer(const Player &player, QPainter *painter, bool showG
             else
                 toDraw = player.ghostPixmap;
         }
-        //qInfo((QString::number(player.isGhost) + " " + QString::number(y - toDraw->size().height() / 2)).toStdString().c_str());
+        //qInfo() << player.isGhost << y - toDraw->size().height() / 2;
         displayAt(toDraw, x, y - toDraw->size().height() / 2, painter);
         QPainter* newPainter = painter ? painter : new QPainter(windowPixmap);
         int fontSizePt = 23;
@@ -412,20 +380,22 @@ void InGameUI::displayPlayer(const Player &player, QPainter *painter, bool showG
  */
 void InGameUI::redraw()
 {
+    QSize qSize = size();
+    int qWidth = qSize.width(),
+        qHeight = qSize.height();
     if(currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES || currentInGameGUI == IN_GAME_GUI_WIN_IMPOSTORS)
     {
         QPixmap *oldPixmap = windowPixmap;
-        QSize qSize = size();
         windowPixmap = new QPixmap(qSize);
         QPainter painter(windowPixmap);
-        painter.fillRect(0, 0, qSize.width(), qSize.height(), Qt::black);
+        painter.fillRect(0, 0, qWidth, qHeight, Qt::black);
         QString winningTeam = currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES ? "crewmates" : "impostors";
         painter.setPen(currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES ? Qt::blue : Qt::red);
         QString title = firstUppercase(QString("%1's victory").arg(winningTeam));
         painter.setFont(QFont("arial", 25));
         QFontMetrics fm(painter.font());
-        quint16 middleX = qSize.width() / 2, middleY = qSize.height() / 2;
-        painter.drawText(middleX - fm.width(title) / 2, qSize.height() / 10, title);
+        quint16 middleX = qWidth / 2, middleY = qHeight / 2;
+        painter.drawText(middleX - fm.boundingRect(title).width() / 2, qHeight / 10, title); // .width(title) isn't available in Qt 6
 
         QList<Player*> players;
         if((currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES) == (!currPlayer.isImpostor))
@@ -444,10 +414,10 @@ void InGameUI::redraw()
         for(quint8 playersIndex = 0; playersIndex < playersSize; playersIndex++)
         {
             Player* player = players[playersIndex];
-            //qInfo(("winner: " + player->nickname + " " + QString::number(middleX) + " " + QString::number(middleY) + " " + QString::number(qSize.width()) + " " + QString::number(qSize.height())).toStdString().c_str());
+            //qInfo() << "winner:" << player->nickname << middleX << middleY << qSize.width() << qSize.height();
             displayPlayer(*player, &painter, false/*true*/, middleX + 50 * playersIndex, middleY);
         }
-        painter.drawImage(qSize.width()-130, qSize.height()-130, playAgainButtonImage);
+        painter.drawImage(qWidth - 130, qHeight - 130, playAgainButtonImage);
 
         setPixmap(*windowPixmap);
         delete oldPixmap;
@@ -488,7 +458,7 @@ void InGameUI::redraw()
         redrawAsteroids(now);
 
     QPixmap *oldPixmap = windowPixmap;
-    windowPixmap = new QPixmap(size());
+    windowPixmap = new QPixmap(qSize);
     QPainter painter(windowPixmap);
     setCenterBorderLimit(currPlayer.x, currPlayer.y - currPlayer.playerPixmap->size().height() / 2, &painter);
     // Display players with ascending y, then ascending x
@@ -527,37 +497,38 @@ void InGameUI::redraw()
     }
 
     // For debugging purposes: show current location - should make a boolean to choose whether or not to display location
-    /*QRect textRect(size().width()-1, 0, 1, fontSizePt);
+    /*QRect textRect(qWidth - 1, 0, 1, fontSizePt);
     QRect boundingRect;
     painter.setPen(Qt::white);
     painter.drawText(textRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y), &boundingRect);
-    boundingRect.setLeft(size().width()-1-boundingRect.width());
-    boundingRect.setRight(size().width()-1);
+    boundingRect.setLeft(qWidth - 1 - boundingRect.width());
+    boundingRect.setRight(qWidth - 1);
     painter.fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
     painter.drawText(boundingRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y));*/
 
     // Game buttons
-    if(everyoneReady && findKillablePlayer())
-        painter.drawImage(size().width()-220, size().height()-110, killButtonImage);
-    if(findReportableBody())
-        painter.drawImage(size().width()-110, size().height()-110, reportButtonImage);
-    if(everyoneReady && (getUsableTasksByDistance().size() > 0) || isNearEmergencyButton())
-        painter.drawImage(size().width()-110, size().height()-220, useButtonImage);
+    if(everyoneReady)
+    {
+        if(findKillablePlayer())
+            painter.drawImage(qWidth - 220, qHeight - 110, killButtonImage);
+        if(findReportableBody())
+            painter.drawImage(qWidth - 110, qHeight - 110, reportButtonImage);
+        if(isThereAnyUsableTaskNear() || isNearEmergencyButton())
+            painter.drawImage(qWidth - 110, qHeight - 220, useButtonImage);
+    }
 
     // Ready button
-    if (!everyoneReady)
+    if(!everyoneReady && !readyButtonLayout)
     {
-        if(!readyButtonLayout) {
-            qDebug() << "Creating ready button";
-            readyButtonLayout = new QGridLayout;
-            readyButton = new QPushButton("Ready");
-            readyButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
-            connect(readyButton, &QPushButton::released, this, &InGameUI::onReadyClicked);
-            readyButtonLayout->addWidget(readyButton, 0, 0, Qt::AlignBottom | Qt::AlignRight);
-            setLayout(readyButtonLayout);
-        }
+        //qDebug() << "Creating ready button";
+        readyButtonLayout = new QGridLayout;
+        readyButton = new QPushButton("Ready");
+        readyButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+        connect(readyButton, &QPushButton::released, this, &InGameUI::onReadyClicked);
+        readyButtonLayout->addWidget(readyButton, 0, 0, Qt::AlignBottom | Qt::AlignRight);
+        setLayout(readyButtonLayout);
     }
-    
+
     // Game map
     if(gameMap)
         gameMap->redraw();
@@ -984,7 +955,7 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                 onClickKill();
             else if(mouseX >= width-110 && mouseX < width && mouseY >= height-110 && mouseY < height && findReportableBody())
                 onClickReport();
-            else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && ((getUsableTasksByDistance().size() > 0) || isNearEmergencyButton()))
+            else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton()))
                 onClickUse();
         }
         else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS) {
@@ -1005,16 +976,12 @@ void InGameUI::mouseDoubleClickEvent(QMouseEvent *mouseEvent) {
 
 quint8 InGameUI::getPlayersNumber()
 {
-    //qInfo(("gettingPlayersNumber: " + QString::number(otherPlayers.size()) + " " + currPlayer.nickname + " ! " + QString::number(currPlayer.nickname == "" ? 0 : 1)).toStdString().c_str());
     return otherPlayers.size() + (currPlayer.nickname == "" ? 0 : 1);
 }
 
 void InGameUI::spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname)
 {
-    //int otherPlayersSize = otherPlayers.size()/* + 1*/;
-    //otherPlayers.push_back(Player(X_SPAWN, Y_SPAWN, otherPlayerNickname, colors[otherPlayersSize][0], colors[otherPlayersSize][1]));
-    quint8 playersNumber = getPlayersNumber();
-    otherPlayers[peerAddress] = Player(X_SPAWN, Y_SPAWN, otherPlayerNickname, colors[playersNumber][0], colors[playersNumber][1]);
+    otherPlayers[peerAddress] = Player(otherPlayerNickname);
 }
 
 void InGameUI::setFacingLeftPlayer(QString peerAddress)
@@ -1024,16 +991,6 @@ void InGameUI::setFacingLeftPlayer(QString peerAddress)
 
 void InGameUI::movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp)
 {
-    /*QList<QString> peerAddresses = otherPlayers.keys();
-    quint8 peerAddressesSize = peerAddresses.size();
-    qInfo(("peerAddress: " + peerAddress).toStdString().c_str());
-    for(quint8 peerAddressesIndex = 0; peerAddressesIndex < peerAddressesSize; peerAddressesIndex++)
-    {
-        QString peerAddress = peerAddresses[peerAddressesIndex];
-        qInfo((QString::number(peerAddressesIndex) + " " + peerAddress).toStdString().c_str());
-    }
-    Player* player = &otherPlayers[peerAddress];
-    qInfo(("moving: " + player->nickname + " !").toStdString().c_str());*/
     Player* player = &otherPlayers[peerAddress];
     if(tp)
         player->playerFacingLeft = false;
@@ -1041,27 +998,23 @@ void InGameUI::movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp)
         player->playerFacingLeft = x < player->x;
     player->x = x;
     player->y = y;
-    /*player->bodyX = x;
-    player->bodyY = y;*/
 }
 
 void InGameUI::checkEverybodyReady(bool threadSafe)
 {
-    //qInfo("a");
     if(!currPlayer.isReady) return;
-    //qInfo("b");
-    QList<QString> peerAddresses = otherPlayers.keys();
+    if(all_of(otherPlayers.begin(), otherPlayers.end(), [](Player player){return player.isReady;}))
+    /*QList<QString> peerAddresses = otherPlayers.keys();
     quint8 peerAddressesSize = peerAddresses.size();
     for(quint8 peerAddressesIndex = 0; peerAddressesIndex < peerAddressesSize; peerAddressesIndex++)
     {
         QString peerAddress = peerAddresses[peerAddressesIndex];
         if(!otherPlayers[peerAddress].isReady)
         {
-            //qInfo((peerAddress + " " + QString::number(peerAddressesSize)).toStdString().c_str());
+            //qInfo() << peerAddress << peerAddressesSize;
             return;
         }
-    }
-    //qInfo("c");
+    }*/
     onEverybodyReady(threadSafe);
 }
 

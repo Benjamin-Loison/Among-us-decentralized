@@ -9,23 +9,37 @@
 #include <QSoundEffect>
 #include <QVBoxLayout>
 #include "main.h"
+using namespace std;
 
 QString assetsFolder = "assets/";
 
 QMap<QString, QSoundEffect*> soundEffectMap;
 QChar hexs[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-bool DebugEventFilter::eventFilter(QObject *obj, QEvent *ev) {
-    if(ev->type() == QEvent::KeyPress)
-        qDebug() << "Key press sent to object of type" << obj->metaObject()->className();
-    else if(ev->type() == QEvent::KeyRelease)
-        qDebug() << "Key release sent to object of type" << obj->metaObject()->className();
-    else if(ev->type() == QEvent::MouseMove)
-        qDebug() << "Mouse move sent to object of type" << obj->metaObject()->className();
-    else if(ev->type() == QEvent::MouseButtonPress)
-        qDebug() << "Mouse button press sent to object of type" << obj->metaObject()->className();
-    else if(ev->type() == QEvent::MouseButtonDblClick)
-        qDebug() << "Mouse double click sent to object of type" << obj->metaObject()->className();
+bool DebugEventFilter::eventFilter(QObject* obj, QEvent* ev)
+{
+    QString source = "";
+    switch(ev->type())
+    {
+        case QEvent::KeyPress:
+            source = "Key press";
+            break;
+        case QEvent::KeyRelease:
+            source = "Key release";
+            break;
+        case QEvent::MouseMove:
+            source = "Mouse move";
+            break;
+        case QEvent::MouseButtonPress:
+            source = "Mouse button press";
+            break;
+        case QEvent::MouseButtonDblClick:
+            source = "Mouse double click";
+        default:
+            ;
+    }
+    if(source != "")
+        qDebug() << source << "sent to object of type" << obj->metaObject()->className();
     return false;
 }
 
@@ -65,7 +79,7 @@ QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2) {
     return QPixmap::fromImage(tmp);
 }
 
-void playSound(QString soundFile)
+void playSound(QString soundFile) // could assume all sounds are .wav so can append it here
 {
     if(!soundEffectMap.count(soundFile)) {
         QSoundEffect* effect = new QSoundEffect;
@@ -79,8 +93,9 @@ void playSound(QString soundFile)
 
 bool getBool(QString title, QString label)
 {
-    int reponse = QMessageBox::question(inGameUI, title, label, QMessageBox ::Yes | QMessageBox::No);
-    return reponse == QMessageBox::Yes;
+    int response = QMessageBox::question(inGameUI, title, label, QMessageBox ::Yes | QMessageBox::No);
+    qInfo() << "response:" << response;
+    return response == QMessageBox::Yes;
 }
 
 QString getText(QString title, QString label, QString defaultText)
@@ -114,7 +129,7 @@ void sleepWithEvents(quint16 s)
     msleepWithEvents(s * 1000);
 }
 
-QString randomHex(quint16 length)
+QString randomHex(quint16 length) // length in bits
 {
     QString res = "";
     for(quint16 i = 0; i < length / 4; i++)
@@ -150,13 +165,7 @@ QHBoxLayout* makeCenteredLayout(QWidget* widget) {
 
 bool isAPositiveInteger(QString s)
 {
-    quint8 sLength = s.length();
-    for(quint8 sIndex = 0; sIndex < sLength; sIndex++)
-    {
-        if(!s[sIndex].isDigit())
-            return false;
-    }
-    return true;
+    return all_of(s.begin(), s.end(), [](QChar c) { return c.isDigit(); });
 }
 
 QString firstUppercase(QString s)
@@ -164,4 +173,38 @@ QString firstUppercase(QString s)
     if(s == "") return s;
     s[0] = s[0].toTitleCase();
     return s;
+}
+
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
+bool isTCPPortInUse(quint16 port)
+{
+    struct sockaddr_in client;
+
+    client.sin_family = AF_INET;
+    client.sin_port = htons(port);
+    client.sin_addr.s_addr = inet_addr("127.0.0.1"); // localhost doesn't work here
+
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if(sock == -1)
+    {
+        qInfo("socket error");
+    }
+    int res = connect(sock, (struct sockaddr*)&client, sizeof(client));
+    if(res == -1)
+    {
+        // could check precisely if the error is already in use or not
+        //qInfo("connect error");
+    }
+    else
+    {
+        if(close(sock) == -1) // what about shutdown ?
+        {
+            qInfo("close error");
+        }
+    }
+
+    return res == 0;
 }

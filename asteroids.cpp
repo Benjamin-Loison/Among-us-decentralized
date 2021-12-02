@@ -72,19 +72,6 @@ void replaceAsteroidsPixmap(QPixmap* pixmap) {
     if(currAsteroidsPixmap)
         delete currAsteroidsPixmap;
     currAsteroidsPixmap = pixmap;
-    /*QLabel* qImage = new QLabel;
-    qImage->setPixmap(*pixmap);
-    QHBoxLayout* hbox = (QHBoxLayout*)inGameUI->qLabel->layout();
-    hbox->takeAt(1);
-    hbox->takeAt(1);
-    hbox->addWidget(qImage);
-    hbox->addStretch();
-    if(currAsteroidsLabel)
-        delete currAsteroidsLabel;
-    currAsteroidsLabel = qImage;
-    if(currAsteroidsPixmap)
-        delete currAsteroidsPixmap;
-    currAsteroidsPixmap = pixmap;*/
 }
 
 void redrawAsteroids(qint64 now) {
@@ -179,9 +166,8 @@ void resetAsteroids() {
 
 void onCloseAsteroids() {
     resetAsteroids();
-    if(currAsteroidsLabel) {
+    if(currAsteroidsLabel)
         currAsteroidsLabel = nullptr;
-    }
     if(currAsteroidsPixmap) {
         delete currAsteroidsPixmap;
         currAsteroidsPixmap = nullptr;

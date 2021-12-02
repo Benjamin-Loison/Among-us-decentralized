@@ -12,7 +12,7 @@ extern InGameGUI currentInGameGUI;
 extern QMap<Task,QVector<QPoint>> tasksLocations;
 extern QList<Client*> clients;
 extern Server* server;
-extern QString shareIP, myAddress;
+extern QString myAddress;
 extern bool isFirstToRun;
 
 #endif

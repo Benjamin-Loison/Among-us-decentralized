@@ -1,7 +1,6 @@
 #include "meetings.h"
 #include "Server.h"
 #include "main.h"
-#include <QDebug>
 
 MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reportingPlayer): QWidget(parent), votedPlayer(nullptr), voted(false) {
     skipVotes = inGameUI->getAlivePlayersNumber();
@@ -18,17 +17,8 @@ MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reporting
     int iPlayer = 0;
     QVector<Player*> players;
     players.push_back(&parent->currPlayer);
-    // with this code it crashes when clicking on another player button
-    //for(Player &player : parent->otherPlayers.values())
-    //    players.push_back(&player);
-    QList<QString> keys = parent->otherPlayers.keys();
-    quint8 keysSize = keys.size();
-    for(quint8 keysIndex = 0; keysIndex < keysSize; keysIndex++)
-    {
-        QString key = keys[keysIndex];
-        Player* player = &parent->otherPlayers[key];
-        players.push_back(player);
-    }
+    for(Player&/*ampersand is important here*/ player : inGameUI->otherPlayers)
+        players.push_back(&player);
     for(Player* player : players) {
         QString playerLabel = player->isGhost ? QString("%1 (dead)").arg(player->nickname) : QString(player->nickname);
         QPushButton* button = new QPushButton(playerLabel);

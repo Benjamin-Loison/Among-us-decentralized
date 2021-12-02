@@ -21,9 +21,6 @@
 #include "Task.h"
 #include <QThread>
 
-#define X_SPAWN 5500
-#define Y_SPAWN 1100
-
 #define EMERGENCY_BUTTON_X 4830
 #define EMERGENCY_BUTTON_Y 1045
 
@@ -110,7 +107,8 @@ class InGameUI : public QLabel
         quint8 gameCommonTasks, gameLongTasks, gameShortTasks;
         quint64 distanceToEmergencyButton();
         bool isNearEmergencyButton();
-        InGameUI(/*QString nickname,*/ QLabel* parent = 0);
+        bool isThereAnyUsableTaskNear();
+        InGameUI(QLabel* parent = 0);
 
     public slots:
         void redraw();

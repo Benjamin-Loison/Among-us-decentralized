@@ -2,16 +2,10 @@
 #include <QTcpServer>
 #include "main.h"
 #include <WorkerThread.h>
-//#include <unistd.h> // only linux...
+using namespace std;
 
 // should use IPv6 by default
 
-/*QTcpServer* server;
-QList<QTcpSocket*> clients;
-quint16 messageSize;
-void newConnection(),
-     dataReceived(),
-     clientDisconnected();*/
 bool askingAll = false, needEverybodyReadyCall = false;
 QMap<QTcpSocket*, quint16> peersPorts;
 
@@ -25,7 +19,6 @@ Server::Server(quint16 serverPort)
     else
     {
         //qWarning("Server started !");
-        //QObject::connect(server, &QTcpServer::newConnection, [](){ newConnection(); });
         connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
     }
 
@@ -37,8 +30,6 @@ void Server::newConnection()
     QTcpSocket* newClient = server->nextPendingConnection();
     clients << newClient;
 
-    //QObject::connect(newClient, &QIODevice::readyRead, [](){ dataReceived(); });
-    //QObject::connect(newClient, &QAbstractSocket::disconnected, [](){ clientDisconnected(); });
     connect(newClient, SIGNAL(readyRead()), this, SLOT(dataReceived()));
     connect(newClient, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
 }
@@ -93,7 +84,6 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
         QStringList coordinates = messagePart.split(' ');
         quint32 x = coordinates[0].toUInt(), y = coordinates[1].toUInt();
         inGameUI->movePlayer(socketString, x, y);
-        //inGameUI->redraw(); // what if called a lot of time ?
     }
     else if(messagePart == "Facing left")
     {
@@ -158,7 +148,6 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
         messagePart = messagePart.replace("YourAddress ", "");
         myAddress = messagePart; // should take the majority here too
     }
-    // TODO: other votes
 }
 
 QString Server::processMessageServer(QTcpSocket* socket, QString message)
@@ -181,8 +170,7 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
             peersPorts[socket] = remotePort.toUInt();
             //inGameUI->spawnOtherPlayer(otherPlayeNickname);
             QList<QTcpSocket*> peers = getPeers();
-            quint16 peersSize = /*clients*/peers.size();//,
-                    //clientsTreated = 0;
+            quint16 peersSize = peers.size();
             if(peersSize > 1)
             {
                 res += "peers ";
@@ -374,8 +362,6 @@ QString addressToString(QHostAddress address)
 QString addressPortToString(QHostAddress address, quint16 port)
 {
     QString addressStr = addressToString(address);
-    //if(shareIP != "")
-    //        addressStr = addressStr.replace("127.0.0.1", shareIP);
     return addressToString(address)/*.replace("::ffff:127.0.0.1", "127.0.0.1")*//*sometimes there is the prefix ::ffff:127.0.0.1*//*not sure about this*/ + ":" + QString::number(port);
 }
 
@@ -394,21 +380,24 @@ QString socketToString(QTcpSocket* socket)
     return addressPortToString(socket->peerAddress(), socket->peerPort());
 }
 
+typedef struct {
+    QTcpSocket* peer;
+    void operator() (QString messagePart) {sendToSocket(peer, messagePart);}
+} sendToAllStruct;
+
 void sendToAll(QString message)
 {
     QList<QTcpSocket*> peers = getPeers();
     // can't do this in a single line ?
+
     quint16 peersSize = peers.size();
     for(quint16 peersIndex = 0; peersIndex < peersSize; peersIndex++)
     {
         QTcpSocket* peer = peers[peersIndex];
         //sendToSocket(peer, message); // doesn't used to have the following even if it isn't optimized, it works
         QStringList messageParts = message.split(NETWORK_SEPARATOR);
-        quint8 messagePartsSize = messageParts.size();
-        for(quint8 messagePartsIndex = 0; messagePartsIndex < messagePartsSize; messagePartsIndex++)
-        {
-            QString messagePart = messageParts[messagePartsIndex];
-            sendToSocket(peer, messagePart);
-        }
+        sendToAllStruct sendToAllStructInstance;
+        sendToAllStructInstance.peer = peer;
+        for_each(messageParts.begin(), messageParts.end(), sendToAllStructInstance);
     }
 }

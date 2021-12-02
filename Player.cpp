@@ -1,10 +1,18 @@
 #include "Player.h"
 #include "qPlus.h"
-#include <QDebug>
+#include "main.h"
 
-Player::Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor color2):
-    x(spawnX),
-    y(spawnY),
+const QColor colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
+                             {QColor(20, 156, 20), QColor(8, 99, 64)},
+                             {QColor(17, 43, 192), QColor(8, 19, 131)},
+                             {QColor(102, 67, 27), QColor(87, 35, 21)},
+                             {QColor(193, 17, 17), QColor(120, 8, 57)},
+                             {QColor(62, 71, 78), QColor(30, 30, 38)},
+                             {QColor(244, 244, 86), QColor(194, 134, 34)}};
+
+Player::Player(QString nickname):
+    x(X_SPAWN),
+    y(Y_SPAWN),
     bodyX(-1),
     bodyY(-1),
     nickname(nickname),
@@ -13,9 +21,11 @@ Player::Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor c
     isImpostor(false),
     isGhost(false),
     showBody(false),
-    isReady(false),
-    color1(color1),
-    color2(color2) {
+    isReady(false)
+{
+    quint8 playersNumber = inGameUI->getPlayersNumber();
+    color1 = colors[playersNumber][0];
+    color2 = colors[playersNumber][1];
     playerPixmap = getQPixmap("player.png");
     deadPixmap = getQPixmap("Dead0042.png");
     ghostPixmap = getQPixmap("ghost0001.png");

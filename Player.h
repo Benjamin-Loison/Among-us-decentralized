@@ -5,6 +5,9 @@
 #define MINIMAL_NUMBER_OF_PLAYERS 1
 #define IMPOSTOR_NUMBER 1
 
+#define X_SPAWN 5500
+#define Y_SPAWN 1100
+
 class Player {
 public:
     int x, y;
@@ -18,7 +21,7 @@ public:
     QColor color1, color2;
 
     Player();
-    Player(int spawnX, int spawnY, QString nickname, QColor color1, QColor color2);
+    Player(QString nickname);
     QPixmap* playerPixmap;
     QPixmap* flippedPixmap;
     QPixmap* deadPixmap; // no flippedDead ?

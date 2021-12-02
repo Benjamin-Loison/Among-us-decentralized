@@ -96,7 +96,7 @@ Task pickRandomTask(QRandomGenerator* qRandomGenerator, TaskTime taskTime)
     }
 
     quint8 tasksSize = tasks.size(), randomIndex = qRandomGenerator->bounded(tasksSize);
-    //qInfo((QString::number(randomIndex) + " / " + QString::number(tasksSize)).toStdString().c_str());
+    //qInfo() << randomIndex << "/" << tasksSize;
     Task task = tasks[randomIndex];
     return task;
 }
@@ -104,12 +104,13 @@ Task pickRandomTask(QRandomGenerator* qRandomGenerator, TaskTime taskTime)
 QVector<Task*> getTasksAsPointers(QVector<Task> tasks)
 {
     QVector<Task*> tasksPointers;
-    quint8 tasksSize = tasks.size();
+    /*quint8 tasksSize = tasks.size();
     for(quint8 tasksIndex = 0; tasksIndex < tasksSize; tasksIndex++)
     {
         Task task = tasks[tasksIndex];
         tasksPointers.push_back(new Task(task.taskType, task.location));
-    }
+    }*/
+    transform(tasks.begin(), tasks.end(), back_inserter(tasksPointers), [](const Task task){ return new Task(task.taskType, task.location); });
     return tasksPointers;
 }
 
@@ -119,8 +120,8 @@ QVector<Task> getRandomTasks(QString privateSaltedWithCommonRandom) // can't onl
     privateSaltedWithCommonRandom = privateSaltedWithCommonRandom.toUpper();
     privateSaltedWithCommonRandom.chop(120); // otherwise toUInt not working
     quint32 privateSaltedWithCommonRandomUint32 = privateSaltedWithCommonRandom.toUInt(/*nullptr*/&ok, 16); /// warning cryptographic here 32 bits only...
-    //qInfo(("ok: " + QString::number(ok)).toStdString().c_str());
-    //qInfo(("privateSaltedWithCommonRandomUint32 " + QString::number(privateSaltedWithCommonRandomUint32) + " " + privateSaltedWithCommonRandom).toStdString().c_str());
+    //qInfo() << "ok:" << ok;
+    //qInfo() << "privateSaltedWithCommonRandomUint32 " << privateSaltedWithCommonRandomUint32 << privateSaltedWithCommonRandom;
     QRandomGenerator qRandomGenerator = QRandomGenerator(privateSaltedWithCommonRandomUint32);
     QVector<Task> tasks;
     while(!doTasksFitRequirements(tasks))

@@ -28,5 +28,6 @@ QString SHA512(QString input);
 QHBoxLayout* makeCenteredLayout(QWidget* widget);
 bool isAPositiveInteger(QString s);
 QString firstUppercase(QString s);
+bool isTCPPortInUse(quint16 port);
 
 #endif

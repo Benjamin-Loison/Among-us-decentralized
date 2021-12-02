@@ -18,7 +18,7 @@ Client::Client(QString peerAddress)
     if(peerAddress.contains(':'))
     {
         QStringList peerAddressParts = peerAddress.split(':');
-        quint8 peerAddressPartsSize = peerAddressParts.size();
+        //quint8 peerAddressPartsSize = peerAddressParts.size();
         quint16 potentialPort = peerAddressParts.last().toUInt();
         if(potentialPort > 255)
         {
@@ -27,12 +27,10 @@ Client::Client(QString peerAddress)
         peerAddressParts.removeLast();
         peerAddress = peerAddressParts.join(':');
     }
-    // Orange is so bad port opening doesn't work anymore but DMZ does :'(
-    qInfo(("client connecting to " + peerAddress + " on port " + QString::number(serverPort) + "...").toStdString().c_str());
-    socket->connectToHost(peerAddress/*"2a01:cb00:774:4300:a4ba:9926:7e3a:b6c1"*//*"192.168.1.45"*//*"localhost"*//*"90.127.197.24"*//*"2a01:cb00:774:4300:531:8a76:deda:2b53"*//*a secret domain name*/, serverPort); // On se connecte au serveur demandé
+    qInfo() << "client connecting to" << peerAddress << "on port" << serverPort << "...";
+    socket->connectToHost(peerAddress, serverPort);
     // could wait connected before logging discovering otherwise IP is incorrect
     // however it assumes we will connect to him quickly which may not be the case
-    //qInfo("client connected ?");
     while(!isConnected) // looping seems important instead of single call to processEvents, doing this bloquant way assume that all remote peers trying to be connected to will succeed quickly or will have to wait for timeout (if there is any)
     {
         QCoreApplication::processEvents();
@@ -78,7 +76,7 @@ void Client::dataReceived()
     QString receivedMessage;
     in >> receivedMessage;
 
-    qInfo(("client received: " + receivedMessage).toStdString().c_str());
+    qInfo() << "client received:" << receivedMessage;
     /*if(askingAll)
     {
         QString peerString = socketToString(socket);
@@ -86,7 +84,7 @@ void Client::dataReceived()
         {
             askingAllMessages[peerString] = receivedMessage;
             askingAllMessagesCounter--;
-            qInfo(("askingAllMessagesCounter: " + QString::number(askingAllMessagesCounter)).toStdString().c_str());
+            qInfo() << "askingAllMessagesCounter:" << askingAllMessagesCounter;
         }
         else
             processMessageClient(receivedMessage);
@@ -114,7 +112,7 @@ void Client::processMessageClient(QString message)
                 {
                     askingAllMessages[peerString] = messagePart.split('|')[1];
                     askingAllMessagesCounter--;
-                    qInfo(("askingAllMessagesCounter: " + QString::number(askingAllMessagesCounter)).toStdString().c_str());
+                    qInfo() << "askingAllMessagesCounter:" << askingAllMessagesCounter;
                 }
                 continue;
             }
@@ -172,7 +170,7 @@ void Client::socketError(QAbstractSocket::SocketError error) // not used
             qWarning("Error: the server shutdown the connection.");
             break;
         default:
-            qWarning(("Error: " + socket->errorString()).toStdString().c_str());
+            qWarning() << "Error:" << socket->errorString();
     }
 }
 
