@@ -380,7 +380,7 @@ QString socketToString(QTcpSocket* socket)
     return addressPortToString(socket->peerAddress(), socket->peerPort());
 }
 
-typedef struct {
+typedef struct sendToAllStruct/*required on Window$*/ {
     QTcpSocket* peer;
     void operator() (QString messagePart) {sendToSocket(peer, messagePart);}
 } sendToAllStruct;
