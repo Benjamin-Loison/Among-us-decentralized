@@ -4,6 +4,8 @@
 #include <QDebug>
 
 MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reportingPlayer): QWidget(parent), votedPlayer(nullptr), voted(false) {
+    skipVotes = inGameUI->getAlivePlayersNumber();
+    waitingVotes = skipVotes;
     setAutoFillBackground(true);
     layout = new QGridLayout(this);
     titleLabel = new QLabel("<b>Who is the Impostor?</b>");
@@ -16,8 +18,17 @@ MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reporting
     int iPlayer = 0;
     QVector<Player*> players;
     players.push_back(&parent->currPlayer);
-    for(Player &player : parent->otherPlayers.values())
-        players.push_back(&player);
+    // with this code it crashes when clicking on another player button
+    //for(Player &player : parent->otherPlayers.values())
+    //    players.push_back(&player);
+    QList<QString> keys = parent->otherPlayers.keys();
+    quint8 keysSize = keys.size();
+    for(quint8 keysIndex = 0; keysIndex < keysSize; keysIndex++)
+    {
+        QString key = keys[keysIndex];
+        Player* player = &parent->otherPlayers[key];
+        players.push_back(player);
+    }
     for(Player* player : players) {
         QString playerLabel = player->isGhost ? QString("%1 (dead)").arg(player->nickname) : QString(player->nickname);
         QPushButton* button = new QPushButton(playerLabel);
@@ -43,17 +54,19 @@ MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reporting
 void MeetingUI::voteFor(Player* player) {
     if(voted)
         return; // should never happen
-    if(!player)
+    /*if(!player)
         qDebug() << "Skipped vote";
     else
-        qDebug() << "Voted for" << player->nickname;
+        qDebug() << "Voted for" << player->nickname;*/
     votedPlayer = player;
     voted = true;
     for(QPushButton* button : playerButtons)
         button->setDisabled(true);
     skipButton->setDisabled(true);
     titleLabel->setText("<b>Waiting for other players...</b>");
-    sendToAll(player ? "Voted " + player->nickname : "Skip"); // TODO: delay votes till the end?
+    QString toSend = player ? "Voted " + player->nickname : "Skip";
+    sendToAll(toSend); // TODO: delay votes till the end?
+    inGameUI->executeVote(toSend);
     // TODO: perform voting logic
     /*InGameUI* parentUI = static_cast<InGameUI*>(parent());
     parentUI->closeMeetingUI();*/

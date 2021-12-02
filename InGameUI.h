@@ -24,6 +24,9 @@
 #define X_SPAWN 5500
 #define Y_SPAWN 1100
 
+#define EMERGENCY_BUTTON_X 4830
+#define EMERGENCY_BUTTON_Y 1045
+
 const int FPS = 30;
 
 class GameMap;
@@ -43,6 +46,7 @@ class InGameUI : public QLabel
         QImage killButtonImage;
         QImage reportButtonImage;
         QImage useButtonImage;
+        QImage playAgainButtonImage;
         QPixmap* windowPixmap;
         QTimer* timer;
         QElapsedTimer* elapsedTimer;
@@ -59,7 +63,7 @@ class InGameUI : public QLabel
         Player currPlayer; // used to be private
         QMap<QString, Player> otherPlayers; //same
         QLabel* qLabel;
-        QWidget* meetingWidget; // may be merged with qLabel
+        MeetingUI* meetingWidget; // may be merged with qLabel
         void initialize(QString nickname);
         void initDisplay();
         void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
@@ -81,7 +85,7 @@ class InGameUI : public QLabel
         void onClickKill();
         void openMap();
         void closeMap();
-        void triggerMeeting(Player* reportedPlayer); // Called by the client who reports the body
+        void triggerMeeting(Player* reportedPlayer = nullptr); // Called by the client who reports the body
         void openMeetingUI(Player* reportedPlayer = nullptr, Player* reportingPlayer = nullptr); // Also called by other clients upon receipt of the corresponding packet
         void closeMeetingUI();
         void spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname);
@@ -93,6 +97,8 @@ class InGameUI : public QLabel
         void setPlayerReady(QString peerAddress, bool threadSafe = false);
         void checkEndOfTheGame();
         void taskFinished(TaskTime taskTime);
+        void executeVote(QString voteStr);
+        quint8 getAlivePlayersNumber();
         quint8 getAliveCrewmatesNumber();
         quint8 getAliveImpostorsNumber();
         quint8 getPlayersNumber();
@@ -102,6 +108,8 @@ class InGameUI : public QLabel
         void setImposter(QString nickname);
         quint8 waitingAnswersNumber;
         quint8 gameCommonTasks, gameLongTasks, gameShortTasks;
+        quint64 distanceToEmergencyButton();
+        bool isNearEmergencyButton();
         InGameUI(/*QString nickname,*/ QLabel* parent = 0);
 
     public slots:

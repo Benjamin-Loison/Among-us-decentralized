@@ -5,7 +5,10 @@
 #include <QPushButton>
 #include <QVector>
 #include "Player.h"
-#include "InGameUI.h"
+#include <QMap>
+#include <QGridLayout>
+#include <QLabel>
+//#include "InGameUI.h"
 
 const int MEETING_PLAYERS_PER_ROW = 3;
 
@@ -13,6 +16,10 @@ class InGameUI;
 
 class MeetingUI: public QWidget {
     Q_OBJECT
+
+public:
+    QMap<QString, quint8> votes;
+    quint8 skipVotes, waitingVotes;
 
 private:
     void voteFor(Player* player);

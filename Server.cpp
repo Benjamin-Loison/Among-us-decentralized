@@ -70,7 +70,7 @@ void Server::dataReceived()
     // Si ces lignes s'exécutent, c'est qu'on a reçu tout le message : on peut le récupérer !
     QString message;
     in >> message;
-    qInfo("server received: %s", message.toStdString().c_str());
+    qInfo("server received: %s", message.toStdString().c_str()); // not logging Position and keep logged all network stuff
     message = processMessageServer(socket, message);
 
     //message = processMessage(message);
@@ -98,6 +98,10 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
     else if(messagePart == "Facing left")
     {
         inGameUI->setFacingLeftPlayer(socketString);
+    }
+    else if(messagePart == "Skip" || messagePart.startsWith("Voted "))
+    {
+        inGameUI->executeVote(messagePart);
     }
     else if(messagePart.startsWith("RandomHashed "))
     {
@@ -145,7 +149,7 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
         Player* reportedPlayer = inGameUI->getPlayer(nickname);
         inGameUI->openMeetingUI(reportedPlayer, player);
     }
-    else if(messagePart == "Emergency_meeting")
+    else if(messagePart == "Emergency meeting")
     {
         inGameUI->openMeetingUI(nullptr, player);
     }

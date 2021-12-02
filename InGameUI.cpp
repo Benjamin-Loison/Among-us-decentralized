@@ -6,9 +6,10 @@
 using namespace std;
 
 const int MOVEMENT_SPEED_SEC = 477;
-const int KILL_RANGE_SQUARED = 200*200;
-const int TASK_RANGE_SQUARED = 200*200;
-const int REPORT_RANGE_SQUARED = 200*200;
+const int KILL_RANGE_SQUARED = qPow(200, 2);
+const int TASK_RANGE_SQUARED = qPow(200, 2);
+const int REPORT_RANGE_SQUARED = qPow(200, 2);
+const int EMERGENCY_RANGE_SQUARED = qPow(250, 2);
 const QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)},
              colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
                              {QColor(20, 156, 20), QColor(8, 99, 64)},
@@ -86,6 +87,8 @@ void InGameUI::initDisplay()
     reportButtonImage = reportButtonPixmap->toImage();
     QPixmap* useButtonPixmap = getQPixmap("useButton.png");
     useButtonImage = useButtonPixmap->toImage();
+    QPixmap* playAgainButtonPixmap = getQPixmap("playAgainButton.png");
+    playAgainButtonImage = playAgainButtonPixmap->toImage();
 
     if (isCollision(currPlayer.x, currPlayer.y))
     {
@@ -249,6 +252,16 @@ QVector<Player *> InGameUI::getOtherPlayersByDistance() {
             return a->nickname < b->nickname;
     });
     return players;
+}
+
+bool InGameUI::isNearEmergencyButton()
+{
+    return !currPlayer.isGhost && (distanceToEmergencyButton() < EMERGENCY_RANGE_SQUARED);
+}
+
+quint64 InGameUI::distanceToEmergencyButton()
+{
+    return qPow(currPlayer.x - EMERGENCY_BUTTON_X, 2) + qPow(currPlayer.y - EMERGENCY_BUTTON_Y, 2);
 }
 
 QVector<Task*> InGameUI::getUsableTasksByDistance() {
@@ -434,6 +447,7 @@ void InGameUI::redraw()
             //qInfo(("winner: " + player->nickname + " " + QString::number(middleX) + " " + QString::number(middleY) + " " + QString::number(qSize.width()) + " " + QString::number(qSize.height())).toStdString().c_str());
             displayPlayer(*player, &painter, false/*true*/, middleX + 50 * playersIndex, middleY);
         }
+        painter.drawImage(qSize.width()-130, qSize.height()-130, playAgainButtonImage);
 
         setPixmap(*windowPixmap);
         delete oldPixmap;
@@ -513,21 +527,21 @@ void InGameUI::redraw()
     }
 
     // For debugging purposes: show current location - should make a boolean to choose whether or not to display location
-    QRect textRect(size().width()-1, 0, 1, fontSizePt);
+    /*QRect textRect(size().width()-1, 0, 1, fontSizePt);
     QRect boundingRect;
     painter.setPen(Qt::white);
     painter.drawText(textRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y), &boundingRect);
     boundingRect.setLeft(size().width()-1-boundingRect.width());
     boundingRect.setRight(size().width()-1);
     painter.fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
-    painter.drawText(boundingRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y));
+    painter.drawText(boundingRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y));*/
 
     // Game buttons
     if(everyoneReady && findKillablePlayer())
         painter.drawImage(size().width()-220, size().height()-110, killButtonImage);
     if(findReportableBody())
         painter.drawImage(size().width()-110, size().height()-110, reportButtonImage);
-    if(everyoneReady && getUsableTasksByDistance().size() > 0)
+    if(everyoneReady && (getUsableTasksByDistance().size() > 0) || isNearEmergencyButton())
         painter.drawImage(size().width()-110, size().height()-220, useButtonImage);
 
     // Ready button
@@ -649,6 +663,53 @@ bool isAliveCrewmate(Player* player)
     return !player->isGhost && !player->isImpostor;
 }
 
+quint8 InGameUI::getAlivePlayersNumber()
+{
+    quint8 alivePlayersNumber = currPlayer.isGhost ? 0 : 1;
+    for(Player& player : otherPlayers)
+        if(!player.isGhost)
+            alivePlayersNumber++;
+    return alivePlayersNumber;
+}
+
+// see voted for the moment would be nice
+void InGameUI::executeVote(QString voteStr)
+{
+    meetingWidget->waitingVotes--;
+    if(voteStr != "Skip")
+    {
+        meetingWidget->votes[voteStr.replace("Voted ", "")]++;
+    }
+    if(meetingWidget->waitingVotes == 0)
+    {
+        QList<QString> nicknames = meetingWidget->votes.keys();
+        quint8 maxVotes = 0, nicknamesSize = nicknames.size();
+        QString nicknameMostVoted = "";
+        bool exAequo = false;
+        for(quint8 nicknamesIndex = 0; nicknamesIndex < nicknamesSize; nicknamesIndex++)
+        {
+            QString nickname = nicknames[nicknamesIndex];
+            quint8 currentVotes = meetingWidget->votes[nickname];
+            if(currentVotes > maxVotes)
+            {
+                maxVotes = currentVotes;
+                nicknameMostVoted = nickname;
+                exAequo = false;
+            }
+            else if(currentVotes == maxVotes && currentVotes > 0)
+            {
+                exAequo = true;
+            }
+        }
+        if(nicknameMostVoted != "" && !exAequo)
+        {
+            killPlayer(*getPlayer(nicknameMostVoted));
+        }
+        closeMeetingUI();
+        checkEndOfTheGame();
+    }
+}
+
 quint8 InGameUI::getAliveCrewmatesNumber()
 {
     QList<QString> keys = otherPlayers.keys();
@@ -665,7 +726,7 @@ quint8 InGameUI::getAliveCrewmatesNumber()
 
 quint8 InGameUI::getAliveImpostorsNumber()
 {
-    return getPlayersNumber() - getAliveCrewmatesNumber();
+    return getAlivePlayersNumber() - getAliveCrewmatesNumber();
 }
 
 void InGameUI::checkEndOfTheGame() // could optimize by precising which checkEndOfTheGame (task or death) to optimize
@@ -735,6 +796,12 @@ void InGameUI::closeTask() {
 }
 
 void InGameUI::onClickUse() {
+    if(isNearEmergencyButton())
+    {
+        triggerMeeting();
+        return;
+    }
+
     QVector<Task*> usableTasks = getUsableTasksByDistance();
     if(usableTasks.size() > 0) {
         Task* task = usableTasks[0];
@@ -805,7 +872,7 @@ void InGameUI::triggerMeeting(Player* reportedPlayer) {
     if(reportedPlayer)
         sendToAll("Report " + reportedPlayer->nickname);
     else
-        sendToAll("Emergency_meeting");
+        sendToAll("Emergency meeting");
     openMeetingUI(reportedPlayer, &currPlayer);
 }
 
@@ -917,7 +984,7 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                 onClickKill();
             else if(mouseX >= width-110 && mouseX < width && mouseY >= height-110 && mouseY < height && findReportableBody())
                 onClickReport();
-            else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && getUsableTasksByDistance().size() > 0)
+            else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && ((getUsableTasksByDistance().size() > 0) || isNearEmergencyButton()))
                 onClickUse();
         }
         else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS) {
