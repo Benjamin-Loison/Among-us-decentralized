@@ -1,4 +1,4 @@
-win/end game meeting et déclenchement après avoir fait chacun ses tâches
+win/end game meeting et déclenchement après avoir fait chacun ses tâches (seul l'affichage des joueurs sur l'écran de fin reste à faire)
 travis (fait)
 enter id code
 résoudre les bugs (réseau 3 ordinateurs différents (fait), tâches aléatoires (fait), synchronisation temps réel réseau 2 ordi ?)
