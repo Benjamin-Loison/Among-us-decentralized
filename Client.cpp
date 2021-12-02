@@ -141,7 +141,6 @@ void Client::processMessageClient(QString message)
                 }
                 if(!alreadyInContacts)
                     discoverClient(connectedPart);
-                //sendToSocket();
             }
         }
         /*else if(messagePart.startsWith("nickname "))

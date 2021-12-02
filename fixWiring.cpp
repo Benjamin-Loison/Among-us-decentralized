@@ -239,10 +239,6 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
     if(currFixWiringPixmap)
         delete currFixWiringPixmap;
     currFixWiringPixmap = qBackgroundPixmap;
-    /* sometimes this happen when launching (maybe due to huge image)
-     * 21:47:13: The program has unexpectedly finished.
-        21:47:13: The process was ended forcefully.
-        */
 
     bool everythingMatch = true;
     for(qint8 nodesIndex = 0; nodesIndex < COLORS_NUMBER; nodesIndex++)

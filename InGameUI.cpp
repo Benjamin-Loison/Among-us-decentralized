@@ -756,8 +756,7 @@ void InGameUI::closeTask() {
         case IN_GAME_GUI_ASTEROIDS:
         onCloseAsteroids();
         break;
-        default:
-        break;
+        default:;
     }
     currentTask = nullptr;
     currentInGameGUI = IN_GAME_GUI_NONE;
@@ -912,8 +911,7 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
         else if(gameMap)
             closeMap();
         break;
-    default:
-        break;
+    default:;
     }
     QLabel::keyPressEvent(key);
 }
@@ -930,15 +928,14 @@ void InGameUI::keyReleaseEvent(QKeyEvent* key) {
         case Qt::Key_Right:
             isPressed[keycode] = false;
             break;
-        default:
-            break;
+        default:;
         }
     }
     QLabel::keyReleaseEvent(key);
 }
 
 void InGameUI::mouseMoveEvent(QMouseEvent *mouseEvent) {
-    if (qLabel != nullptr && mouseEvent->buttons() & Qt::LeftButton)
+    if (qLabel && mouseEvent->buttons() & Qt::LeftButton)
     {
         if (currentInGameGUI == IN_GAME_GUI_FIX_WIRING)
             onMouseEventFixWiring(mouseEvent);

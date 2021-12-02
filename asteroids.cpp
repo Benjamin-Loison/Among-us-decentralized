@@ -27,7 +27,7 @@ Asteroid::Asteroid():
 
 Asteroid::Asteroid(int x, int y, double unit_x, double unit_y, QPixmap* pixmap):
     x(x), y(y), pixmap(pixmap) {
-    double norm = sqrt(unit_x*unit_x+unit_y*unit_y);
+    double norm = sqrt(qPow(unit_x, 2)+qPow(unit_y, 2));
     unit_x /= norm;
     unit_y /= norm;
     vx = unit_x*ASTEROID_VELOCITY_SEC;

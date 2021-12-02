@@ -22,16 +22,15 @@ finished(false) {}
 
 bool Task::operator ==(Task const taskBis) const
 {
-    return this->taskType == taskBis.taskType && this->location == taskBis.location;
+    return taskType == taskBis.taskType && location == taskBis.location;
 }
 
 tuple<quint8, quint8, quint8> getTasksTypes(QVector<Task> tasks)
 {
-    quint8 commonTasksGot = 0, longTasksGot = 0, shortTasksGot = 0, tasksSize = tasks.size();
-    for(quint8 tasksIndex = 0; tasksIndex < tasksSize; tasksIndex++)
+    quint8 commonTasksGot = 0, longTasksGot = 0, shortTasksGot = 0;
+    for(Task task : tasks)
     {
-        Task* task = &tasks[tasksIndex];
-        TaskType taskType = task->taskType;
+        TaskType taskType = task.taskType;
         TaskTime taskTime = taskTimes[taskType];
         switch(taskTime)
         {
@@ -51,7 +50,9 @@ tuple<quint8, quint8, quint8> getTasksTypes(QVector<Task> tasks)
 bool doTasksFitRequirements(QVector<Task> tasks)
 {
     tuple<quint8, quint8, quint8> tasksTypes = getTasksTypes(tasks);
-    quint8 commonTasksGot = get<0>(tasksTypes), longTasksGot = get<1>(tasksTypes), shortTasksGot = get<2>(tasksTypes);
+    quint8 commonTasksGot = get<0>(tasksTypes),
+           longTasksGot = get<1>(tasksTypes),
+           shortTasksGot = get<2>(tasksTypes);
     return commonTasksGot == commonTasks && longTasksGot == longTasks && shortTasksGot == shortTasks;
 }
 
@@ -59,7 +60,8 @@ bool doTasksFitRequirements(QVector<Task> tasks)
 TaskTime getTaskTimeNeeded(QVector<Task> tasks)
 {
     tuple<quint8, quint8, quint8> tasksTypes = getTasksTypes(tasks);
-    quint8 commonTasksGot = get<0>(tasksTypes), longTasksGot = get<1>(tasksTypes)/*, shortTasksGot = get<2>(tasksTypes)*/;
+    quint8 commonTasksGot = get<0>(tasksTypes),
+           longTasksGot = get<1>(tasksTypes);
     if(commonTasksGot != commonTasks)
         return TASK_COMMON;
     else if(longTasksGot != longTasks)
@@ -71,32 +73,16 @@ Task pickRandomTask(QRandomGenerator* qRandomGenerator, TaskTime taskTime)
 {
     QVector<Task> tasks;
     QVector<TaskType> taskTypes;
-    QList<TaskType> taskTypesKeys = taskTimes.keys();
-    quint8 taskTypesKeysSize = taskTypesKeys.size();
-    for(quint8 taskTypesKeysIndex = 0; taskTypesKeysIndex < taskTypesKeysSize; taskTypesKeysIndex++)
-    {
-        TaskType taskTypeKey = taskTypesKeys[taskTypesKeysIndex];
-        TaskTime taskTimeGot = taskTimes[taskTypeKey];
-        if(taskTimeGot == taskTime)
-        {
+    QList<TaskType> taskTimesKeys = taskTimes.keys();
+    for(TaskType taskTypeKey : taskTimesKeys)
+        if(taskTimes[taskTypeKey] == taskTime)
             taskTypes.push_back(taskTypeKey);
-        }
-    }
-    quint8 taskTypesSize = taskTypes.size();
-    for(quint8 taskTypesIndex = 0; taskTypesIndex < taskTypesSize; taskTypesIndex++)
-    {
-        TaskType taskType = taskTypes[taskTypesIndex];
-        QList<QPoint> taskTypeLocations = taskLocations[taskType];
-        quint8 taskTypeLocationsSize = taskTypeLocations.size();
-        for(quint8 taskTypeLocationsIndex = 0; taskTypeLocationsIndex < taskTypeLocationsSize; taskTypeLocationsIndex++)
-        {
-            QPoint taskTypeLocation = taskTypeLocations[taskTypeLocationsIndex];
+    for(TaskType taskType : taskTypes)
+        for(QPoint taskTypeLocation : taskLocations[taskType])
             tasks.push_back(Task(taskType, taskTypeLocation));
-        }
-    }
 
-    quint8 tasksSize = tasks.size(), randomIndex = qRandomGenerator->bounded(tasksSize);
-    //qInfo() << randomIndex << "/" << tasksSize;
+    quint8 tasksSize = tasks.size(),
+           randomIndex = qRandomGenerator->bounded(tasksSize);
     Task task = tasks[randomIndex];
     return task;
 }
@@ -104,12 +90,6 @@ Task pickRandomTask(QRandomGenerator* qRandomGenerator, TaskTime taskTime)
 QVector<Task*> getTasksAsPointers(QVector<Task> tasks)
 {
     QVector<Task*> tasksPointers;
-    /*quint8 tasksSize = tasks.size();
-    for(quint8 tasksIndex = 0; tasksIndex < tasksSize; tasksIndex++)
-    {
-        Task task = tasks[tasksIndex];
-        tasksPointers.push_back(new Task(task.taskType, task.location));
-    }*/
     transform(tasks.begin(), tasks.end(), back_inserter(tasksPointers), [](const Task task){ return new Task(task.taskType, task.location); });
     return tasksPointers;
 }
