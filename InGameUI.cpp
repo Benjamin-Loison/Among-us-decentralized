@@ -391,7 +391,7 @@ void InGameUI::redraw()
         painter.fillRect(0, 0, qWidth, qHeight, Qt::black);
         QString winningTeam = currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES ? "crewmates" : "impostors";
         painter.setPen(currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES ? Qt::blue : Qt::red);
-        QString title = firstUppercase(QString("%1's victory").arg(winningTeam));
+        QString title = firstUppercase(QString("%1' victory").arg(winningTeam));
         painter.setFont(QFont("arial", 25));
         QFontMetrics fm(painter.font());
         quint16 middleX = qWidth / 2, middleY = qHeight / 2;
@@ -561,7 +561,7 @@ void InGameUI::onReadyClicked() {
     }
 }
 
-void InGameUI::setImposter(QString nickname)
+void InGameUI::setImpostor(QString nickname)
 {
     Player* player = getPlayer(nickname);
     player->isImpostor = true;
@@ -592,7 +592,7 @@ void InGameUI::onEverybodyReadySub(bool threadSafe)
         QList<QString> peerAddresses = otherPlayers.keys();
         if(imposterPlayerIndex > 0)
             nickname = otherPlayers[peerAddresses[imposterPlayerIndex - 1]].nickname;
-        setImposter(nickname);
+        setImpostor(nickname);
         sendToAll("Imposter " + nickname);
     }
     readyButtonLayout->removeWidget(readyButton);
@@ -805,7 +805,7 @@ void InGameUI::onClickReport() {
 }
 
 void InGameUI::onClickKill() {
-    // Game logic verifications are performed in the function calls
+    // Game logic verifications are performed in findKillablePlayer()
     Player* killable = findKillablePlayer();
     if(killable)
     {

@@ -124,7 +124,7 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
     else if(messagePart.startsWith("Imposter "))
     {
         messagePart = messagePart.replace("Imposter ", "");
-        inGameUI->setImposter(messagePart);
+        inGameUI->setImpostor(messagePart);
     }
     else if(messagePart == "ready")
     {
@@ -304,7 +304,6 @@ QString askAll(QString message)
     {
         //usleep(1000);
         QCoreApplication::processEvents();
-        qInfo("msleep 1");
         QThread::msleep(1);
         //if(waitingMessages[key].empty())
         //    break;

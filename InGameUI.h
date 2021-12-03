@@ -102,7 +102,7 @@ class InGameUI : public QLabel
         QPixmap* getBackgroundPixmap();
         QVector<Task*> getTasks();
         Player* getPlayer(QString nickname);
-        void setImposter(QString nickname);
+        void setImpostor(QString nickname);
         quint8 waitingAnswersNumber;
         quint8 gameCommonTasks, gameLongTasks, gameShortTasks;
         quint64 distanceToEmergencyButton();

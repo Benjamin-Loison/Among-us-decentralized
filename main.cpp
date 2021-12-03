@@ -112,8 +112,9 @@ int main(int argc, char *argv[])
         for(quint16 nicknamesIndex = 0; nicknamesIndex < nicknamesSize; nicknamesIndex++)
         {
             QString nicknameStr = nicknames[nicknamesIndex];
-            QStringList nicknameParts = nicknameStr.split(' '); // warning wouldn't work if space in username
-            inGameUI->spawnOtherPlayer(nicknameParts[0], nicknameParts[1]);
+            QString peerAddress = nicknameStr.section(' ', 0, 0);
+            QString nickname = nicknameStr.section(' ', 1);
+            inGameUI->spawnOtherPlayer(peerAddress, nickname);
         }
     }
 
