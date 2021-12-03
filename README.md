@@ -44,18 +44,18 @@ Requires Qt 5.12.11 (or probably any other recent version). To build on Ubuntu, 
 - open `AmongUsDecentralized.pro` in Qt Creator, then click "Build Project",
 - or, from a build directory, run `qmake path/to/AmongUsDecentralized.pro` then `make`.
 
------------
+<!-------------
 
 For network maybe just working with Discord Rich Presence with a high level of abstraction would be nice
 
 make some tests (by a human for tasks for instance but precise a procedure)
 
-Pour utiliser le multijoueur il est supposé que lorsque vous vous connectez à un autre joueur son port est ouvert.
-<!-- Pour utiliser le multijoueur il est supposé que chaque joueur ait son port ouvert--><!-- ou qu'à l'aide de l'UPnp se soit possible de l'ouvrir. -->
+Pour utiliser le multijoueur il est supposé que lorsque vous vous connectez à un autre joueur son port est ouvert.-->
+Pour utiliser le multijoueur il est supposé que chaque joueur ait son port serveur ouvert.<!-- ou qu'à l'aide de l'UPnp se soit possible de l'ouvrir. -->
 <!-- Pour utiliser le multijoueur il est supposé qu'au moins un joueur ait son port ouvert ou qu'à l'aide de l'UPnP se soit possible de l'ouvrir. -->
 <!-- avec l'IPv6 les ports sont ouverts par défaut ?! -->
 
-----------
+<!------------
 
 Ideas for protocols and methods 
 killed people wait at their bodies the round's end
@@ -74,4 +74,4 @@ Thus, when they reach a certain distance, they agree on a a protocol to see each
 dealing with doors is optionnal
 
 
-the main objective is to make sure that no one cheated at the end of the round/game                                      
+the main objective is to make sure that no one cheated at the end of the round/game-->
