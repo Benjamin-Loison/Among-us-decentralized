@@ -25,7 +25,7 @@ MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reporting
         if(player->isGhost || inGameUI->currPlayer.isGhost)
             button->setDisabled(true);
         else
-            connect(button, &QPushButton::released, this, [=]() {voteFor(player);});
+            connect(button, &QPushButton::released, this, [=/*=?*/]() {voteFor(player);});
         int row = 2+iPlayer/MEETING_PLAYERS_PER_ROW, col = iPlayer%MEETING_PLAYERS_PER_ROW;
         layout->addWidget(button, row, col);
         playerButtons.push_back(button);

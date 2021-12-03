@@ -8,7 +8,6 @@
 #include <QMap>
 #include <QGridLayout>
 #include <QLabel>
-//#include "InGameUI.h"
 
 const int MEETING_PLAYERS_PER_ROW = 3;
 

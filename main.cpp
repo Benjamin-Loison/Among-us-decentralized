@@ -7,13 +7,12 @@
 #include "main.h"
 #include "InGameUI.h"
 #include <QtGlobal>
-//#include <unistd.h> // only linux...
 
 InGameUI* inGameUI;
 InGameGUI currentInGameGUI = IN_GAME_GUI_NONE;
 Server* server;
 QList<Client*> clients;
-QString nickname, peerAddress, myAddress;
+QString myAddress;
 bool isFirstToRun = false;
 
 int main(int argc, char *argv[])
@@ -31,8 +30,9 @@ int main(int argc, char *argv[])
         for(quint32 allAddressesIndex = /*0*/2; allAddressesIndex < allAddressesSize; allAddressesIndex++)
         {
             QHostAddress address = allAddresses[allAddressesIndex];
-            qInfo() << addressToString(address);            // broadcast global linkLocal loopback multicast siteLocal uniqueLocalUnicast
+            qInfo() << addressToString(address);
             // for real users only global addresses seem interesting
+            // broadcast global linkLocal loopback multicast siteLocal uniqueLocalUnicast
             //qInfo() << address.isBroadcast() << address.isGlobal() << address.isLinkLocal() << address.isLoopback() << address.isMulticast() << address.isSiteLocal() << address.isUniqueLocalUnicast();
         }
     }
@@ -44,32 +44,18 @@ int main(int argc, char *argv[])
     bool isDefaultServerPortInUse = isTCPPortInUse(DEFAULT_SERVER_PORT);
     if(!isDefaultServerPortInUse) // assume no two servers running at the same time even for development purpose
         isFirstToRun = getBool("First to run", "Are you the first to run for this game?");
-    bool runServer = true,//isFirstToRun/*should be true for more than 2 players*/, // but not required for last player joining the party
+    bool runServer = true, // not required for last player joining the party - could always open it, it doesn't cost a lot and if someone want to use this node it is possible
          runClient = !isFirstToRun;
     QString isFirstToRunStr = isFirstToRun ? "true" : "false";
     qInfo() << "isFirstToRun:" << isFirstToRunStr; // clicking on exit button is like choosing no...
     quint16 serverPort = DEFAULT_SERVER_PORT + (isDefaultServerPortInUse ? 1 : 0);
-    // proposing by default the first server port opened above the default one
-    if(/*runServer*/!isFirstToRun) // why would someone want to customize server port or run two servers at the same time ? making interface or configuration file would be more appropriate - running two servers is equivalent to running two clients so for developing purpose it's needed - only the first to launch isn't that much useful to precise
+    if(!isFirstToRun)
     {
         while(isTCPPortInUse(serverPort))
-        {
             serverPort++;
-        }
-        /*bool ok = false;
-        while(!ok)
-        {
-            QString serverPortStr = getText("Server port", "Your server port", QString::number(DEFAULT_SERVER_PORT));
-            uint port = serverPortStr.toUInt(&ok);
-            if(port == 0 || port >= 65535)
-                ok = false;
-            if(!ok)
-                showWarningMessage("Invalid port", "Invalid port number.\nThe port number must be an integer between 1 and 65535 (inclusive).");
-            else
-                serverPort = (quint16) port;
-        }*/
         qInfo("serverPort: %hu", serverPort);
     }
+    QString peerAddress;
     if(runClient)
     {
         peerAddress = getText("Peer address", "A peer address", isDefaultServerPortInUse ? QString::number(DEFAULT_SERVER_PORT) : "");
@@ -103,24 +89,42 @@ int main(int argc, char *argv[])
         qInfo("Waiting for discovery...");
         sleepWithEvents(TIME_S_ASSUME_DISCOVERED);
         qInfo("Discovered %d peers !", getPeers().size());
+    }
+
+    QStringList nicknames;
+    QString nickname;
+    while(true)
+    {
+        nickname = getText("Nickname", "Your nickname");
+        qInfo() << "nickname:" << nickname;
+        if(!runClient)
+            break;
+
         qInfo("Waiting for nicknames...");
         QString nicknamesStr = askAll("nicknames"); // or should more precisely ask all nicknames at each nickname test ? but this assume to wait the maximum ping of someone ?
         qInfo("Received nicknames: %s", nicknamesStr.toStdString().c_str());
-        QStringList nicknames = nicknamesStr.split(",");
-        quint16 nicknamesSize = nicknames.size();
-        // assume everybody using external IPv6 - what a strong assumption that doesn't seem necessary
-        for(quint16 nicknamesIndex = 0; nicknamesIndex < nicknamesSize; nicknamesIndex++)
+        nicknames = nicknamesStr.split(",");
+        QStringList realNicknames;
+        for(QString nicknameStr : nicknames)
         {
-            QString nicknameStr = nicknames[nicknamesIndex];
+            QString nickname = nicknameStr.section(' ', 1);
+            realNicknames.push_back(nickname);
+        }
+        if(realNicknames.contains(nickname))
+            showWarningMessage("Nickname", "This nickname is already used !");
+        else
+            break;
+    }
+    if(runClient)
+        for(QString nicknameStr : nicknames)
+        {
             QString peerAddress = nicknameStr.section(' ', 0, 0);
             QString nickname = nicknameStr.section(' ', 1);
             inGameUI->spawnOtherPlayer(peerAddress, nickname);
         }
-    }
 
-    QString nickname;
-    nickname = getText("Nickname", "Your nickname"); // should check if the given nickname collides with received ones
-    qInfo() << "nickname:" << nickname;
+
+
     if(runClient)
         sendToAll("nickname " + nickname);
 

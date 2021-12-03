@@ -1,17 +1,14 @@
 #include "Client.h"
 #include "Server.h"
 #include "main.h"
+using namespace std;
 
-Client::Client(QString peerAddress)
+Client::Client(QString peerAddress) : socket(new QTcpSocket(this)), messageSize(0), isConnected(false)
 {
-    socket = new QTcpSocket(this);
     connect(socket, SIGNAL(readyRead()), this, SLOT(dataReceived()));
     connect(socket, SIGNAL(connected()), this, SLOT(connecte()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(deconnecte()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
-
-    messageSize = 0;
-    isConnected = false;
 
     socket->abort(); // On désactive les connexions précédentes s'il y en a
     quint16 serverPort = DEFAULT_SERVER_PORT;
@@ -99,59 +96,30 @@ void Client::dataReceived()
 void Client::processMessageClient(QString message)
 {
     QStringList messageParts = message.split(NETWORK_SEPARATOR);
-    quint32 messagePartsSize = messageParts.size();
-    for(quint32 messagePartsIndex = 0; messagePartsIndex < messagePartsSize; messagePartsIndex++)
+    for(QString messagePart : messageParts)
     {
-        QString messagePart = messageParts[messagePartsIndex];
-        if(askingAll) // copied from higher level
+        if(askingAll && messagePart.contains('|')) // copied from higher level
         {
-            if(messagePart.contains('|'))
+            QString peerString = socketToString(socket);
+            if(askingAllMessages.contains(peerString) && askingAllMessages[peerString] == "")
             {
-                QString peerString = socketToString(socket);
-                if(askingAllMessages.find(peerString) != askingAllMessages.end() && askingAllMessages[peerString] == "")
-                {
-                    askingAllMessages[peerString] = messagePart.split('|')[1];
-                    askingAllMessagesCounter--;
-                    qInfo() << "askingAllMessagesCounter:" << askingAllMessagesCounter;
-                }
-                continue;
+                askingAllMessages[peerString] = messagePart.section('|', 1, 1);
+                askingAllMessagesCounter--;
+                qInfo() << "askingAllMessagesCounter:" << askingAllMessagesCounter;
             }
+            continue;
         }
-
 
         if(messagePart.startsWith("peers "))
         {
             QString connected = messagePart.replace("peers ", "");
             QStringList connectedParts = connected.split(" ");
-            quint32 connectedPartsSize = connectedParts.size();
-            for(quint32 connectedPartsIndex = 0; connectedPartsIndex < connectedPartsSize; connectedPartsIndex++)
-            {
-                QString connectedPart = connectedParts[connectedPartsIndex];
-                quint8 clientsSize = clients.size();
-                bool alreadyInContacts = false;
-                for(quint8 clientsIndex = 0; clientsIndex < clientsSize; clientsIndex++)
-                {
-                    Client* client = clients[clientsIndex];
-                    QString clientAddress = socketToString(client->socket);
-                    if(clientAddress == connectedPart)
-                    {
-                        alreadyInContacts = true;
-                        break;
-                    }
-                }
-                if(!alreadyInContacts)
+            for(QString connectedPart : connectedParts)
+                if(!any_of(clients.begin(), clients.end(), [&](const Client* client) { return socketToString(client->socket) == connectedPart; }))
                     discoverClient(connectedPart);
-            }
         }
-        /*else if(messagePart.startsWith("nickname "))
-        {
-            QString otherPlayeNickname = messagePart.replace("nickname ", "");
-            inGameUI->spawnOtherPlayer(otherPlayeNickname);
-        }*/
         else
-        {
             processMessageCommon(socket, messagePart);
-        }
     }
 }
 
@@ -179,8 +147,5 @@ void discoverClient(QString peerAddress)
     clients.push_back(client);
     QStringList peerAddressParts = peerAddress.split(':');
     peersPorts[client->socket] = peerAddressParts.last().toUInt();
-    //client->sendToServer("nickname " + nickname);
-    //client->sendToServer("discovering " + inGameUI->currPlayer.nickname);
-    //peerAddressParts.removeLast();
-    client->sendToServer("YourAddress " + /*peerAddressParts.join(':')*/socketWithoutPortToString(client->socket) + NETWORK_SEPARATOR + "discovering " + serverSocketToString().split(':').last() /*+ inGameUI->currPlayer.nickname*/);
+    client->sendToServer("YourAddress " + socketWithoutPortToString(client->socket) + NETWORK_SEPARATOR + "discovering " + serverSocketToString().split(':').last());
 }

@@ -8,21 +8,20 @@ using namespace std;
 
 bool askingAll = false, needEverybodyReadyCall = false;
 QMap<QTcpSocket*, quint16> peersPorts;
+// assume not same message a second time until others validated
+QMap<QPair<QString, QString>, QMap<QString, QString>> waitingMessages; // QMap<QPair<peerAddress, message>, verificatorsAddresses>
+QMap<QString, QString> askingAllMessages;
+quint16 askingAllMessagesCounter = 0;
 
-Server::Server(quint16 serverPort)
+Server::Server(quint16 serverPort) : server(new QTcpServer()), messageSize(0)
 {
-    server = new QTcpServer();
     if(!server->listen(QHostAddress::Any, serverPort))
-    {
         qWarning("Server couldn't start for reason: %s", server->errorString().toStdString().c_str());
-    }
     else
     {
         //qWarning("Server started !");
         connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
     }
-
-    messageSize = 0;
 }
 
 void Server::newConnection()
@@ -70,9 +69,6 @@ void Server::dataReceived()
     // 2 : remise de la taille du message à 0 pour permettre la réception des futurs messages
     messageSize = 0;
 }
-
-// assume not same message a second time until others validated
-QMap<QPair<QString, QString>, QMap<QString, QString>> waitingMessages; // QMap<QPair<peerAddress, message>, verificatorsAddresses>
 
 void processMessageCommon(QTcpSocket* socket, QString messagePart)
 {
@@ -158,26 +154,17 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
     for(quint32 messagePartsIndex = 0; messagePartsIndex < messagePartsSize; messagePartsIndex++)
     {
         QString messagePart = messageParts[messagePartsIndex];
-        /*if(messagePart.startsWith("nickname "))
-        {
-            QString otherPlayeNickname = messagePart.replace("nickname ", "");
-            inGameUI->spawnOtherPlayer(otherPlayeNickname);
-            res += "nickname " + inGameUI->currPlayer.nickname;
-        }*/
-        if(messagePart.startsWith("discovering ")) // messagePart == "discovering"
+        if(messagePart.startsWith("discovering "))
         {
             QString remotePort = messagePart.replace("discovering ", "");
             peersPorts[socket] = remotePort.toUInt();
-            //inGameUI->spawnOtherPlayer(otherPlayeNickname);
             QList<QTcpSocket*> peers = getPeers();
             quint16 peersSize = peers.size();
             if(peersSize > 1)
             {
-                res += "peers ";
                 QStringList fullAddresses;
-                for(quint16 peersIndex = 0; peersIndex < peersSize; peersIndex++)
+                for(QTcpSocket* currentSocket : peers)
                 {
-                    QTcpSocket* currentSocket = peers[peersIndex]; // should also work with clients in InGameUI
                     if(currentSocket != socket)
                     {
                         quint16 currentPort = peersPorts[currentSocket];
@@ -187,45 +174,31 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
                         parts.append(QString::number(currentPort));
                         peerFullAddress = parts.join(':');
                         fullAddresses.push_back(peerFullAddress);
-                        /*res += peerFullAddress;
-                        clientsTreated++;
-                        if(clientsTreated < clientsSize - 2) // warning unsigned etc
-                        {
-                            res += " ";
-                        }*/
                     }
                 }
-                res += fullAddresses.join(' ');
+                res += "peers " + fullAddresses.join(' ');
             }
             res = "YourAddress " + socketWithoutPortToString(socket) + NETWORK_SEPARATOR + res;
-            //res += "nickname " + inGameUI->currPlayer.nickname; // no not trustable data until
         }
         else if(messagePart == "nicknames")
         {
             QStringList parts;
             parts.append(serverSocketToString() + " " + inGameUI->currPlayer.nickname);
             QList<QTcpSocket*> peers = getPeers();
-            quint8 peersSize = peers.size();
-            for(quint8 peersIndex = 0; peersIndex < peersSize; peersIndex++)
+            for(QTcpSocket* peer : peers)
             {
-                QTcpSocket* peer = peers[peersIndex];
                 if(peer == socket) continue;
-            //}
-            //QStringList addresses = inGameUI->otherPlayers.keys();
-            //quint8 addressesSize = addresses.size();
-            //for(quint8 addressesIndex = 0; addressesIndex < addressesSize; addressesIndex++)
-            //{
-                QString address = socketToString(peer),//addresses[addressesIndex],
+
+                QString address = socketToString(peer),
                         nickname = inGameUI->otherPlayers[address].nickname;
                 QStringList addressParts = address.split(':');
                 addressParts.removeLast();
                 addressParts.append(QString::number(peersPorts[peer]));
-                address = addressParts.join(':'); // could make a function for this purpose
+                address = addressParts.join(':'); // could make a function for this purpose - is the same thing used elsewhere ?
                 parts.append(address + " " + nickname);
             }
             /// order matters ! should do alphabetical one for instance
             res += messagePart + "|" + parts.join(',');
-            // should also send others nicknames, order is important here
         }
         else if(messagePart.startsWith("nickname "))
         {
@@ -240,9 +213,7 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
             }
         }
         else
-        {
             processMessageCommon(socket, messagePart);
-        }
         if(messagePartsIndex < messagePartsSize - 1)
             res += NETWORK_SEPARATOR;
     }
@@ -278,9 +249,6 @@ void sendToSocket(QTcpSocket* socket, QString messageToSend)
 
     socket->write(paquet); // On envoie le paquet
 }
-
-QMap<QString, QString> askingAllMessages;
-quint16 askingAllMessagesCounter = 0;
 
 QString askAll(QString message)
 {
@@ -343,13 +311,8 @@ QList<QTcpSocket*> getPeers()
     QList<QTcpSocket*> res;
     if(server != nullptr) // if code was clear shouldn't be here
         res.append(server->clients);
-    quint16 clientsSize = clients.size();
-    for(quint16 clientsIndex = 0; clientsIndex < clientsSize; clientsIndex++)
-    {
-        Client* client = clients[clientsIndex];
-        QTcpSocket* clientSocket = client->socket;
-        res.append(clientSocket);
-    }
+    for(Client* client : clients)
+        res.append(client->socket);
     return res;
 }
 
@@ -379,7 +342,7 @@ QString socketToString(QTcpSocket* socket)
     return addressPortToString(socket->peerAddress(), socket->peerPort());
 }
 
-typedef struct sendToAllStruct/*required on Window$*/ {
+typedef struct sendToAllStruct {
     QTcpSocket* peer;
     void operator() (QString messagePart) {sendToSocket(peer, messagePart);}
 } sendToAllStruct;
@@ -387,12 +350,9 @@ typedef struct sendToAllStruct/*required on Window$*/ {
 void sendToAll(QString message)
 {
     QList<QTcpSocket*> peers = getPeers();
-    // can't do this in a single line ?
 
-    quint16 peersSize = peers.size();
-    for(quint16 peersIndex = 0; peersIndex < peersSize; peersIndex++)
+    for(QTcpSocket* peer : peers)
     {
-        QTcpSocket* peer = peers[peersIndex];
         //sendToSocket(peer, message); // doesn't used to have the following even if it isn't optimized, it works
         QStringList messageParts = message.split(NETWORK_SEPARATOR);
         sendToAllStruct sendToAllStructInstance;
