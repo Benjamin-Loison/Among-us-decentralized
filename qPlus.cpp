@@ -175,55 +175,10 @@ QString firstUppercase(QString s)
     return s;
 }
 
-#ifdef _WIN32
-    #include <winsock2.h>
-    #include <ws2tcpip.h>
-#else
-    #include <netinet/in.h>
-    #include <arpa/inet.h>
-    #include <unistd.h>
-    #include <sys/socket.h>
-
-    #define SOCKET int
-    #define SOCKADDR_IN struct sockaddr_in
-#endif
-
-
 bool isTCPPortInUse(quint16 port)
 {
-    SOCKADDR_IN client;
-
-    client.sin_family = AF_INET;
-    client.sin_port = htons(port);
-    client.sin_addr.s_addr = inet_addr("127.0.0.1"); // localhost doesn't work here
-
-    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
-    if(sock == -1)
-    {
-        qInfo("socket error");
-    }
-    int res = connect(sock, (struct sockaddr*)&client, sizeof(client));
-    if(res == -1)
-    {
-        // could check precisely if the error is already in use or not
-        //qInfo("connect error");
-    }
-    else
-    {
-        if(shutdown(sock, 2) == -1)
-        {
-            qInfo("shutdown error");
-        }
-        #ifdef _WIN32
-            closesocket(sock);
-            WSACleanup(); // sure ?
-        #else
-            if(close(sock) == -1) // what about shutdown ?
-            {
-                qInfo("close error");
-            }
-        #endif
-    }
-
-    return res == 0;
+    QTcpSocket* socket = new QTcpSocket();
+    bool res = socket->bind(port, QAbstractSocket::DontShareAddress);
+    delete(socket);
+    return !res;
 }
