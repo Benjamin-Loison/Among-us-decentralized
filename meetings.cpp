@@ -57,7 +57,6 @@ void MeetingUI::voteFor(Player* player) {
     QString toSend = player ? "Voted " + player->nickname : "Skip";
     sendToAll(toSend); // TODO: delay votes till the end?
     inGameUI->executeVote(toSend);
-    // TODO: perform voting logic
     /*InGameUI* parentUI = static_cast<InGameUI*>(parent());
     parentUI->closeMeetingUI();*/
 }
