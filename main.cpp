@@ -135,8 +135,6 @@ int main(int argc, char *argv[])
             inGameUI->spawnOtherPlayer(peerAddress, nickname);
         }
 
-
-
     if(runClient)
         sendToAll("nickname " + nickname);
 
