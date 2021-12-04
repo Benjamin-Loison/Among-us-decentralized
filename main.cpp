@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
         else
             break;
     }
-    if(!isDefaultServerPortInUse)
+    if(!isDefaultServerPortInUse && nickname != oldNickname)
     {
         settings.setValue("nickname", QVariant(nickname));
         settings.sync();
