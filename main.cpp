@@ -16,6 +16,7 @@ QString myAddress;
 bool isFirstToRun = false;
 QTranslator translator;
 
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -29,7 +30,6 @@ int main(int argc, char *argv[])
     if(!translator.load(languageFile))
         qInfo("languageFile couldn't be loaded !");
     app.installTranslator(&translator);
-    // QSettings like TravianBlockchained
 
     QList<QHostAddress> allAddresses = QNetworkInterface::allAddresses();
     quint32 allAddressesSize = allAddresses.size();
@@ -95,11 +95,15 @@ int main(int argc, char *argv[])
     }
 
     QStringList nicknames;
-    QString nickname;
+    // likewise if using multiple client for developing for instance we don't have problems
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    QString nickname,
+            oldNickname = isDefaultServerPortInUse ? "" : settings.value("nickname").toString();
     while(true)
     {
-        nickname = getText(QObject::tr("Nickname"), QObject::tr("Your nickname"));
+        nickname = getText(QObject::tr("Nickname"), QObject::tr("Your nickname"), oldNickname);
         qInfo() << "nickname:" << nickname;
+
         if(!runClient)
             break;
 
@@ -117,6 +121,11 @@ int main(int argc, char *argv[])
             showWarningMessage(QObject::tr("Nickname"), QObject::tr("This nickname is already used !"));
         else
             break;
+    }
+    if(!isDefaultServerPortInUse)
+    {
+        settings.setValue("nickname", QVariant(nickname));
+        settings.sync();
     }
     if(runClient)
         for(QString nicknameStr : nicknames)
