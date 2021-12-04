@@ -2,6 +2,8 @@ QT += widgets
 QT += network
 QT += multimedia
 
+TRANSLATIONS = AmongUsDecentralizedFR.ts
+
 SOURCES += \
     InGameUI.cpp \
     asteroids.cpp \

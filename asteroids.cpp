@@ -116,7 +116,7 @@ void redrawAsteroids(qint64 now) {
     int fontSizePt = 23;
     painter->setFont(QFont("Liberation Sans", fontSizePt));
     painter->setPen(Qt::white);
-    painter->drawText(0, 13*fontSizePt/10, QString("%1 left").arg(nbAsteroids));
+    painter->drawText(0, 13*fontSizePt/10, QString(QObject::tr("%1 left")).arg(nbAsteroids));
 
     delete painter;
     replaceAsteroidsPixmap(pixmap);

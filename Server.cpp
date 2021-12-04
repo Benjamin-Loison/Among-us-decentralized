@@ -254,11 +254,9 @@ QString askAll(QString message)
 {
     QList<QTcpSocket*> peers = getPeers();
     //QStringList verificatorsAddresses;
-    quint16 peersSize = peers.size();
-    askingAllMessagesCounter = peersSize;
-    for(quint16 peersIndex = 0; peersIndex < peersSize; peersIndex++)
+    askingAllMessagesCounter = peers.size();
+    for(QTcpSocket* peer : peers)
     {
-        QTcpSocket* peer = peers[peersIndex];
         QString peerString = socketToString(peer);
         //verificatorsAddresses.push_back(peerString);
         sendToSocket(peer, message);
@@ -277,13 +275,11 @@ QString askAll(QString message)
         //    break;
     }
     //return "";
-    quint16 askingAllMessagesSize = askingAllMessages.size();
     QMap<QString, quint16> scores;
     QList<QString> askingAllMessagesValues = askingAllMessages.values();
-    for(quint16 askingAllMessagesIndex = 0; askingAllMessagesIndex < askingAllMessagesSize; askingAllMessagesIndex++)
+    for(QString askingMessage : askingAllMessagesValues)
     {
-        QString askingMessage = askingAllMessagesValues[askingAllMessagesIndex];
-        if(scores.find(askingMessage) != scores.end())
+        if(scores.contains(askingMessage))
             scores[askingMessage]++;
         else
             scores[askingMessage] = 1;
@@ -291,11 +287,10 @@ QString askAll(QString message)
     askingAllMessages.clear();
     // askingAllMessagesCounter already null
     QString majorMessage;
-    quint16 scoresSize = scores.size(), maxScore = 0;
+    quint16 maxScore = 0;
     QList<QString> scoresKeys = scores.keys();
-    for(quint16 scoresIndex = 0; scoresIndex < scoresSize; scoresIndex++)
+    for(QString currentScoreKey : scoresKeys)
     {
-        QString currentScoreKey = scoresKeys[scoresIndex];
         quint16 currentScore = scores[currentScoreKey];
         if(currentScore > maxScore/* || maxScore == 0*/) // not necessary
         {

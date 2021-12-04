@@ -14,6 +14,7 @@ Server* server;
 QList<Client*> clients;
 QString myAddress;
 bool isFirstToRun = false;
+QTranslator translator;
 
 int main(int argc, char *argv[])
 {
@@ -21,6 +22,14 @@ int main(int argc, char *argv[])
     #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         QImageReader::setAllocationLimit(256);
     #endif
+
+    QString locale = QLocale::system().name().section('_', 0, 0),
+            languageFile = "AmongUsDecentralizedFR";
+    translator.load(QString("qt_") + locale, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    if(!translator.load(languageFile))
+        qInfo("languageFile couldn't be loaded !");
+    app.installTranslator(&translator);
+    // QSettings like TravianBlockchained
 
     QList<QHostAddress> allAddresses = QNetworkInterface::allAddresses();
     quint32 allAddressesSize = allAddresses.size();
@@ -43,7 +52,7 @@ int main(int argc, char *argv[])
 
     bool isDefaultServerPortInUse = isTCPPortInUse(DEFAULT_SERVER_PORT);
     if(!isDefaultServerPortInUse) // assume no two servers running at the same time even for development purpose
-        isFirstToRun = getBool("First to run", "Are you the first to run for this game?");
+        isFirstToRun = getBool(QObject::tr("First to run"), QObject::tr("Are you the first to run for this game ?"));
     bool runServer = true, // not required for last player joining the party - could always open it, it doesn't cost a lot and if someone want to use this node it is possible
          runClient = !isFirstToRun;
     QString isFirstToRunStr = isFirstToRun ? "true" : "false";
@@ -58,17 +67,11 @@ int main(int argc, char *argv[])
     QString peerAddress;
     if(runClient)
     {
-        peerAddress = getText("Peer address", "A peer address", isDefaultServerPortInUse ? QString::number(DEFAULT_SERVER_PORT) : "");
+        peerAddress = getText(QObject::tr("Peer address"), QObject::tr("A peer address"), isDefaultServerPortInUse ? QString::number(DEFAULT_SERVER_PORT) : "");
         if(isAPositiveInteger(peerAddress))
             peerAddress = "localhost:" + peerAddress;
         qInfo() << "peerAddress:" << peerAddress;
     }
-    /*QString languageFile = "among_us_decentralized_fr";
-        if(translator.load(languageFile))
-            app.installTranslator(&translator);
-        else
-            qInfo("languageFile couldn't be loaded !");*/
-    // QSettings like TravianBlockchained
 
     // les nouveaux se connectent aux anciens
     // disons que l'on cherche à découvrir tout le monde (dans le cas précis de ce jeu)
@@ -95,7 +98,7 @@ int main(int argc, char *argv[])
     QString nickname;
     while(true)
     {
-        nickname = getText("Nickname", "Your nickname");
+        nickname = getText(QObject::tr("Nickname"), QObject::tr("Your nickname"));
         qInfo() << "nickname:" << nickname;
         if(!runClient)
             break;
@@ -111,7 +114,7 @@ int main(int argc, char *argv[])
             realNicknames.push_back(nickname);
         }
         if(realNicknames.contains(nickname))
-            showWarningMessage("Nickname", "This nickname is already used !");
+            showWarningMessage(QObject::tr("Nickname"), QObject::tr("This nickname is already used !"));
         else
             break;
     }

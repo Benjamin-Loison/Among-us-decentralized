@@ -17,7 +17,7 @@ InGameUI::InGameUI(QLabel* parent) : QLabel(parent), lastNx(0), lastNy(0), every
 {
     // doing this at the very first window would be nice (when asking nickname etc)
     setWindowIcon(QIcon(assetsFolder + "logo.png"));
-    setWindowTitle("Among Us decentralized");
+    setWindowTitle(tr("Among Us decentralized"));
     // couldn't put all not necessary stuff in initialize not to delay user input ?
 }
 
@@ -71,7 +71,7 @@ void InGameUI::initDisplay()
  * Displays given pixmap centered at map coordinates (centerx, centery).
  * Uses the provided painter if any.
  */
-void InGameUI::displayAt(QPixmap *pixmap, int centerx, int centery, QPainter *painter = nullptr)
+void InGameUI::displayAt(QPixmap* pixmap, int centerx, int centery, QPainter* painter = nullptr)
 {
     int w = pixmap->size().width(), h = pixmap->size().height();
     int top = topBackground + centery - h / 2, left = leftBackground + centerx - w / 2;
@@ -389,13 +389,13 @@ void InGameUI::redraw()
         windowPixmap = new QPixmap(qSize);
         QPainter painter(windowPixmap);
         painter.fillRect(0, 0, qWidth, qHeight, Qt::black);
-        QString winningTeam = currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES ? "crewmates" : "impostors";
+        QString winningTeam = currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES ? tr("crewmates") : tr("impostors");
         painter.setPen(currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES ? Qt::blue : Qt::red);
-        QString title = firstUppercase(QString("%1' victory").arg(winningTeam));
+        QString title = firstUppercase(QString(tr("%1' victory")).arg(winningTeam));
         painter.setFont(QFont("arial", 25));
         QFontMetrics fm(painter.font());
         quint16 middleX = qWidth / 2, middleY = qHeight / 2;
-        painter.drawText(middleX - fm.boundingRect(title).width() / 2, qHeight / 10, title); // .width(title) isn't available in Qt 6
+        painter.drawText(middleX - fm.boundingRect(title).width() / 2, qHeight / 10, title);
 
         QList<Player*> players;
         if((currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES) == (!currPlayer.isImpostor))
@@ -490,9 +490,10 @@ void InGameUI::redraw()
         QRect boundingRect;
         //QPen oldPen = painter.pen();
         painter.setPen(Qt::red);
-        painter.drawText(textRect, Qt::TextDontClip | Qt::AlignLeft, "You are an Impostor!", &boundingRect);
+        QString text = tr("You are an Impostor !");
+        painter.drawText(textRect, Qt::TextDontClip | Qt::AlignLeft, text, &boundingRect); // why twice, is it a kind of shade ?
         painter.fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
-        painter.drawText(textRect, Qt::TextDontClip | Qt::AlignLeft, "You are an Impostor!");
+        painter.drawText(textRect, Qt::TextDontClip | Qt::AlignLeft, text);
         //painter.setPen(oldPen);
     }
 
@@ -520,9 +521,8 @@ void InGameUI::redraw()
     // Ready button
     if(!everyoneReady && !readyButtonLayout)
     {
-        //qDebug() << "Creating ready button";
         readyButtonLayout = new QGridLayout;
-        readyButton = new QPushButton("Ready");
+        readyButton = new QPushButton(tr("Ready"));
         readyButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
         connect(readyButton, &QPushButton::released, this, &InGameUI::onReadyClicked);
         readyButtonLayout->addWidget(readyButton, 0, 0, Qt::AlignBottom | Qt::AlignRight);
@@ -550,14 +550,12 @@ void InGameUI::onReadyClicked() {
         {
             qDebug() << "Ready clicked";
             currPlayer.isReady = true;
-            readyButton->setText("Waiting for other players");
+            readyButton->setText(tr("Waiting for other players"));
             sendToAll("ready");
             checkEverybodyReady();
         }
         else
-        {
             qDebug() << "Still waiting for players..."; // could display it on the button by default how many we are waiting
-        }
     }
 }
 
@@ -1002,10 +1000,8 @@ void InGameUI::checkEverybodyReady(bool threadSafe)
     if(!currPlayer.isReady) return;
     if(all_of(otherPlayers.begin(), otherPlayers.end(), [](Player player){return player.isReady;}))
     /*QList<QString> peerAddresses = otherPlayers.keys();
-    quint8 peerAddressesSize = peerAddresses.size();
-    for(quint8 peerAddressesIndex = 0; peerAddressesIndex < peerAddressesSize; peerAddressesIndex++)
+    for(QString peerAddress : peerAddresses)
     {
-        QString peerAddress = peerAddresses[peerAddressesIndex];
         if(!otherPlayers[peerAddress].isReady)
         {
             //qInfo() << peerAddress << peerAddressesSize;
@@ -1035,10 +1031,8 @@ Player* InGameUI::getPlayer(QString nickname)
 {
     if(currPlayer.nickname == nickname) return &currPlayer;
     QList<QString> peerAddresses = otherPlayers.keys();
-    quint8 peerAddressesSize = peerAddresses.size();
-    for(quint8 peerAddressesIndex = 0; peerAddressesIndex < peerAddressesSize; peerAddressesIndex++)
+    for(QString peerAddress : peerAddresses)
     {
-        QString peerAddress = peerAddresses[peerAddressesIndex];
         Player* player = &otherPlayers[peerAddress];
         if(player->nickname == nickname)
             return player;

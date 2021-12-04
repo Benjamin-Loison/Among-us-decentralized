@@ -135,7 +135,6 @@ QLabel* getFixWiring()
 {
     if(!fixWiringBackgroundPixmap)
         fixWiringBackgroundPixmap = getQPixmap("fixWiring.png");
-    //qInfo("a");
     playSound("Fix_Wiring_task_open_sound.wav");
     QLabel* qLabel = new QLabel;
 
@@ -212,13 +211,9 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
     {
         quint8 link = links[nodesIndex];
         if(link < COLOR_UNDEFINED)
-        {
             fillWire(painter, nodesIndex);
-        }
         else if(link == COLOR_FIXING)
-        {
             fillFixWire(painter, nodesIndex, mouseY, mouseX);
-        }
         else if(!isFixing)
         {
             quint16 middleX = FIX_WIRING_LEFT_X + FIX_WIRING_WIDTH / 2,
