@@ -178,6 +178,7 @@ QString firstUppercase(QString s)
     return s;
 }
 
+// doesn't seem to always work perfectly if quick restarting
 bool isTCPPortInUse(quint16 port)
 {
     QTcpSocket* socket = new QTcpSocket();

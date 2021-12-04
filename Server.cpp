@@ -45,6 +45,7 @@ void Server::dataReceived()
     // Si tout va bien, on continue : on récupère le message
     QDataStream in(socket);
 
+    //qInfo("dataReceived"); // not executed even if message sent...
     if(messageSize == 0) // Si on ne connaît pas encore la taille du message, on essaie de la récupérer
     {
         if(socket->bytesAvailable() < (int)sizeof(quint16)) // On n'a pas reçu la taille du message en entier
@@ -244,10 +245,22 @@ void sendToSocket(QTcpSocket* socket, QString messageToSend)
 
     out << (quint16)0;
     out << messageToSend;
-    out.device()->seek(0);
-    out << (quint16)(paquet.size() - sizeof(quint16));
+    QIODevice* device = out.device();
+    if(device == nullptr)
+        qInfo("device nullptr");
+    if(!device->seek(0))
+        qInfo("seek error");
+    int size = paquet.size();
+    out << (quint16)(size - sizeof(quint16));
+    //qInfo() << "size:" << size << "device:" << device;
 
-    socket->write(paquet); // On envoie le paquet
+    if(socket->write(paquet) == -1) // On envoie le paquet
+        qInfo("socket write error");
+    if(!socket->waitForBytesWritten())
+        qInfo("wait for bytes error");
+    // the syncing problem seem to really be at sending step because dataReceived isn't ever triggered when there is the bug
+    // flushing and waitForReadyRead may be interesting ? https://forum.qt.io/topic/46323/solved-qtcpsocket-would-not-receiving-all-data/2
+    // it doesn't seem to be exactly the last packet but last few
 }
 
 QString askAll(QString message)
