@@ -3,6 +3,7 @@ QT += network
 QT += multimedia
 
 TRANSLATIONS = AmongUsDecentralizedFR.ts
+RC_ICONS += assets/logo.ico
 
 SOURCES += \
     InGameUI.cpp \
