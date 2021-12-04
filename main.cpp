@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
     if(runServer)
     {
         server = new Server(serverPort);
-        qInfo() << "Server started on:" << /*serverSocketToString()*/serverPort;
+        qInfo() << "Server started on:" << serverPort;
     }
     if(runClient)
     {
