@@ -59,8 +59,9 @@ QPixmap* getQPixmap(quint16 width,quint16 height)
     return new QPixmap(width,height);
 }
 
+QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)};
+
 QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2) {
-    QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)};
     QColor colors[2] = {color1, color2};
     QImage tmp = pixmap.toImage();
 
@@ -185,4 +186,11 @@ bool isTCPPortInUse(quint16 port)
     bool res = socket->bind(port, QAbstractSocket::DontShareAddress);
     delete(socket);
     return !res;
+}
+
+void drawCenteredText(QPainter* painter, quint16 x, quint16 y, QString text)
+{
+    QFontMetrics fm(painter->font());
+    QRect rect = fm.boundingRect(text);
+    painter->drawText(x - rect.width() / 2, y + rect.height() / 2, text);
 }

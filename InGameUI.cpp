@@ -10,10 +10,11 @@ const int KILL_RANGE_SQUARED = qPow(200, 2);
 const int TASK_RANGE_SQUARED = qPow(200, 2);
 const int REPORT_RANGE_SQUARED = qPow(200, 2);
 const int EMERGENCY_RANGE_SQUARED = qPow(250, 2);
-const QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)};
+const int KILL_COOLDOWN_SEC = 45;
+const int MAX_EMERGENCY_PER_PLAYER = 1;
 
 // should make a function to get new player
-InGameUI::InGameUI(QLabel* parent) : QLabel(parent), lastNx(0), lastNy(0), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr)
+InGameUI::InGameUI(QLabel* parent) : QLabel(parent), lastNx(0), lastNy(0), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr), lastKillTime(0), numberOfEmergenciesRequested(0)
 {
     // doing this at the very first window would be nice (when asking nickname etc)
     setWindowIcon(QIcon(assetsFolder + "logo.png"));
@@ -46,7 +47,7 @@ void InGameUI::initDisplay()
 {
     backgroundPixmap = getQPixmap("mapCrop.png"); // "The Skeld"
     collisionPixmap = getQPixmap("mapCropCollision.png");
-    collisionImage = collisionPixmap->toImage();
+    collisionImage = collisionPixmap->toImage(); // what difference between QPixmap and QImage ?
     QPixmap* killButtonPixmap = getQPixmap("killButton.png");
     killButtonImage = killButtonPixmap->toImage();
     QPixmap* reportButtonPixmap = getQPixmap("reportButton.png");
@@ -222,7 +223,7 @@ QVector<Player *> InGameUI::getOtherPlayersByDistance() {
 
 bool InGameUI::isNearEmergencyButton()
 {
-    return !currPlayer.isGhost && (distanceToEmergencyButton() < EMERGENCY_RANGE_SQUARED);
+    return !currPlayer.isGhost && (distanceToEmergencyButton() < EMERGENCY_RANGE_SQUARED) && numberOfEmergenciesRequested < MAX_EMERGENCY_PER_PLAYER;
 }
 
 quint64 InGameUI::distanceToEmergencyButton()
@@ -393,9 +394,8 @@ void InGameUI::redraw()
         painter.setPen(currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES ? Qt::blue : Qt::red);
         QString title = firstUppercase(QString(tr("%1' victory")).arg(winningTeam));
         painter.setFont(QFont("arial", 25));
-        QFontMetrics fm(painter.font());
         quint16 middleX = qWidth / 2, middleY = qHeight / 2;
-        painter.drawText(middleX - fm.boundingRect(title).width() / 2, qHeight / 10, title);
+        drawCenteredText(&painter, middleX, qHeight / 10, title);
 
         QList<Player*> players;
         if((currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES) == (!currPlayer.isImpostor))
@@ -511,7 +511,22 @@ void InGameUI::redraw()
     if(everyoneReady)
     {
         if(findKillablePlayer())
-            painter.drawImage(qWidth - 220, qHeight - 110, killButtonImage);
+        {
+            qint64 currentTime = QDateTime::currentSecsSinceEpoch();
+            if(currentTime >= lastKillTime + KILL_COOLDOWN_SEC)
+                painter.drawImage(qWidth - 220, qHeight - 110, killButtonImage);
+            else
+            {
+                QImage killButtonTemporaryImage = killButtonImage;
+                QPainter* killButtonPainter = new QPainter(&killButtonTemporaryImage);
+                QFont font = QFont("arial", 40, QFont::ExtraBold);
+                killButtonPainter->setFont(font);
+                killButtonPainter->setPen(Qt::white);
+                drawCenteredText(killButtonPainter, 55, 55, QString::number(KILL_COOLDOWN_SEC - (currentTime - lastKillTime)));
+                painter.drawImage(qWidth - 220, qHeight - 110, killButtonTemporaryImage);
+                delete(killButtonPainter);
+            }
+        }
         if(findReportableBody())
             painter.drawImage(qWidth - 110, qHeight - 110, reportButtonImage);
         if(isThereAnyUsableTaskNear() || isNearEmergencyButton())
@@ -598,16 +613,24 @@ void InGameUI::onEverybodyReadySub(bool threadSafe)
     delete readyButtonLayout;
     readyButtonLayout = nullptr;
 
+    resetAllPlayers();
+
+    lastKillTime = QDateTime::currentSecsSinceEpoch();
+}
+
+void InGameUI::resetAllPlayers()
+{
+    // teleport all players and hide bodies
     QList<QString> peerAddresses = otherPlayers.keys();
-    quint8 peerAddressesSize = peerAddresses.size();
-    for(quint8 peerAddressesIndex = 0; peerAddressesIndex < peerAddressesSize; peerAddressesIndex++)
+    for(QString peerAddress : peerAddresses)
     {
-        QString peerAddress = peerAddresses[peerAddressesIndex];
         movePlayer(peerAddress, X_SPAWN, Y_SPAWN, true);
+        hidePlayerBodyIfDead(peerAddress);
     }
     currPlayer.x = X_SPAWN;
     currPlayer.y = Y_SPAWN;
     currPlayer.playerFacingLeft = false;
+    if(currPlayer.isGhost) currPlayer.showBody = false;
 }
 
 void InGameUI::onEverybodyReady(bool threadSafe)
@@ -674,6 +697,7 @@ void InGameUI::executeVote(QString voteStr)
         {
             killPlayer(*getPlayer(nicknameMostVoted));
         }
+        resetAllPlayers(); // could also TP before opening meeting interface
         closeMeetingUI();
         checkEndOfTheGame();
     }
@@ -767,6 +791,7 @@ void InGameUI::onClickUse() {
     if(isNearEmergencyButton())
     {
         triggerMeeting();
+        numberOfEmergenciesRequested++;
         return;
     }
 
@@ -804,12 +829,15 @@ void InGameUI::onClickReport() {
 
 void InGameUI::onClickKill() {
     // Game logic verifications are performed in findKillablePlayer()
-    Player* killable = findKillablePlayer();
-    if(killable)
+    if(QDateTime::currentSecsSinceEpoch() >= lastKillTime + KILL_COOLDOWN_SEC)
     {
-        killPlayer(*killable);
-        inGameUI->checkEndOfTheGame();
-        sendToAll("Kill " + killable->nickname);
+        Player* killable = findKillablePlayer();
+        if(killable)
+        {
+            killPlayer(*killable);
+            inGameUI->checkEndOfTheGame();
+            sendToAll("Kill " + killable->nickname);
+        }
     }
 }
 
@@ -836,7 +864,6 @@ void InGameUI::closeMap() {
 }
 
 void InGameUI::triggerMeeting(Player* reportedPlayer) {
-    // TODO: networking
     if(reportedPlayer)
         sendToAll("Report " + reportedPlayer->nickname);
     else
@@ -855,8 +882,6 @@ void InGameUI::openMeetingUI(Player* reportedPlayer, Player* reportingPlayer) {
         closeTask();
     if(currentInGameGUI == IN_GAME_GUI_MAP)
         closeMap();
-    if(reportedPlayer)
-        reportedPlayer->showBody = false;
     meetingWidget = new MeetingUI(this, reportedPlayer, reportingPlayer);
 
     currHLayout = makeCenteredLayout(meetingWidget);;
@@ -993,6 +1018,12 @@ void InGameUI::movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp)
         player->playerFacingLeft = x < player->x;
     player->x = x;
     player->y = y;
+}
+
+void InGameUI::hidePlayerBodyIfDead(QString peerAddress)
+{
+    Player* player = &otherPlayers[peerAddress];
+    if(player->isGhost) player->showBody = false; // could almost make a function also to treat currPlayer
 }
 
 void InGameUI::checkEverybodyReady(bool threadSafe)
