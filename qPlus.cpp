@@ -80,9 +80,8 @@ QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2) {
     return QPixmap::fromImage(tmp);
 }
 
-void playSound(QString soundFile) // isn't there any background music ?
+void playSound(QString soundFile) // could assume all sounds are .wav so can append it here
 {
-    soundFile += ".ogg";
     if(!soundEffectMap.count(soundFile)) {
         QSoundEffect* effect = new QSoundEffect;
         QUrl qUrl = QUrl::fromLocalFile(QFileInfo(assetsFolder + soundFile).absoluteFilePath());

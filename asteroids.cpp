@@ -137,7 +137,7 @@ void onMouseEventAsteroids(QMouseEvent* mouseEvent)
         mouseY = mouseEvent->y() - asteroidsTop;
     if(mouseX < 0 || mouseX >= asteroidsWidth || mouseY < 0 || mouseY >= asteroidsHeight)
         return;
-    playSound("clear_asteroids_shooting");
+    playSound("clear_asteroids_shooting.wav");
     bool hit = false;
     for(Asteroid& asteroid : asteroids) {
         int x = asteroid.x, y = asteroid.y, w = asteroid.pixmap->size().width(), h = asteroid.pixmap->size().height();
@@ -145,18 +145,18 @@ void onMouseEventAsteroids(QMouseEvent* mouseEvent)
         if(mouseX >= left && mouseX < right && mouseY >= top && mouseY < bottom && !asteroid.destroyed) {
             asteroid.destroyed = true;
             nbAsteroids--;
-            playSound(QString("clear_asteroids_asteroid_destroyed_%1").arg(QRandomGenerator::global()->bounded(3)));
+            playSound(QString("clear_asteroids_asteroid_destroyed_%1.wav").arg(QRandomGenerator::global()->bounded(3)));
             hit = true;
         }
     }
     if(nbAsteroids <= 0) {
-        playSound("task_completed");
+        playSound("task_completed.wav");
         inGameUI->finishTask();
         inGameUI->closeTask();
         inGameUI->checkEndOfTheGame();
     }
     else if(hit)
-        playSound("task_in_progress");
+        playSound("task_in_progress.wav");
 }
 
 void resetAsteroids() {

@@ -135,7 +135,7 @@ QLabel* getFixWiring()
 {
     if(!fixWiringBackgroundPixmap)
         fixWiringBackgroundPixmap = getQPixmap("fixWiring.png");
-    playSound("fix_wiring_task_open");
+    playSound("fix_wiring_task_open.wav");
     QLabel* qLabel = new QLabel;
 
     // 2 * COLORS_NUMBER! possibilities
@@ -201,7 +201,7 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
             if(d <= range)
             {
                 links[fixingIndex] = nodesIndex;
-                playSound(QString("fix_wiring_connect_wire_%1").arg(QRandomGenerator::global()->bounded(3)));
+                playSound(QString("fix_wiring_connect_wire_%1.wav").arg(QRandomGenerator::global()->bounded(3)));
                 break;
             }
         }
@@ -252,7 +252,7 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
     }
     if(everythingMatch)
     {
-        playSound("task_completed"); // shouldn't be in finishTask function ?
+        playSound("task_completed.wav"); // shouldn't be in finishTask function ?
         inGameUI->finishTask();
         inGameUI->closeTask();
         inGameUI->checkEndOfTheGame();
@@ -260,7 +260,7 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
 }
 
 void onCloseFixWiring() {
-    playSound("fix_wiring_task_close");
+    playSound("fix_wiring_task_close.wav");
     resetFixWiring();
     if(currFixWiringLabel) {
         currFixWiringLabel = nullptr;
