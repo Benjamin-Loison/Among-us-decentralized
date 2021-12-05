@@ -27,8 +27,8 @@ Player::Player(QString nickname):
     color1 = colors[playersNumber][0];
     color2 = colors[playersNumber][1];
     playerPixmap = getQPixmap("player.png");
-    deadPixmap = getQPixmap("Dead0042.png");
-    ghostPixmap = getQPixmap("ghost0001.png");
+    deadPixmap = getQPixmap("corpse.png");
+    ghostPixmap = getQPixmap("ghost.png");
     iconOnMapPixmap = getQPixmap("playerIconOnMap.png");
     *playerPixmap = colorPixmap(*playerPixmap, color1, color2);
     *deadPixmap = colorPixmap(*deadPixmap, color1, color2);
@@ -38,7 +38,7 @@ Player::Player(QString nickname):
     flippedGhostPixmap = new QPixmap(ghostPixmap->transformed(QTransform().scale(-1,1)));
 }
 
-Player::Player(): x(0), y(0), nickname(/*"Player"*/""), playerFacingLeft(false), playerPixmap(getQPixmap("player.png")), deadPixmap(getQPixmap("Dead0042.png")), ghostPixmap(getQPixmap("ghost0001.png")) {
+Player::Player(): x(0), y(0), nickname(""), playerFacingLeft(false), playerPixmap(getQPixmap("player.png")), deadPixmap(getQPixmap("corpse.png")), ghostPixmap(getQPixmap("ghost.png")) {
     flippedPixmap = new QPixmap(playerPixmap->transformed(QTransform().scale(-1,1)));
     flippedGhostPixmap = new QPixmap(ghostPixmap->transformed(QTransform().scale(-1,1)));
 }
