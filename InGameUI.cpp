@@ -517,7 +517,7 @@ void InGameUI::redraw()
                 painter.drawImage(qWidth - 220, qHeight - 110, killButtonImage);
             else
             {
-                QImage killButtonTemporaryImage = killButtonImage;
+                QImage killButtonTemporaryImage = killButtonImage; // a gray version would be nice
                 QPainter* killButtonPainter = new QPainter(&killButtonTemporaryImage);
                 QFont font = QFont("arial", 40, QFont::ExtraBold);
                 killButtonPainter->setFont(font);
@@ -835,6 +835,7 @@ void InGameUI::onClickKill() {
         if(killable)
         {
             killPlayer(*killable);
+            lastKillTime = QDateTime::currentSecsSinceEpoch();
             inGameUI->checkEndOfTheGame();
             sendToAll("Kill " + killable->nickname);
         }
