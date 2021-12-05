@@ -54,6 +54,8 @@ For network maybe just working with Discord Rich Presence with a high level of a
 
 make some tests (by a human for tasks for instance but precise a procedure)
 
+Adding OGG support would be nice (why have switch to SoundEffect which doesn't support OGG ?)
+
 Pour utiliser le multijoueur il est supposé que lorsque vous vous connectez à un autre joueur son port est ouvert.-->
 Pour utiliser le multijoueur il est supposé que chaque joueur ait son port serveur ouvert.<!-- ou qu'à l'aide de l'UPnp se soit possible de l'ouvrir. -->
 <!-- Pour utiliser le multijoueur il est supposé qu'au moins un joueur ait son port ouvert ou qu'à l'aide de l'UPnP se soit possible de l'ouvrir. -->
