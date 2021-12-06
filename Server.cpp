@@ -258,6 +258,7 @@ void sendToSocket(QTcpSocket* socket, QString messageToSend)
         qInfo("socket write error");
     if(!socket->waitForBytesWritten())
         qInfo("wait for bytes error");
+    socket->flush(); // maybe it's the solution https://doc.qt.io/qt-5/qabstractsocket.html#flush
     // still having the problem (without error message)
     // the syncing problem seem to really be at sending step because dataReceived isn't ever triggered when there is the bug
     // flushing and waitForReadyRead may be interesting ? https://forum.qt.io/topic/46323/solved-qtcpsocket-would-not-receiving-all-data/2
@@ -283,7 +284,6 @@ QString askAll(QString message)
     //return "";
     while(askingAllMessagesCounter > 0)
     {
-        //usleep(1000);
         QCoreApplication::processEvents();
         QThread::msleep(1);
         //if(waitingMessages[key].empty())
@@ -293,12 +293,7 @@ QString askAll(QString message)
     QMap<QString, quint16> scores;
     QList<QString> askingAllMessagesValues = askingAllMessages.values();
     for(QString askingMessage : askingAllMessagesValues)
-    {
-        if(scores.contains(askingMessage))
-            scores[askingMessage]++;
-        else
-            scores[askingMessage] = 1;
-    }
+        scores[askingMessage]++; // no problem even if key not set
     askingAllMessages.clear();
     // askingAllMessagesCounter already null
     QString majorMessage;
