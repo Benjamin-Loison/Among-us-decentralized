@@ -258,9 +258,11 @@ void sendToSocket(QTcpSocket* socket, QString messageToSend)
         qInfo("socket write error");
     if(!socket->waitForBytesWritten())
         qInfo("wait for bytes error");
+    // still having the problem (without error message)
     // the syncing problem seem to really be at sending step because dataReceived isn't ever triggered when there is the bug
     // flushing and waitForReadyRead may be interesting ? https://forum.qt.io/topic/46323/solved-qtcpsocket-would-not-receiving-all-data/2
     // it doesn't seem to be exactly the last packet but last few
+    // I don't know if during dataReceived we also receive the forgotten message or something and we should recursively loop ?
 }
 
 QString askAll(QString message)
