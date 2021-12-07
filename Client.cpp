@@ -57,6 +57,8 @@ void Client::dataReceived()
     /* Même principe que lorsque le serveur reçoit un paquet :
     On essaie de récupérer la taille du message
     Une fois qu'on l'a, on attend d'avoir reçu le message entier (en se basant sur la taille annoncée messageSize)*/
+
+    //qInfo("Client::dataReceived"); // no bug at this level
     QDataStream in(socket);
 
     if(messageSize == 0)
@@ -73,6 +75,7 @@ void Client::dataReceived()
     QString receivedMessage;
     in >> receivedMessage;
 
+    // got problem on client side this time (server sent but no client received...)
     qInfo() << "client received:" << receivedMessage;
     /*if(askingAll)
     {
@@ -91,6 +94,7 @@ void Client::dataReceived()
 
     // On remet la taille du message à 0 pour pouvoir recevoir de futurs messages
     messageSize = 0;
+    qInfo() << "bytesAvailable:" << socket->bytesAvailable();
 }
 
 void Client::processMessageClient(QString message)

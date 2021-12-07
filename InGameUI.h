@@ -57,7 +57,6 @@ class InGameUI : public QLabel
         QString privateRandom;
         QPainter* killButtonPainter;
         qint64 lastKillTime;
-        quint8 numberOfEmergenciesRequested;
 
     public:
         Player currPlayer; // used to be private
@@ -113,6 +112,9 @@ class InGameUI : public QLabel
         bool isThereAnyUsableTaskNear();
         void resetAllPlayers();
         void hidePlayerBodyIfDead(QString peerAddress);
+        bool isWinScreen();
+        QList<Player*> getAllPlayers();
+        void teleportAllPlayers();
         InGameUI(QLabel* parent = 0);
 
     public slots:

@@ -21,7 +21,8 @@ Player::Player(QString nickname):
     isImpostor(false),
     isGhost(false),
     showBody(false),
-    isReady(false)
+    isReady(false),
+    numberOfEmergenciesRequested(0)
 {
     quint8 playersNumber = inGameUI->getPlayersNumber();
     color1 = colors[playersNumber][0];

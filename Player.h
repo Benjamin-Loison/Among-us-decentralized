@@ -18,6 +18,7 @@ public:
     bool isGhost;
     bool showBody;
     bool isReady;
+    quint8 numberOfEmergenciesRequested;
     QColor color1, color2;
 
     Player();

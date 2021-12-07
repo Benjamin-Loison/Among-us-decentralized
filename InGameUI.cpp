@@ -14,7 +14,7 @@ const int KILL_COOLDOWN_SEC = 45;
 const int MAX_EMERGENCY_PER_PLAYER = 1;
 
 // should make a function to get new player
-InGameUI::InGameUI(QLabel* parent) : QLabel(parent), lastNx(0), lastNy(0), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr), lastKillTime(0), numberOfEmergenciesRequested(0)
+InGameUI::InGameUI(QLabel* parent) : QLabel(parent), lastNx(0), lastNy(0), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr), lastKillTime(0)
 {
     // doing this at the very first window would be nice (when asking nickname etc)
     setWindowIcon(QIcon(assetsFolder + "logo.png"));
@@ -223,7 +223,7 @@ QVector<Player *> InGameUI::getOtherPlayersByDistance() {
 
 bool InGameUI::isNearEmergencyButton()
 {
-    return !currPlayer.isGhost && (distanceToEmergencyButton() < EMERGENCY_RANGE_SQUARED) && numberOfEmergenciesRequested < MAX_EMERGENCY_PER_PLAYER;
+    return !currPlayer.isGhost && (distanceToEmergencyButton() < EMERGENCY_RANGE_SQUARED) && currPlayer.numberOfEmergenciesRequested < MAX_EMERGENCY_PER_PLAYER;
 }
 
 quint64 InGameUI::distanceToEmergencyButton()
@@ -375,6 +375,11 @@ void InGameUI::displayPlayer(const Player &player, QPainter *painter, bool showG
     }
 }
 
+bool InGameUI::isWinScreen()
+{
+    return currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES || currentInGameGUI == IN_GAME_GUI_WIN_IMPOSTORS;
+}
+
 /**
  * Performs player movement, then redraws the in-game UI. Meant to be called at each frame.
  * @brief InGameUI::redraw
@@ -384,7 +389,7 @@ void InGameUI::redraw()
     QSize qSize = size();
     int qWidth = qSize.width(),
         qHeight = qSize.height();
-    if(currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES || currentInGameGUI == IN_GAME_GUI_WIN_IMPOSTORS)
+    if(isWinScreen())
     {
         QPixmap *oldPixmap = windowPixmap;
         windowPixmap = new QPixmap(qSize);
@@ -510,6 +515,7 @@ void InGameUI::redraw()
     // Game buttons
     if(everyoneReady)
     {
+        // could choose not to display use, report, kill buttons on meeting because not useable and especially killing button because the counter is decreasing
         if(findKillablePlayer())
         {
             qint64 currentTime = QDateTime::currentSecsSinceEpoch();
@@ -618,18 +624,33 @@ void InGameUI::onEverybodyReadySub(bool threadSafe)
     lastKillTime = QDateTime::currentSecsSinceEpoch();
 }
 
-void InGameUI::resetAllPlayers()
+QList<Player*> InGameUI::getAllPlayers()
 {
-    // teleport all players and hide bodies
+    QList<Player*> players;
+    players.push_back(&currPlayer);
+    for(Player& player : otherPlayers)
+        players.push_back(&player);
+    return players;
+}
+
+void InGameUI::teleportAllPlayers()
+{
     QList<QString> peerAddresses = otherPlayers.keys();
     for(QString peerAddress : peerAddresses)
-    {
         movePlayer(peerAddress, X_SPAWN, Y_SPAWN, true);
-        hidePlayerBodyIfDead(peerAddress);
-    }
     currPlayer.x = X_SPAWN;
     currPlayer.y = Y_SPAWN;
     currPlayer.playerFacingLeft = false;
+}
+
+void InGameUI::resetAllPlayers()
+{
+    // could use getAllPlayers function
+    // teleport all players and hide bodies
+    QList<QString> peerAddresses = otherPlayers.keys();
+    for(QString peerAddress : peerAddresses)
+        hidePlayerBodyIfDead(peerAddress);
+    teleportAllPlayers();
     if(currPlayer.isGhost) currPlayer.showBody = false;
 }
 
@@ -657,6 +678,7 @@ bool isAliveCrewmate(Player* player)
 
 quint8 InGameUI::getAlivePlayersNumber()
 {
+    // could use getAllPlayers maybe other functions too need this function
     quint8 alivePlayersNumber = currPlayer.isGhost ? 0 : 1;
     for(Player& player : otherPlayers)
         if(!player.isGhost)
@@ -675,12 +697,11 @@ void InGameUI::executeVote(QString voteStr)
     if(meetingWidget->waitingVotes == 0)
     {
         QList<QString> nicknames = meetingWidget->votes.keys();
-        quint8 maxVotes = 0, nicknamesSize = nicknames.size();
+        quint8 maxVotes = 0;
         QString nicknameMostVoted = "";
         bool exAequo = false;
-        for(quint8 nicknamesIndex = 0; nicknamesIndex < nicknamesSize; nicknamesIndex++)
+        for(QString nickname : nicknames)
         {
-            QString nickname = nicknames[nicknamesIndex];
             quint8 currentVotes = meetingWidget->votes[nickname];
             if(currentVotes > maxVotes)
             {
@@ -689,15 +710,12 @@ void InGameUI::executeVote(QString voteStr)
                 exAequo = false;
             }
             else if(currentVotes == maxVotes && currentVotes > 0)
-            {
                 exAequo = true;
-            }
         }
         if(nicknameMostVoted != "" && !exAequo)
-        {
             killPlayer(*getPlayer(nicknameMostVoted));
-        }
         resetAllPlayers(); // could also TP before opening meeting interface
+        lastKillTime = QDateTime::currentSecsSinceEpoch();
         closeMeetingUI();
         checkEndOfTheGame();
     }
@@ -791,7 +809,7 @@ void InGameUI::onClickUse() {
     if(isNearEmergencyButton())
     {
         triggerMeeting();
-        numberOfEmergenciesRequested++;
+        currPlayer.numberOfEmergenciesRequested++;
         return;
     }
 
@@ -969,18 +987,38 @@ void InGameUI::mouseMoveEvent(QMouseEvent *mouseEvent) {
 
 void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
     if(everyoneReady && mouseEvent->button() == Qt::LeftButton) {
+        int mouseX = mouseEvent->x(), mouseY = mouseEvent->y();
+        int width = size().width(), height = size().height();
+        bool isBottomRight = mouseX >= width-110 && mouseX < width && mouseY >= height-110 && mouseY < height;
         if(currentInGameGUI == IN_GAME_GUI_NONE) {
-            int mouseX = mouseEvent->x(), mouseY = mouseEvent->y();
-            int width = size().width(), height = size().height();
             if(mouseX >= width-220 && mouseX < width-110 && mouseY >= height-110 && mouseY < height && findKillablePlayer())
                 onClickKill();
-            else if(mouseX >= width-110 && mouseX < width && mouseY >= height-110 && mouseY < height && findReportableBody())
+            else if(isBottomRight && findReportableBody())
                 onClickReport();
             else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton()))
-                onClickUse();
+                    onClickUse();
         }
         else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS) {
             onMouseEventAsteroids(mouseEvent);
+        }
+        else if(isWinScreen())
+        {
+            if(isBottomRight)
+            {
+                // could almost bypass waiting first ready phase - I thought to do a ready like on the win screen before the real ready but clicking on play again button to switch to first ready interface is better
+                QList<Player*> players = getAllPlayers();
+                for(Player* player : players)
+                {
+                    player->isImpostor = false;
+                    player->isReady = false;
+                    player->isGhost = false;
+                    player->showBody = false;
+                    player->numberOfEmergenciesRequested = 0;
+                }
+                teleportAllPlayers();
+                everyoneReady = false;
+                currentInGameGUI = IN_GAME_GUI_NONE;
+            }
         }
     }
 }
