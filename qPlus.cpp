@@ -183,7 +183,7 @@ QString firstUppercase(QString s)
 bool isTCPPortInUse(quint16 port)
 {
     QTcpSocket* socket = new QTcpSocket();
-    bool res = socket->bind(port, QAbstractSocket::DontShareAddress);
+    bool res = socket->bind(port, QAbstractSocket::DontShareAddress | QAbstractSocket::ReuseAddressHint);
     delete(socket);
     return !res;
 }
