@@ -94,7 +94,12 @@ void Client::dataReceived()
 
     // On remet la taille du message à 0 pour pouvoir recevoir de futurs messages
     messageSize = 0;
-    qInfo() << "bytesAvailable:" << socket->bytesAvailable();
+    //qInfo() << "bytesAvailable:" << socket->bytesAvailable();
+    if(socket->bytesAvailable() > 0)
+    {
+        qInfo("Client::dataReceived recursive was needed");
+        dataReceived();
+    }
 }
 
 void Client::processMessageClient(QString message)
