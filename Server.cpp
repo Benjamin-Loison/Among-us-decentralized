@@ -69,6 +69,11 @@ void Server::dataReceived()
 
     // 2 : remise de la taille du message à 0 pour permettre la réception des futurs messages
     messageSize = 0;
+    if(socket->bytesAvailable() > 0)
+    {
+        qInfo("Server::dataReceived recursive was needed");
+        dataReceived();
+    }
 }
 
 void processMessageCommon(QTcpSocket* socket, QString messagePart)
