@@ -391,6 +391,8 @@ void InGameUI::redraw()
         qHeight = qSize.height();
     if(isWinScreen())
     {
+        leftBackground = 0;
+        topBackground = 0;
         QPixmap *oldPixmap = windowPixmap;
         windowPixmap = new QPixmap(qSize);
         QPainter painter(windowPixmap);
@@ -420,7 +422,7 @@ void InGameUI::redraw()
         {
             Player* player = players[playersIndex];
             //qInfo() << "winner:" << player->nickname << middleX << middleY << qSize.width() << qSize.height();
-            displayPlayer(*player, &painter, false/*true*/, middleX + 50 * playersIndex, middleY);
+            displayPlayer(*player, &painter, false/*true*/, (quint16)((2*middleX + player->playerPixmap->width() * (2*playersIndex - playersSize + 1))/2), middleY + player->playerPixmap->height()/2);
         }
         painter.drawImage(qWidth - 130, qHeight - 130, playAgainButtonImage);
 
