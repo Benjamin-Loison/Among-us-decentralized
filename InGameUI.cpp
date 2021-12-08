@@ -687,12 +687,18 @@ quint8 InGameUI::getAlivePlayersNumber()
 }
 
 // see voted for the moment would be nice
-void InGameUI::executeVote(QString voteStr)
+void InGameUI::executeVote(QString voteStr, Player *voter)
 {
     meetingWidget->waitingVotes--;
     if(voteStr != "Skip")
     {
-        meetingWidget->votes[voteStr.replace("Voted ", "")]++;
+        QString voteNickname = voteStr.replace("Voted ", "");
+        meetingWidget->votes[voteNickname]++;
+        meetingWidget->votesByPlayer[voter->nickname] = getPlayer(voteNickname);
+    }
+    else {
+        meetingWidget->skipVotes++;
+        meetingWidget->votesByPlayer[voter->nickname] = nullptr;
     }
     if(meetingWidget->waitingVotes == 0)
     {
@@ -712,7 +718,7 @@ void InGameUI::executeVote(QString voteStr)
             else if(currentVotes == maxVotes && currentVotes > 0)
                 exAequo = true;
         }
-        if(nicknameMostVoted != "" && !exAequo)
+        if(2*meetingWidget->skipVotes < inGameUI->getAlivePlayersNumber() && nicknameMostVoted != "" && !exAequo)
             killPlayer(*getPlayer(nicknameMostVoted));
         resetAllPlayers(); // could also TP before opening meeting interface
         lastKillTime = QDateTime::currentSecsSinceEpoch();

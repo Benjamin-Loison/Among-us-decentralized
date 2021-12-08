@@ -88,7 +88,7 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
     }
     else if(messagePart == "Skip" || messagePart.startsWith("Voted "))
     {
-        inGameUI->executeVote(messagePart);
+        inGameUI->executeVote(messagePart, player);
     }
     else if(messagePart.startsWith("RandomHashed "))
     {

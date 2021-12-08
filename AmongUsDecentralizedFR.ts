@@ -4,37 +4,37 @@
 <context>
     <name>InGameUI</name>
     <message>
-        <location filename="InGameUI.cpp" line="20"/>
+        <location filename="InGameUI.cpp" line="21"/>
         <source>Among Us decentralized</source>
         <translation>Among Us décentralisé</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="392"/>
+        <location filename="InGameUI.cpp" line="398"/>
         <source>crewmates</source>
         <translation>équipiers</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="392"/>
+        <location filename="InGameUI.cpp" line="398"/>
         <source>impostors</source>
         <translation>imposteurs</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="394"/>
+        <location filename="InGameUI.cpp" line="400"/>
         <source>%1&apos; victory</source>
         <translation>victoire des %1</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="493"/>
+        <location filename="InGameUI.cpp" line="498"/>
         <source>You are an Impostor !</source>
         <translation>Vous êtes un imposteur !</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="525"/>
+        <location filename="InGameUI.cpp" line="546"/>
         <source>Ready</source>
         <translation>Prêt</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="553"/>
+        <location filename="InGameUI.cpp" line="574"/>
         <source>Waiting for other players</source>
         <translation>En attente des autres joueurs</translation>
     </message>
@@ -53,8 +53,8 @@
     </message>
     <message>
         <location filename="meetings.cpp" line="15"/>
-        <source>Emergency meeting asked by %1</source>
-        <translation>Réunion d&apos;urgence réclamé par %1</translation>
+        <source>Emergency meeting requested by %1</source>
+        <translation>Réunion d&apos;urgence réclamée par %1</translation>
     </message>
     <message>
         <location filename="meetings.cpp" line="23"/>
@@ -80,39 +80,39 @@
         <translation>%1 restant(s)</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="47"/>
+        <location filename="main.cpp" line="54"/>
         <source>First to run</source>
         <translation>Premier à rejoindre la partie</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="47"/>
+        <location filename="main.cpp" line="54"/>
         <source>Are you the first to run for this game ?</source>
         <translation>Êtes-vous le premier à rejoindre la partie ?</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="62"/>
+        <location filename="main.cpp" line="69"/>
         <source>Peer address</source>
         <translation>Adresse d&apos;un participant</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="62"/>
+        <location filename="main.cpp" line="69"/>
         <source>A peer address</source>
-        <translation>Une adresse d&apos;un participant</translation>
+        <translation>L&apos;adresse d&apos;un participant</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="99"/>
-        <location filename="main.cpp" line="115"/>
+        <location filename="main.cpp" line="103"/>
+        <location filename="main.cpp" line="120"/>
         <source>Nickname</source>
         <translation>Pseudonyme</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="99"/>
+        <location filename="main.cpp" line="103"/>
         <source>Your nickname</source>
         <translation>Votre pseudonyme</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="115"/>
-        <source>This nickname is already used !</source>
+        <location filename="main.cpp" line="120"/>
+        <source>This nickname is already used!</source>
         <translation>Ce pseudonyme est déjà utilisé !</translation>
     </message>
 </context>

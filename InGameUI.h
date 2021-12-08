@@ -96,7 +96,7 @@ class InGameUI : public QLabel
         void setPlayerReady(QString peerAddress, bool threadSafe = false);
         void checkEndOfTheGame();
         void taskFinished(TaskTime taskTime);
-        void executeVote(QString voteStr);
+        void executeVote(QString voteStr, Player *voter);
         quint8 getAlivePlayersNumber();
         quint8 getAliveCrewmatesNumber();
         quint8 getAliveImpostorsNumber();

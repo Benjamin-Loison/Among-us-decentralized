@@ -2,18 +2,19 @@
 #include "Server.h"
 #include "main.h"
 
-MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reportingPlayer): QWidget(parent), votedPlayer(nullptr), voted(false) {
-    skipVotes = inGameUI->getAlivePlayersNumber();
-    waitingVotes = skipVotes;
+MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reportingPlayer): QWidget(parent), skipVotes(0), votedPlayer(nullptr), voted(false) {
+    waitingVotes = inGameUI->getAlivePlayersNumber();
     setAutoFillBackground(true);
     layout = new QGridLayout(this);
+
     titleLabel = new QLabel("<b>" + tr("Who is the Impostor ?") + "</b>");
     layout->addWidget(titleLabel, 0, 0, 1, -1);
     if(reportedPlayer)
         reportedPlayerLabel = new QLabel(QString(tr("%1's body was found by %2")).arg(reportedPlayer->nickname).arg(reportingPlayer->nickname)); /// should display who activate the meeting
     else
-        reportedPlayerLabel = new QLabel(QString(tr("Emergency meeting asked by %1")).arg(reportingPlayer->nickname)); // No dead body reported
+        reportedPlayerLabel = new QLabel(QString(tr("Emergency meeting requested by %1")).arg(reportingPlayer->nickname)); // No dead body reported
     layout->addWidget(reportedPlayerLabel, 1, 0, 1, -1);
+
     int iPlayer = 0;
     QVector<Player*> players;
     players.push_back(&parent->currPlayer);
@@ -31,6 +32,7 @@ MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reporting
         playerButtons.push_back(button);
         iPlayer++;
     }
+
     int skipRow = 2+iPlayer/MEETING_PLAYERS_PER_ROW;
     if(iPlayer % MEETING_PLAYERS_PER_ROW != 0)
         skipRow++;
@@ -56,7 +58,15 @@ void MeetingUI::voteFor(Player* player) {
     titleLabel->setText("<b>" + tr("Waiting for other players...") + "</b>");
     QString toSend = player ? "Voted " + player->nickname : "Skip";
     sendToAll(toSend); // TODO: delay votes till the end?
-    inGameUI->executeVote(toSend);
+    inGameUI->executeVote(toSend, &inGameUI->currPlayer);
     /*InGameUI* parentUI = static_cast<InGameUI*>(parent());
     parentUI->closeMeetingUI();*/
+}
+
+MeetingResultsUI::MeetingResultsUI(InGameUI *parent, QMap<QString, quint8> votes, QMap<QString, Player*> votesByPlayer, quint8 skipVotes): QWidget(parent), votes(votes), votesByPlayer(votesByPlayer), skipVotes(skipVotes) {
+    layout = new QGridLayout(this);
+
+    titleLabel = new QLabel("<b>" + tr("Voting results") + "</b>");
+    layout->addWidget(titleLabel, 0, 0, 1, -1);
+    // TODO
 }
