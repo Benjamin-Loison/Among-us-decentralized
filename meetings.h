@@ -48,11 +48,20 @@ private:
     QLabel* titleLabel;
     QVector<QLabel*> playerLabels;
     QVector<QLabel*> voterLabels;
+    QLabel* skipLabel;
+    QLabel* skipVotersLabel;
     QLabel* verdictLabel;
     QPushButton* proceedButton;
+    quint8 proceedsLeft;
+    Player* whoToKill;
+    void updateProceedButton();
 
 public:
     MeetingResultsUI(InGameUI *parent, QMap<QString, quint8> votes, QMap<QString, Player*> votesByPlayer, quint8 skipVotes);
+    void onProceed();
+
+public slots:
+    void onClickProceed();
 };
 
 #endif

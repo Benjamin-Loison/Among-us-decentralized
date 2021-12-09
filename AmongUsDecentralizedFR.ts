@@ -9,34 +9,97 @@
         <translation>Among Us décentralisé</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="398"/>
+        <location filename="InGameUI.cpp" line="400"/>
         <source>crewmates</source>
         <translation>équipiers</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="398"/>
+        <location filename="InGameUI.cpp" line="400"/>
         <source>impostors</source>
         <translation>imposteurs</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="400"/>
+        <location filename="InGameUI.cpp" line="402"/>
         <source>%1&apos; victory</source>
         <translation>victoire des %1</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="498"/>
+        <location filename="InGameUI.cpp" line="500"/>
         <source>You are an Impostor !</source>
         <translation>Vous êtes un imposteur !</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="546"/>
+        <location filename="InGameUI.cpp" line="548"/>
         <source>Ready</source>
         <translation>Prêt</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="574"/>
+        <location filename="InGameUI.cpp" line="576"/>
         <source>Waiting for other players</source>
         <translation>En attente des autres joueurs</translation>
+    </message>
+</context>
+<context>
+    <name>MeetingResultsUI</name>
+    <message>
+        <location filename="meetings.cpp" line="70"/>
+        <source>Voting results</source>
+        <translation>Résultats du vote</translation>
+    </message>
+    <message>
+        <location filename="meetings.cpp" line="97"/>
+        <source>Skip vote</source>
+        <translation>Passer le vote</translation>
+    </message>
+    <message>
+        <location filename="meetings.cpp" line="105"/>
+        <source>Majority voted to skip vote. No player was killed.</source>
+        <translation>La majorité a voté pour passer le vote. Aucun joueur n&apos;a été tué.</translation>
+    </message>
+    <message>
+        <location filename="meetings.cpp" line="126"/>
+        <source>%1 got the most votes and was killed.</source>
+        <translation>%1 a obtenu le plus de votes et a été tué.</translation>
+    </message>
+    <message>
+        <location filename="meetings.cpp" line="128"/>
+        <source>He was an Impostor.</source>
+        <translation>C&apos;était un imposteur.</translation>
+    </message>
+    <message>
+        <location filename="meetings.cpp" line="140"/>
+        <source>%1 Impostor left.</source>
+        <translation>%1 imposteur restant.</translation>
+    </message>
+    <message>
+        <location filename="meetings.cpp" line="142"/>
+        <source>%1 Impostors left.</source>
+        <translation>%1 imposteurs restants.</translation>
+    </message>
+    <message>
+        <location filename="meetings.cpp" line="132"/>
+        <source>He was not an Impostor.</source>
+        <translation>Ce n&apos;était pas un imposteur.</translation>
+    </message>
+    <message>
+        <location filename="meetings.cpp" line="136"/>
+        <source>A tie occurred. No player was killed.</source>
+        <translation>Ex-aequo. Aucun joueur n&apos;a été tué.</translation>
+    </message>
+    <message>
+        <location filename="meetings.cpp" line="147"/>
+        <source>Proceed</source>
+        <translation>Continuer</translation>
+    </message>
+    <message>
+        <location filename="meetings.cpp" line="159"/>
+        <source>Waiting for one other player...</source>
+        <translation>En attente d&apos;un autre joueur...</translation>
+    </message>
+    <message>
+        <location filename="meetings.cpp" line="161"/>
+        <source>Waiting for %1 other players...</source>
+        <translation>En attente de %1 autres joueurs</translation>
     </message>
 </context>
 <context>
@@ -57,17 +120,17 @@
         <translation>Réunion d&apos;urgence réclamée par %1</translation>
     </message>
     <message>
-        <location filename="meetings.cpp" line="23"/>
+        <location filename="meetings.cpp" line="24"/>
         <source>%1 (dead)</source>
         <translation>%1 (mort)</translation>
     </message>
     <message>
-        <location filename="meetings.cpp" line="37"/>
+        <location filename="meetings.cpp" line="39"/>
         <source>Skip vote</source>
         <translation>Passer le vote</translation>
     </message>
     <message>
-        <location filename="meetings.cpp" line="56"/>
+        <location filename="meetings.cpp" line="58"/>
         <source>Waiting for other players...</source>
         <translation>En attente des autres joueurs...</translation>
     </message>

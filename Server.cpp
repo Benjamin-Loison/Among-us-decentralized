@@ -95,6 +95,11 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
     {
         inGameUI->executeVote(messagePart, player);
     }
+    else if(messagePart == "Proceed_vote")
+    {
+        if(inGameUI->meetingResultsWidget)
+            inGameUI->meetingResultsWidget->onProceed();
+    }
     else if(messagePart.startsWith("RandomHashed "))
     {
         if(player->privateRandomHashed == "")

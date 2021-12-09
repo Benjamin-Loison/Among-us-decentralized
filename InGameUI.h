@@ -61,8 +61,9 @@ class InGameUI : public QLabel
     public:
         Player currPlayer; // used to be private
         QMap<QString, Player> otherPlayers; //same
-        QLabel* qLabel;
-        MeetingUI* meetingWidget; // may be merged with qLabel
+        QLabel *qLabel;
+        MeetingUI *meetingWidget; // may be merged with qLabel
+        MeetingResultsUI *meetingResultsWidget;
         void initialize(QString nickname);
         void initDisplay();
         void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
@@ -97,6 +98,7 @@ class InGameUI : public QLabel
         void checkEndOfTheGame();
         void taskFinished(TaskTime taskTime);
         void executeVote(QString voteStr, Player *voter);
+        void onAllProceeded(Player* whoToKill);
         quint8 getAlivePlayersNumber();
         quint8 getAliveCrewmatesNumber();
         quint8 getAliveImpostorsNumber();

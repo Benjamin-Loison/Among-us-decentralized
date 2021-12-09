@@ -704,29 +704,25 @@ void InGameUI::executeVote(QString voteStr, Player *voter)
     }
     if(meetingWidget->waitingVotes == 0)
     {
-        QList<QString> nicknames = meetingWidget->votes.keys();
-        quint8 maxVotes = 0;
-        QString nicknameMostVoted = "";
-        bool exAequo = false;
-        for(QString nickname : nicknames)
-        {
-            quint8 currentVotes = meetingWidget->votes[nickname];
-            if(currentVotes > maxVotes)
-            {
-                maxVotes = currentVotes;
-                nicknameMostVoted = nickname;
-                exAequo = false;
-            }
-            else if(currentVotes == maxVotes && currentVotes > 0)
-                exAequo = true;
-        }
-        if(2*meetingWidget->skipVotes < inGameUI->getAlivePlayersNumber() && nicknameMostVoted != "" && !exAequo)
-            killPlayer(*getPlayer(nicknameMostVoted));
-        resetAllPlayers(); // could also TP before opening meeting interface
-        lastKillTime = QDateTime::currentSecsSinceEpoch();
+        meetingResultsWidget = new MeetingResultsUI(this, meetingWidget->votes, meetingWidget->votesByPlayer, meetingWidget->skipVotes);
         closeMeetingUI();
-        checkEndOfTheGame();
+        currHLayout = makeCenteredLayout(meetingResultsWidget);
+        setLayout(currHLayout);
+        currentInGameGUI = IN_GAME_GUI_MEETING;
     }
+}
+
+void InGameUI::onAllProceeded(Player* whoToKill) {
+    if(whoToKill)
+        killPlayer(*whoToKill);
+    resetAllPlayers(); // could also TP before opening meeting interface
+    lastKillTime = QDateTime::currentSecsSinceEpoch();
+    delete meetingResultsWidget;
+    delete currHLayout;
+    meetingResultsWidget = nullptr;
+    currHLayout = nullptr;
+    currentInGameGUI = IN_GAME_GUI_NONE;
+    checkEndOfTheGame();
 }
 
 quint8 InGameUI::getAliveCrewmatesNumber()
@@ -911,7 +907,7 @@ void InGameUI::openMeetingUI(Player* reportedPlayer, Player* reportingPlayer) {
         closeMap();
     meetingWidget = new MeetingUI(this, reportedPlayer, reportingPlayer);
 
-    currHLayout = makeCenteredLayout(meetingWidget);;
+    currHLayout = makeCenteredLayout(meetingWidget);
     setLayout(currHLayout);
     currentInGameGUI = IN_GAME_GUI_MEETING;
 }
