@@ -95,6 +95,7 @@ class InGameUI : public QLabel
         void onEverybodyReadySub(bool threadSafe);
         void checkEverybodyReady(bool threadSafe = false);
         void setPlayerReady(QString peerAddress, bool threadSafe = false);
+        void unreadyTeleportEveryone();
         void checkEndOfTheGame();
         void taskFinished(TaskTime taskTime);
         void executeVote(QString voteStr, Player *voter);

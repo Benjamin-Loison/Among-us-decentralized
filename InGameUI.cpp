@@ -574,6 +574,7 @@ void InGameUI::onReadyClicked() {
             qDebug() << "Ready clicked";
             currPlayer.isReady = true;
             readyButton->setText(tr("Waiting for other players"));
+            readyButton->setEnabled(false);
             sendToAll("ready");
             checkEverybodyReady();
         }
@@ -744,11 +745,19 @@ quint8 InGameUI::getAliveImpostorsNumber()
     return getAlivePlayersNumber() - getAliveCrewmatesNumber();
 }
 
+void InGameUI::unreadyTeleportEveryone() {
+    for(Player* player : getAllPlayers())
+        player->isReady = false;
+    teleportAllPlayers();
+    everyoneReady = false;
+}
+
 void InGameUI::checkEndOfTheGame() // could optimize by precising which checkEndOfTheGame (task or death) to optimize
 {
     if(gameCommonTasks + gameLongTasks + gameShortTasks == 0)
     {
         qInfo("all crewmates tasks done !");
+        unreadyTeleportEveryone();
         currentInGameGUI = IN_GAME_GUI_WIN_CREWMATES;
     }
     else
@@ -756,11 +765,13 @@ void InGameUI::checkEndOfTheGame() // could optimize by precising which checkEnd
         if(getAliveCrewmatesNumber() == 0)
         {
             qInfo("impostors win !");
+            unreadyTeleportEveryone();
             currentInGameGUI = IN_GAME_GUI_WIN_IMPOSTORS;
         }
         else if(getAliveImpostorsNumber() == 0)
         {
             qInfo("crewmates win !");
+            unreadyTeleportEveryone();
             currentInGameGUI = IN_GAME_GUI_WIN_CREWMATES;
         }
     }
@@ -990,20 +1001,22 @@ void InGameUI::mouseMoveEvent(QMouseEvent *mouseEvent) {
 }
 
 void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
-    if(everyoneReady && mouseEvent->button() == Qt::LeftButton) {
+    if(mouseEvent->button() == Qt::LeftButton) {
         int mouseX = mouseEvent->x(), mouseY = mouseEvent->y();
         int width = size().width(), height = size().height();
         bool isBottomRight = mouseX >= width-110 && mouseX < width && mouseY >= height-110 && mouseY < height;
-        if(currentInGameGUI == IN_GAME_GUI_NONE) {
-            if(mouseX >= width-220 && mouseX < width-110 && mouseY >= height-110 && mouseY < height && findKillablePlayer())
-                onClickKill();
-            else if(isBottomRight && findReportableBody())
-                onClickReport();
-            else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton()))
-                    onClickUse();
-        }
-        else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS) {
-            onMouseEventAsteroids(mouseEvent);
+        if(everyoneReady) {
+            if(currentInGameGUI == IN_GAME_GUI_NONE) {
+                if(mouseX >= width-220 && mouseX < width-110 && mouseY >= height-110 && mouseY < height && findKillablePlayer())
+                    onClickKill();
+                else if(isBottomRight && findReportableBody())
+                    onClickReport();
+                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton()))
+                        onClickUse();
+            }
+            else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS) {
+                onMouseEventAsteroids(mouseEvent);
+            }
         }
         else if(isWinScreen())
         {
@@ -1014,13 +1027,11 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                 for(Player* player : players)
                 {
                     player->isImpostor = false;
-                    player->isReady = false;
                     player->isGhost = false;
                     player->showBody = false;
                     player->numberOfEmergenciesRequested = 0;
                 }
                 teleportAllPlayers();
-                everyoneReady = false;
                 currentInGameGUI = IN_GAME_GUI_NONE;
             }
         }
@@ -1073,6 +1084,7 @@ void InGameUI::checkEverybodyReady(bool threadSafe)
 {
     if(!currPlayer.isReady) return;
     if(all_of(otherPlayers.begin(), otherPlayers.end(), [](Player player){return player.isReady;}))
+        onEverybodyReady(threadSafe);
     /*QList<QString> peerAddresses = otherPlayers.keys();
     for(QString peerAddress : peerAddresses)
     {
@@ -1082,7 +1094,6 @@ void InGameUI::checkEverybodyReady(bool threadSafe)
             return;
         }
     }*/
-    onEverybodyReady(threadSafe);
 }
 
 void InGameUI::setPlayerReady(QString peerAddress, bool threadSafe)
