@@ -820,6 +820,9 @@ void InGameUI::closeTask() {
         case IN_GAME_GUI_ASTEROIDS:
         onCloseAsteroids();
         break;
+        case IN_GAME_GUI_ENTER_ID_CODE :
+        onCloseEnterIDCode();
+        break;
         default:;
     }
     currentTask = nullptr;
@@ -850,6 +853,11 @@ void InGameUI::onClickUse() {
             currentTask = task;
             currentInGameGUI = IN_GAME_GUI_ASTEROIDS;
             qLabel = getAsteroids(elapsedTimer->elapsed());
+            break;
+        case TASK_ENTER_ID_CODE :
+            currentTask = task;
+            currentInGameGUI = IN_GAME_GUI_ENTER_ID_CODE;
+            qLabel = getEnterIDCode();
             break;
         default:
             return;
@@ -1005,6 +1013,8 @@ void InGameUI::mouseMoveEvent(QMouseEvent *mouseEvent) {
     {
         if (currentInGameGUI == IN_GAME_GUI_FIX_WIRING)
             onMouseEventFixWiring(mouseEvent);
+        if (currentInGameGUI == IN_GAME_GUI_ENTER_ID_CODE)
+            onMouseEventEnterIDCode(mouseEvent);
     }
     QLabel::mouseMoveEvent(mouseEvent);
 }

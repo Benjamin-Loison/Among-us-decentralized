@@ -4,8 +4,12 @@
 #include <QRandomGenerator>
 using namespace std;
 
-QMap<TaskType, TaskTime> taskTimes{{TASK_ASTEROIDS, TASK_SHORT}, {TASK_FIX_WIRING, TASK_COMMON}};
-QMap<TaskType, QList<QPoint>> taskLocations{{TASK_ASTEROIDS, {QPoint(6653, 900)}}, {TASK_FIX_WIRING, {QPoint(4060, 360), QPoint(5433,2444), QPoint(7455,2055)}}};
+QMap<TaskType, TaskTime> taskTimes{{TASK_ASTEROIDS, TASK_SHORT}, {TASK_FIX_WIRING, TASK_COMMON}, {TASK_ENTER_ID_CODE, TASK_COMMON},};
+QMap<TaskType, QList<QPoint>> taskLocations{
+    {TASK_ASTEROIDS, {QPoint(6653, 900)}},
+    {TASK_FIX_WIRING, {QPoint(4060, 360), QPoint(5433,2444), QPoint(7455,2055)}}, 
+    {TASK_ENTER_ID_CODE, {QPoint(0, 0)}}
+    };
 
 quint8 commonTasks = 1, longTasks = /*1*/0, shortTasks = /*2*/1;
 

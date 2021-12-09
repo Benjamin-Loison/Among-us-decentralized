@@ -20,6 +20,7 @@
 #include "qPlus.h"
 #include "Task.h"
 #include <QThread>
+#include "EnterIDCode.h"
 
 #define EMERGENCY_BUTTON_X 4830
 #define EMERGENCY_BUTTON_Y 1045
