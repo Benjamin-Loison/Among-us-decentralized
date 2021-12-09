@@ -823,6 +823,9 @@ void InGameUI::closeTask() {
         case IN_GAME_GUI_ENTER_ID_CODE :
         onCloseEnterIDCode();
         break;
+        case IN_GAME_GUI_ALIGN_ENGINE:
+        onCloseAlignEngine();
+        break;
         default:;
     }
     currentTask = nullptr;
@@ -858,6 +861,11 @@ void InGameUI::onClickUse() {
             currentTask = task;
             currentInGameGUI = IN_GAME_GUI_ENTER_ID_CODE;
             qLabel = getEnterIDCode();
+            break;
+        case TASK_ALIGN_ENGINE :
+            currentTask = task;
+            currentInGameGUI = IN_GAME_GUI_ALIGN_ENGINE;
+            qLabel = getAlignEngine();
             break;
         default:
             return;
