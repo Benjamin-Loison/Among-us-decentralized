@@ -16,7 +16,8 @@ SOURCES += \
     Client.cpp \
     Task.cpp \
     GameMap.cpp \
-    meetings.cpp
+    meetings.cpp \
+    EnterIDCode.cpp
 
 HEADERS += \
     InGameUI.h \
@@ -29,7 +30,8 @@ HEADERS += \
     Client.h \
     Task.h \
     GameMap.h \
-    meetings.h
+    meetings.h \
+    EnterIDCode.h \ 
 
 # Source: https://stackoverflow.com/questions/19066593/copy-a-file-to-build-directory-after-compiling-project-with-qt
 win32 {
