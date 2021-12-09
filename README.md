@@ -44,8 +44,8 @@ Requires Qt 5.12.11 (or probably any other recent version). To build on Ubuntu, 
 - open `AmongUsDecentralized.pro` in Qt Creator, then click "Build Project",
 - or, from a build directory, run `qmake path/to/AmongUsDecentralized.pro` then `make`.
 
-To build .ts "to translate" file: lupdate AmongUsDecentralized.pro<br>
-To build .qm "translated" file: lrelease AmongUsDecentralized.pro<br>
+To build the .ts "to translate" file: `lupdate AmongUsDecentralized.pro`  
+To build the .qm "translated" file: `lrelease AmongUsDecentralized.pro`  
 Don't forget to put the .qm file into the directory storing the AmongUsDecentralized executable.
 
 <!-------------

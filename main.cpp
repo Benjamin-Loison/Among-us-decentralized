@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
             realNicknames.push_back(nickname);
         }
         if(realNicknames.contains(nickname))
-            showWarningMessage(QObject::tr("Nickname"), QObject::tr("This nickname is already used !"));
+            showWarningMessage(QObject::tr("Nickname"), QObject::tr("This nickname is already used!"));
         else
             break;
     }

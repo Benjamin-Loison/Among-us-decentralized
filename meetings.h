@@ -18,6 +18,7 @@ class MeetingUI: public QWidget {
 
 public:
     QMap<QString, quint8> votes;
+    QMap<QString, Player*> votesByPlayer;
     quint8 skipVotes, waitingVotes;
 
 private:
@@ -32,6 +33,35 @@ private:
 
 public:
     MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reportingPlayer);
+};
+
+class MeetingResultsUI: public QWidget {
+    Q_OBJECT
+
+public:
+    QMap<QString, quint8> votes;
+    QMap<QString, Player*> votesByPlayer;
+    quint8 skipVotes;
+
+private:
+    QGridLayout* layout;
+    QLabel* titleLabel;
+    QVector<QLabel*> playerLabels;
+    QVector<QLabel*> voterLabels;
+    QLabel* skipLabel;
+    QLabel* skipVotersLabel;
+    QLabel* verdictLabel;
+    QPushButton* proceedButton;
+    quint8 proceedsLeft;
+    Player* whoToKill;
+    void updateProceedButton();
+
+public:
+    MeetingResultsUI(InGameUI *parent, QMap<QString, quint8> votes, QMap<QString, Player*> votesByPlayer, quint8 skipVotes);
+    void onProceed();
+
+public slots:
+    void onClickProceed();
 };
 
 #endif
