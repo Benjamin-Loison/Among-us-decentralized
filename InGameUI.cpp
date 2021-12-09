@@ -330,13 +330,13 @@ bool InGameUI::killPlayer(Player &p) {
 void InGameUI::displayPlayer(const Player &player, QPainter *painter, bool showGhost, quint16 forceX, quint16 forceY)
 {
     // Only ghosts see ghosts
-    if(showGhost && (!currPlayer.isGhost || !player.isGhost))
+    if(showGhost && ((!currPlayer.isGhost && !forceX && !forceY) || !player.isGhost))
     {
         //qInfo("stoped");
         return;
     }
-    else if(player.isGhost && !player.showBody && !showGhost)
-        displayPlayer(player, painter, true);
+    else if(player.isGhost && (!player.showBody || (forceX && forceY)) && !showGhost)
+        return;
     else {
         int x = forceX ? forceX : (player.isGhost && !showGhost) ? player.bodyX : player.x;
         int y = forceY ? forceY : (player.isGhost && !showGhost) ? player.bodyY : player.y;
@@ -344,13 +344,13 @@ void InGameUI::displayPlayer(const Player &player, QPainter *painter, bool showG
         if(!showGhost) {
             if(player.isGhost)
                 toDraw = player.deadPixmap;
-            else if(player.playerFacingLeft)
+            else if(player.playerFacingLeft && !forceX && !forceY)
                 toDraw = player.flippedPixmap;
             else
                 toDraw = player.playerPixmap;
         }
         else {
-            if(player.playerFacingLeft)
+            if(player.playerFacingLeft && !forceX && !forceY)
                 toDraw = player.flippedGhostPixmap;
             else
                 toDraw = player.ghostPixmap;
@@ -368,9 +368,7 @@ void InGameUI::displayPlayer(const Player &player, QPainter *painter, bool showG
         newPainter->fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
         newPainter->drawText(textRect, Qt::TextDontClip | Qt::AlignCenter, player.nickname, &boundingRect);
         newPainter->setPen(oldPen);
-        if(!showGhost)
-            displayPlayer(player, newPainter, true);
-        if (!painter)
+        if(!painter)
             delete newPainter;
     }
 }
@@ -386,6 +384,9 @@ bool InGameUI::isWinScreen()
  */
 void InGameUI::redraw()
 {
+    qint64 now = elapsedTimer->elapsed();
+    qint64 elapsed = now - lastUpdate;
+    lastUpdate = now;
     QSize qSize = size();
     int qWidth = qSize.width(),
         qHeight = qSize.height();
@@ -422,7 +423,8 @@ void InGameUI::redraw()
         {
             Player* player = players[playersIndex];
             //qInfo() << "winner:" << player->nickname << middleX << middleY << qSize.width() << qSize.height();
-            displayPlayer(*player, &painter, false/*true*/, (quint16)((2*middleX + player->playerPixmap->width() * (2*playersIndex - playersSize + 1))/2), middleY + player->playerPixmap->height()/2);
+            for(bool showGhost : {false, true})
+                displayPlayer(*player, &painter, showGhost, (quint16)((2*middleX + player->playerPixmap->width() * (2*playersIndex - playersSize + 1))/2), middleY + player->playerPixmap->height()/2);
         }
         painter.drawImage(qWidth - 130, qHeight - 130, playAgainButtonImage);
 
@@ -431,9 +433,6 @@ void InGameUI::redraw()
         return;
     }
     // Movement
-    qint64 now = elapsedTimer->elapsed();
-    qint64 elapsed = now - lastUpdate;
-    lastUpdate = now;
     if (currentInGameGUI == IN_GAME_GUI_NONE || currentInGameGUI == IN_GAME_GUI_MAP)
     {
         bool moveVert = isPressed[Qt::Key_Up] != isPressed[Qt::Key_Down];
@@ -468,18 +467,18 @@ void InGameUI::redraw()
     windowPixmap = new QPixmap(qSize);
     QPainter painter(windowPixmap);
     setCenterBorderLimit(currPlayer.x, currPlayer.y - currPlayer.playerPixmap->size().height() / 2, &painter);
-    // Display players with ascending y, then ascending x
+    // Display players with ascending y, then ascending x.
+    // Display ghosts above alive players and dead bodies.
     QVector<Player *> players;
     players.push_back(&currPlayer);
     for (Player &player : otherPlayers)
         players.push_back(&player);
     sort(players.begin(), players.end(), [](const Player *a, const Player *b)
           {
-              bool isCurrPlayerGhost = inGameUI->currPlayer.isGhost;
-              int aY = isCurrPlayerGhost ? a->y : a->bodyY, // used to use a->isGhost
-                  aX = isCurrPlayerGhost ? a->x : a->bodyX,
-                  bY = isCurrPlayerGhost ? b->y : b->bodyY,
-                  bX = isCurrPlayerGhost ? b->x : b->bodyX;
+              int aY = a->isGhost ? a->bodyY : a->y,
+                  aX = a->isGhost ? a->bodyX : a->x,
+                  bY = b->isGhost ? b->bodyY : b->y,
+                  bX = b->isGhost ? b->bodyX : b->x;
               if(aY != bY)
                   return aY < bY;
               else if(aX != bX)
@@ -487,7 +486,17 @@ void InGameUI::redraw()
               return a->nickname.compare(b->nickname) < 0;
           });
     for (Player *player : players)
-        displayPlayer(*player, &painter);
+        displayPlayer(*player, &painter, false);
+    sort(players.begin(), players.end(), [](const Player *a, const Player *b)
+          {
+              if (a->y != b->y)
+                  return a->y < b->y;
+              else if(a->x != b->x)
+                  return a->x < b->x;
+              return a->nickname.compare(b->nickname) < 0;
+          });
+    for (Player *player : players)
+        displayPlayer(*player, &painter, true);
 
     int fontSizePt = 23;
     // Impostor message
@@ -1023,15 +1032,13 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
             if(isBottomRight)
             {
                 // could almost bypass waiting first ready phase - I thought to do a ready like on the win screen before the real ready but clicking on play again button to switch to first ready interface is better
-                QList<Player*> players = getAllPlayers();
-                for(Player* player : players)
+                for(Player* player : getAllPlayers())
                 {
                     player->isImpostor = false;
                     player->isGhost = false;
                     player->showBody = false;
                     player->numberOfEmergenciesRequested = 0;
                 }
-                teleportAllPlayers();
                 currentInGameGUI = IN_GAME_GUI_NONE;
             }
         }
