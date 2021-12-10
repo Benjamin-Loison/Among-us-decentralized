@@ -63,7 +63,7 @@ QPair<QPixmap*, QPainter*> getEnterIDCodePixmapPainter()
 QLabel* getEnterIDCode(){
     if(!EnterIDCodeBackgroundPixmap) {EnterIDCodeBackgroundPixmap = getQPixmap("EnterIdCode_resized.png");};
 
-    playSound("fix_wiring_task_open_sound.wav");
+    playSound("fix_wiring_task_open.wav");
     QLabel* qFrame = new QLabel;
     QHBoxLayout* hbox = new QHBoxLayout(qFrame);
     QLabel* qLabel = new QLabel(qFrame);
@@ -170,7 +170,7 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
     quint8 digit = DigitClicked(mouseX,mouseY);
 
     if (digit<DIGIT_UNDEFINED){
-        playSound("Enter_Id_Code_entering_number_sound.wav");
+        playSound("Enter_Id_Code_entering_number.wav");
         answer[current_digit]=digit;
         current_digit++;
     }
