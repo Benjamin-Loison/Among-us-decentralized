@@ -92,24 +92,32 @@ void playSound(QString soundFile) // could assume all sounds are .wav so can app
     soundEffectMap[soundFile]->play(); // run in a separate thread
 }
 
+void MessageBoxCross::closeEvent(QCloseEvent* closeEvent) {
+    exit(0);
+}
+
 bool getBool(QString title, QString label)
 {
     // X only works if add "| QMessageBox::Close" but it also add a button... same problem as (but potential answer doesn't solve the problem) https://forum.qt.io/topic/74991/qmessagebox-question-does-not-close-when-i-click-on-x-button-but-works-when-we-have-cancel-button-why-so
-    QMessageBox::StandardButton response = QMessageBox::question(inGameUI, title, label, QMessageBox ::Yes | QMessageBox::No);
+    MessageBoxCross msgBox;
+    msgBox.setWindowTitle(title);
+    msgBox.setText(label);
+    msgBox.setStandardButtons(QMessageBox ::Yes | QMessageBox::No);
+    int ret = msgBox.exec();
+    return ret == QMessageBox::Yes;
+    /*QMessageBox::StandardButton response = QMessageBox::question(inGameUI, title, label, );
     //qInfo() << "response:" << response;
-    return response == QMessageBox::Yes;
+    return response == QMessageBox::Yes;*/
 }
 
 QString getText(QString title, QString label, QString defaultText)
 {
     bool ok = false;
     QString text = "";
-
-    // like getBool if click on X it would be nice to QApplication::quit()
-    while(!ok || text.isEmpty())
-    {
+    while(text == "") {
         text = QInputDialog::getText(inGameUI, title, label, QLineEdit::Normal, defaultText, &ok);
-        //qInfo() << "ok:" << ok;
+        if(!ok)
+            exit(0);
     }
     return text;
 }

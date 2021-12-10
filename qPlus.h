@@ -5,10 +5,19 @@
 #include <QString>
 #include <QPixmap>
 #include <QHBoxLayout>
+#include <QMessageBox>
 
 class DebugEventFilter : public QObject {
 protected:
     bool eventFilter(QObject* obj, QEvent* event);
+
+};
+
+class MessageBoxCross : public QMessageBox {
+    Q_OBJECT
+
+protected:
+    void closeEvent(QCloseEvent *event);
 
 };
 
