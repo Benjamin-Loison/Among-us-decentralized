@@ -11,6 +11,7 @@ v2:
 
 doors
 who is where
+network debugging
 bonus: vent
 
 pour présentation, préparer diapo expliquant : architecture + fonctionnement en groupe...
