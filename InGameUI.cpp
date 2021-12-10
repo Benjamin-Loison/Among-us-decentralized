@@ -1021,8 +1021,6 @@ void InGameUI::mouseMoveEvent(QMouseEvent *mouseEvent) {
     {
         if (currentInGameGUI == IN_GAME_GUI_FIX_WIRING)
             onMouseEventFixWiring(mouseEvent);
-        if (currentInGameGUI == IN_GAME_GUI_ENTER_ID_CODE)
-            onMouseEventEnterIDCode(mouseEvent);
     }
     QLabel::mouseMoveEvent(mouseEvent);
 }
@@ -1044,6 +1042,8 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
             else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS) {
                 onMouseEventAsteroids(mouseEvent);
             }
+            else if (currentInGameGUI == IN_GAME_GUI_ENTER_ID_CODE)
+                onMouseEventEnterIDCode(mouseEvent);
         }
         else if(isWinScreen())
         {
