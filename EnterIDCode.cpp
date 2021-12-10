@@ -63,7 +63,7 @@ QPair<QPixmap*, QPainter*> getEnterIDCodePixmapPainter()
 QLabel* getEnterIDCode(){
     if(!EnterIDCodeBackgroundPixmap) {EnterIDCodeBackgroundPixmap = getQPixmap("EnterIdCode_resized.png");};
 
-    playSound("Fix_Wiring_task_open_sound.wav");
+    playSound("fix_wiring_task_open_sound.wav");
     QLabel* qFrame = new QLabel;
     QHBoxLayout* hbox = new QHBoxLayout(qFrame);
     QLabel* qLabel = new QLabel(qFrame);
@@ -216,7 +216,7 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
 
 
 void onCloseEnterIDCode() {
-    playSound("Fix_Wiring_task_close_sound.wav");
+    playSound("fix_wiring_task_close_sound.wav");
     resetCode();
     if(currEnterIDCodeLabel) {
         delete currEnterIDCodeLabel;
