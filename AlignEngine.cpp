@@ -37,13 +37,7 @@ QLabel* getAlignEngine(){
     if(!AlignEngineBackgroundPixmap) {AlignEngineBackgroundPixmap = getQPixmap("Align_Engine_Output_clean.png");};
 
     playSound("fix_wiring_task_open.wav");
-    QLabel* qFrame = new QLabel;
-    QHBoxLayout* hbox = new QHBoxLayout(qFrame);
-    QLabel* qLabel = new QLabel(qFrame);
-    hbox->addStretch();
-    hbox->addWidget(qLabel);
-    hbox->addStretch();
-    qFrame->setLayout(hbox);
+    QLabel* qLabel = new QLabel;
 
     
     QPair<QPixmap*, QPainter*> pixmapPainter = getAlignEnginePixmapPainter();
@@ -64,7 +58,7 @@ QLabel* getAlignEngine(){
     }
     currAlignEngineLabel = qLabel;
 
-    return qFrame;
+    return qLabel;
 
 } 
 
