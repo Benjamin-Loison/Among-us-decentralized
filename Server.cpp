@@ -169,6 +169,11 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
         {
             QString remotePort = messagePart.replace("discovering ", "");
             peersPorts[socket] = remotePort.toUInt();
+            QList<QTcpSocket*> sockets = peersPorts.keys();
+            for(QTcpSocket* s : sockets)
+            {
+                qInfo() << "socket" << socketToString(s) << peersPorts[s];
+            }
             QList<QTcpSocket*> peers = getPeers();
             quint16 peersSize = peers.size();
             if(peersSize > 1)
@@ -189,7 +194,7 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
                 }
                 res += "peers " + fullAddresses.join(' ');
             }
-            res = "YourAddress " + socketWithoutPortToString(socket) + NETWORK_SEPARATOR + res;
+            res = "YourAddress " + socketWithoutPortToString(socket) + (res != "" ? NETWORK_SEPARATOR + res : "");
         }
         else if(messagePart == "nicknames")
         {
