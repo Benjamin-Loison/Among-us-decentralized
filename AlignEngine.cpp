@@ -23,7 +23,7 @@ QLabel* currAlignEngineLabel = nullptr;
 QPixmap* pattern = nullptr;
 QPixmap* arrow = nullptr;
 
-qreal angle = 5;
+qreal theta = 18;
 
 
 
@@ -36,17 +36,21 @@ QPair<QPixmap*, QPainter*> getAlignEnginePixmapPainter()
 }
 
 
-void rotatePattern(QPainter* painter, qreal angle){
+
+
+
+void drawAssets(QPainter* painter, qreal angle){
+    painter->save();
     painter->translate(PATTERN_X_START + PATTERN_ANCHOR_X,PATTERN_Y_START + PATTERN_ANCHOR_Y);
     painter->rotate(angle);
     painter->drawImage(-PATTERN_ANCHOR_X,-PATTERN_ANCHOR_Y,pattern->toImage());
-}
-
-
-void rotateArrow(QPainter* painter, qreal angle){
+    painter->restore();
+    painter->save();
     painter->translate(ARROW_X_START + ARROW_ANCHOR_X,ARROW_Y_START + ARROW_ANCHOR_Y);
     painter->rotate(angle);
     painter->drawImage(-ARROW_ANCHOR_X,-ARROW_ANCHOR_Y,arrow->toImage());
+    painter->restore();
+
 }
 
 
@@ -64,8 +68,7 @@ QLabel* getAlignEngine(){
     if(!pattern) {pattern = getQPixmap("Engine_Pattern.png");};
     if(!arrow) {arrow = getQPixmap("Engine_Arrow.png");};
 
-    rotatePattern(painter,0);
-    rotateArrow(painter,0);
+    drawAssets(painter,theta);
 
     delete painter;
     qLabel->setPixmap(*pixmap);
@@ -102,14 +105,16 @@ void onMouseEventAlignEngine(QMouseEvent* mouseEvent)
         return;
     }
     qInfo() << mouseX << mouseY ;
-    angle = qreal(mouseY-466)/5;
-    qInfo()<< angle;
-    painter->save();
-    rotateArrow(painter,angle);
-    painter->restore();
-    rotatePattern(painter,angle);
-    painter->restore();
+    theta = -qreal(mouseY-466)/20;
+    qInfo()<< theta;
+    drawAssets(painter,theta);
     painter->end();
+
+    if(currAlignEngineLabel)
+        currAlignEngineLabel->setPixmap(*qBackgroundPixmap);
+    if(currAlignEnginePixmap)
+        delete currAlignEnginePixmap;
+    currAlignEnginePixmap = qBackgroundPixmap;
 }
 
 

@@ -18,8 +18,7 @@
 QPair<QPixmap*, QPainter*> getAlignEnginePixmapPainter();
 QLabel* getAlignEngine();
 
-void rotatePattern(QPainter* painter, qreal angle),
-    rotateArrow(QPainter* painter, qreal angle),
+void drawAssets(QPainter* painter, qreal angle),
     onCloseAlignEngine(),
     onMouseEventAlignEngine(QMouseEvent* mouseEvent);
 
