@@ -36,7 +36,7 @@ QPair<QPixmap*, QPainter*> getAlignEnginePixmapPainter()
 QLabel* getAlignEngine(){
     if(!AlignEngineBackgroundPixmap) {AlignEngineBackgroundPixmap = getQPixmap("Align_Engine_Output_clean.png");};
 
-    playSound("Fix_Wiring_task_open_sound.wav");
+    playSound("fix_wiring_task_open.wav");
     QLabel* qFrame = new QLabel;
     QHBoxLayout* hbox = new QHBoxLayout(qFrame);
     QLabel* qLabel = new QLabel(qFrame);
@@ -71,7 +71,7 @@ QLabel* getAlignEngine(){
 
 
 void onCloseAlignEngine() {
-    playSound("Fix_Wiring_task_close_sound.wav");
+    playSound("fix_wiring_task_close.wav");
     if(currAlignEngineLabel) {
         delete currAlignEngineLabel;
         currAlignEngineLabel = nullptr;
