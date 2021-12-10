@@ -8,8 +8,8 @@ QMap<TaskType, TaskTime> taskTimes{{TASK_ASTEROIDS, TASK_SHORT}, {TASK_FIX_WIRIN
 QMap<TaskType, QList<QPoint>> taskLocations{
     {TASK_ASTEROIDS, {QPoint(6653, 900)}},
     {TASK_FIX_WIRING, {QPoint(4060, 360), QPoint(5433,2444), QPoint(7455,2055)}}, 
-    {TASK_ENTER_ID_CODE, {QPoint(5200, 1100)}},
-    {TASK_ALIGN_ENGINE, {QPoint(5500,1100)}}
+    {TASK_ENTER_ID_CODE, {QPoint(2645, 1820)}},
+    {TASK_ALIGN_ENGINE, {QPoint(1550,3600)}}
     };
 
 quint8 commonTasks = /*1*/2, longTasks = /*1*/1, shortTasks = /*2*/1;
