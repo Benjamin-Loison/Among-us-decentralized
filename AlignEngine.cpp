@@ -66,12 +66,8 @@ QLabel* getAlignEngine(){
 
 void onCloseAlignEngine() {
     playSound("fix_wiring_task_close.wav");
-    if(currAlignEngineLabel) {
-        delete currAlignEngineLabel;
+    if(currAlignEngineLabel)
         currAlignEngineLabel = nullptr;
-    }
-    if(currAlignEnginePixmap) {
-        delete currAlignEnginePixmap;
+    if(currAlignEnginePixmap)
         currAlignEnginePixmap = nullptr;
-    }
 }
