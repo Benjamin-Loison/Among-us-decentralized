@@ -64,13 +64,7 @@ QLabel* getEnterIDCode(){
     if(!EnterIDCodeBackgroundPixmap) {EnterIDCodeBackgroundPixmap = getQPixmap("EnterIdCode_resized.png");};
 
     playSound("fix_wiring_task_open.wav");
-    QLabel* qFrame = new QLabel;
-    QHBoxLayout* hbox = new QHBoxLayout(qFrame);
-    QLabel* qLabel = new QLabel(qFrame);
-    hbox->addStretch();
-    hbox->addWidget(qLabel);
-    hbox->addStretch();
-    qFrame->setLayout(hbox);
+    QLabel* qLabel = new QLabel;
 
     randomCode();
 
@@ -93,7 +87,7 @@ QLabel* getEnterIDCode(){
     }
     currEnterIDCodeLabel = qLabel;
 
-    return qFrame;
+    return qLabel;
 
 } 
 
