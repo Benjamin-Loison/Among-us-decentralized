@@ -23,7 +23,11 @@ QLabel* currAlignEngineLabel = nullptr;
 QPixmap* pattern = nullptr;
 QPixmap* arrow = nullptr;
 
-qreal theta = 18;
+qreal theta ;
+
+QElapsedTimer timer;
+
+int elapsedtime = 0;
 
 
 
@@ -68,7 +72,9 @@ QLabel* getAlignEngine(){
     if(!pattern) {pattern = getQPixmap("Engine_Pattern.png");};
     if(!arrow) {arrow = getQPixmap("Engine_Arrow.png");};
 
+    theta = DEFAULT_ANGLE;
     drawAssets(painter,theta);
+    timer.start();
 
     delete painter;
     qLabel->setPixmap(*pixmap);
@@ -89,6 +95,14 @@ QLabel* getAlignEngine(){
 
 } 
 
+void drawGreenLines(QPainter* painter){
+    painter->save();
+    painter->fillRect(QRect(60,360,590,15),QColor(102,255,51));
+    painter->fillRect(QRect(60,575,590,15),QColor(102,255,51));
+    painter->restore();
+}
+
+
 void onMouseEventAlignEngine(QMouseEvent* mouseEvent)
 {   
     QPair<QPixmap*, QPainter*> pixmapPainter = getAlignEnginePixmapPainter();
@@ -104,10 +118,27 @@ void onMouseEventAlignEngine(QMouseEvent* mouseEvent)
         qInfo("get out");
         return;
     }
-    qInfo() << mouseX << mouseY ;
-    theta = -qreal(mouseY-466)/20;
-    qInfo()<< theta;
-    drawAssets(painter,theta);
+
+    bool correct = false;
+    if (mouseX>695 && mouseX < 900){
+
+        theta = -qreal(mouseY-466)/20;
+        qInfo() <<mouseX << mouseY;
+        qInfo()<< theta;
+        drawAssets(painter,theta);
+
+        if ((theta>3)||(theta<-3)){
+            elapsedtime = timer.elapsed();
+        }
+        else{
+            drawGreenLines(painter);
+        }
+
+        if (timer.elapsed() - elapsedtime > 3000 ) {
+            correct = true;
+        }
+    }
+    else drawAssets(painter,theta);
     painter->end();
 
     if(currAlignEngineLabel)
@@ -115,6 +146,17 @@ void onMouseEventAlignEngine(QMouseEvent* mouseEvent)
     if(currAlignEnginePixmap)
         delete currAlignEnginePixmap;
     currAlignEnginePixmap = qBackgroundPixmap;
+
+    
+    if(correct)
+    {
+        playSound("task_completed.wav"); 
+        inGameUI->finishTask();
+        inGameUI->closeTask();
+        inGameUI->checkEndOfTheGame();
+    }
+
+
 }
 
 

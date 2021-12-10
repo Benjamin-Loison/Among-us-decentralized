@@ -14,11 +14,14 @@
 #define ARROW_ANCHOR_X 1000
 #define ARROW_ANCHOR_Y 76
 
+#define DEFAULT_ANGLE 18
+
 
 QPair<QPixmap*, QPainter*> getAlignEnginePixmapPainter();
 QLabel* getAlignEngine();
 
 void drawAssets(QPainter* painter, qreal angle),
+    drawGreenLines(QPainter* painter),
     onCloseAlignEngine(),
     onMouseEventAlignEngine(QMouseEvent* mouseEvent);
 
