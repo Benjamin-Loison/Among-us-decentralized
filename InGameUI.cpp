@@ -1021,6 +1021,8 @@ void InGameUI::mouseMoveEvent(QMouseEvent *mouseEvent) {
     {
         if (currentInGameGUI == IN_GAME_GUI_FIX_WIRING)
             onMouseEventFixWiring(mouseEvent);
+        else if (currentInGameGUI == IN_GAME_GUI_ALIGN_ENGINE)
+            onMouseEventAlignEngine(mouseEvent);
     }
     QLabel::mouseMoveEvent(mouseEvent);
 }
@@ -1044,6 +1046,8 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
             }
             else if (currentInGameGUI == IN_GAME_GUI_ENTER_ID_CODE)
                 onMouseEventEnterIDCode(mouseEvent);
+            else if (currentInGameGUI == IN_GAME_GUI_ALIGN_ENGINE)
+                onMouseEventAlignEngine(mouseEvent);
         }
         else if(isWinScreen())
         {
