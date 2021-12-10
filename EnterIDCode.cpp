@@ -215,14 +215,10 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
 void onCloseEnterIDCode() {
     playSound("fix_wiring_task_close.wav");
     resetCode();
-    if(currEnterIDCodeLabel) {
-        delete currEnterIDCodeLabel;
+    if(currEnterIDCodeLabel)
         currEnterIDCodeLabel = nullptr;
-    }
-    if(currEnterIDCodePixmap) {
-        delete currEnterIDCodePixmap;
+    if(currEnterIDCodePixmap)
         currEnterIDCodePixmap = nullptr;
-    }
 }
 
 
