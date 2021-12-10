@@ -12,6 +12,7 @@ v2:
 doors
 who is where
 network debugging
+code coverage
 bonus: vent
 
 pour présentation, préparer diapo expliquant : architecture + fonctionnement en groupe...
