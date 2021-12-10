@@ -163,7 +163,10 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
     qint16 mouseY = position.y() - (windowSize.height() - pixmapSize.height()) / 2,
            mouseX = position.x() - (windowSize.width() - pixmapSize.width()) / 2;
     if(mouseX < 0 || mouseX >= pixmapSize.width() || mouseY < 0 || mouseY >= pixmapSize.height())
+    {
+        qInfo("get out");
         return;
+    }
     
     bool correct = false;
 
@@ -189,11 +192,11 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
         };
         if (correct){
             qInfo()<< "correct";
-            playSound("Enter_Id_Code_accepted_sound.wav");
+            playSound("Enter_Id_Code_accepted.wav");
         }
         else {
             qInfo()<< "failed";
-            playSound("Enter_Id_Code_failed_sound.wav");
+            playSound("Enter_Id_Code_failed.wav");
         }
     }
 
@@ -216,7 +219,7 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
 
 
 void onCloseEnterIDCode() {
-    playSound("fix_wiring_task_close_sound.wav");
+    playSound("fix_wiring_task_close.wav");
     resetCode();
     if(currEnterIDCodeLabel) {
         delete currEnterIDCodeLabel;
