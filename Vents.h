@@ -5,7 +5,11 @@
 #include <Qpoint>
 
 
+#define ARROW_OFFSET 100
+
+
 enum VentsName{
+    NULL_VENT,
     WEAPONS,
     NAV_TOP,
     NAV_BOT,
@@ -19,7 +23,8 @@ enum VentsName{
     LOWER_ENGINE,
     REACTOR_BOT,
     REACTOR_TOP,
-    UPPER_ENGINE
+    UPPER_ENGINE,
+    FINAL_VENT,
     };
 
 
