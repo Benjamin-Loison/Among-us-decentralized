@@ -39,18 +39,18 @@ QMap<VentsName, QList<VentsName>> VentsLink{
 
 
 
-VentsName VentNear(QPoint curr_pos){
+/*VentsName VentNear(QPoint curr_pos){
     VentsName near_vent = NULL_VENT;
     for (VentsName vent = NULL_VENT; vent < FINAL_VENT; vent++){
-        QPoint vent_pos = VentsPosition.value(vent);
-        int dist = qPow(curr_pos.y()-vent_pos.y(),2) +  qPow(curr_pos.x()-vent_pos.x(),2)
+        QPoint vent_pos = VentsPositions.value(vent);
+        int dist = qPow(curr_pos.y()-vent_pos.y(),2) +  qPow(curr_pos.x()-vent_pos.x(),2);
         if (dist < VENT_RANGE_SQUARED){
             near_vent = vent;
         };
     }
     return near_vent;
 }
-
+*/
 
 void drawArrow(QPainter* painter, QPoint pos1,QPoint pos2,QImage arrow){
     qreal angle = qAtan2(pos2.y() - pos1.y(), pos2.x() - pos1.x());

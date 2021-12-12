@@ -56,8 +56,8 @@ void InGameUI::initDisplay()
     useButtonImage = useButtonPixmap->toImage();
     QPixmap* playAgainButtonPixmap = getQPixmap("playAgainButton.png");
     playAgainButtonImage = playAgainButtonPixmap->toImage();
-    QPixmap* VentArrowPixmap = getQPixmap("Arrow.png");
-    VentArrowImage = VentArrowPixmap->toImage();
+    QPixmap* ventArrowPixmap = getQPixmap("Arrow.png");
+    ventArrowImage = ventArrowPixmap->toImage();
 
     if (isCollision(currPlayer.x, currPlayer.y))
     {

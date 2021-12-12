@@ -47,6 +47,7 @@ class InGameUI : public QLabel
         QImage reportButtonImage;
         QImage useButtonImage;
         QImage playAgainButtonImage;
+        QImage ventArrowImage;
         QPixmap* windowPixmap;
         QTimer* timer;
         QElapsedTimer* elapsedTimer;
