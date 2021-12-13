@@ -48,7 +48,7 @@ void Client::dataReceived()
     On essaie de récupérer la taille du message
     Une fois qu'on l'a, on attend d'avoir reçu le message entier (en se basant sur la taille annoncée messageSize)*/
 
-    //qInfo("Client::dataReceived"); // no bug at this level
+    qInfo("Client::dataReceived begin"); // no bug at this level
     QDataStream in(socket);
 
     if(messageSize == 0)
@@ -90,6 +90,7 @@ void Client::dataReceived()
         qInfo("Client::dataReceived recursive was needed");
         dataReceived();
     }
+    qInfo("dataReceived end");
 }
 
 void Client::processMessageClient(QString message)
