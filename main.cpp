@@ -96,6 +96,7 @@ int main(int argc, char *argv[])
     QStringList nicknames;
     // likewise if using multiple client for developing for instance we don't have problems
     QSettings settings("settings.ini", QSettings::IniFormat);
+    // like nickname could save peer address
     QString nickname,
             oldNickname = isDefaultServerPortInUse ? "" : settings.value("nickname").toString();
     while(true)
