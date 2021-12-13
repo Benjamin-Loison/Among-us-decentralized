@@ -11,19 +11,9 @@ Client::Client(QString peerAddress) : socket(new QTcpSocket(this)), messageSize(
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
 
     socket->abort(); // On désactive les connexions précédentes s'il y en a
-    quint16 serverPort = DEFAULT_SERVER_PORT;
-    if(peerAddress.contains(':'))
-    {
-        QStringList peerAddressParts = peerAddress.split(':');
-        //quint8 peerAddressPartsSize = peerAddressParts.size();
-        quint16 potentialPort = peerAddressParts.last().toUInt();
-        if(potentialPort > 255)
-        {
-            serverPort = potentialPort;
-        }
-        peerAddressParts.removeLast();
-        peerAddress = peerAddressParts.join(':');
-    }
+    QStringList peerAddressParts = peerAddress.split(':');
+    peerAddress = peerAddressParts[0];
+    quint16 serverPort = peerAddressParts[1].toUInt();
     qInfo() << "client connecting to" << peerAddress << "on port" << serverPort << "...";
     socket->connectToHost(peerAddress, serverPort);
     // could wait connected before logging discovering otherwise IP is incorrect
@@ -152,6 +142,8 @@ void Client::socketError(QAbstractSocket::SocketError error) // not used
 
 void discoverClient(QString peerAddress)
 {
+    if(!peerAddress.contains(':'))
+        peerAddress += ':' + QString::number(DEFAULT_SERVER_PORT);
     Client* client = new Client(peerAddress);
     clients.push_back(client);
     QStringList peerAddressParts = peerAddress.split(':');
