@@ -6,13 +6,15 @@
 #include <QMap>
 #include <QPainter>
 #include <QtMath>
+#include <QVector>
 
 
 #define ARROW_OFFSET 100
 
 
-enum VentsName{
-    NULL_VENT = 0,
+
+enum VentsID{
+    NULL_VENT, 
     WEAPONS,
     NAV_TOP,
     NAV_BOT,
@@ -30,5 +32,6 @@ enum VentsName{
     FINAL_VENT,
     };
 
+enum VentsID VentNear(QPoint curr_pos);
 
 #endif

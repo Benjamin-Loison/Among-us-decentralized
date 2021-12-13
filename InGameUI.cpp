@@ -548,8 +548,9 @@ void InGameUI::redraw()
         }
         if(findReportableBody())
             painter.drawImage(qWidth - 110, qHeight - 110, reportButtonImage);
-        if(isThereAnyUsableTaskNear() || isNearEmergencyButton())
+        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || (VentNear(QPoint(currPlayer.x,currPlayer.y)) != NULL_VENT))
             painter.drawImage(qWidth - 110, qHeight - 220, useButtonImage);
+        
     }
 
     // Ready button
