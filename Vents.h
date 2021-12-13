@@ -2,7 +2,7 @@
 #define VENTS_H
 
 
-#include <Qpoint>
+#include <QPoint>
 #include <QMap>
 #include <QPainter>
 #include <QtMath>
