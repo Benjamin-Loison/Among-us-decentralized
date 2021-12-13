@@ -26,9 +26,10 @@ Course schedule: http://www.lsv.fr/~chatain/enseignement/GL/
     - [X] Enter Id Code
     - [ ] Scan Boarding Pass
     - [ ] Unlock Manifolds
-    - [X] Align engine
+    - [X] Align Engine
     - [X] Set places for tasks (currently not very user-friendly, as players need to know where the tasks are)
 - [X] Show small map with tasks and player location
+- [X] Door sabotage
 - [ ] Vocal chat during "meetings" (not prioritary)
 - [ ] Extra anti cheat (not prioritary)
 - [ ] Packaging (documentation ?)

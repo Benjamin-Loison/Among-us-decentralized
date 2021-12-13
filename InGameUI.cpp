@@ -86,6 +86,7 @@ void InGameUI::initDoorsAndRooms() {
         Door(2307, 824, true), // Upper Engine
         Door(1798, 1525, false),
         Door(3799, 823, true), // Cafeteria
+        Door(4718, 2040, false),
         Door(5875, 823, true),
         Door(3199, 1223, false), // MedBay
         Door(2296, 1990, true), // Security
@@ -93,22 +94,22 @@ void InGameUI::initDoorsAndRooms() {
         Door(2307, 3122, true),
         Door(3129, 3556, false), // Electrical
         Door(4001, 3634, true), // Storage
-        Door(4717, 2682, false),
+        Door(4718, 2682, false),
         Door(5153, 3220, true)
     };
     rooms = {
         Room(tr("Upper Engine"), 0, QPoint(1900, 1100), {&doors[0], &doors[1]}),
-        Room(tr("MedBay"), 1, QPoint(3350, 1800), {&doors[4]}),
-        Room(tr("Cafeteria"), 2, QPoint(4850, 1050), {&doors[2], &doors[3]}),
+        Room(tr("MedBay"), 1, QPoint(3350, 1800), {&doors[5]}),
+        Room(tr("Cafeteria"), 2, QPoint(4850, 1050), {&doors[2], &doors[3], &doors[4]}),
         Room(tr("Weapons"), 3, QPoint(6650, 950), {}),
         Room(tr("Reactor"), 4, QPoint(1150, 2200), {}),
-        Room(tr("Security"), 5, QPoint(2600, 2150), {&doors[5]}),
+        Room(tr("Security"), 5, QPoint(2600, 2150), {&doors[6]}),
         Room(tr("Admin"), 6, QPoint(5800, 2700), {}),
         Room(tr("O2"), 7, QPoint(6100, 1900), {}),
         Room(tr("Navigation"), 8, QPoint(8050, 2100), {}),
-        Room(tr("Lower Engine"), 9, QPoint(1900, 3300), {&doors[6], &doors[7]}),
-        Room(tr("Electrical"), 10, QPoint(3500, 3000), {&doors[8]}),
-        Room(tr("Storage"), 11, QPoint(4600, 3550), {&doors[9], &doors[10], &doors[11]}),
+        Room(tr("Lower Engine"), 9, QPoint(1900, 3300), {&doors[7], &doors[8]}),
+        Room(tr("Electrical"), 10, QPoint(3500, 3000), {&doors[9]}),
+        Room(tr("Storage"), 11, QPoint(4600, 3550), {&doors[10], &doors[11], &doors[12]}),
         Room(tr("Communications"), 12, QPoint(5700, 4050), {}),
         Room(tr("Shields"), 13, QPoint(6650, 3500), {})
     };
