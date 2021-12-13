@@ -151,6 +151,21 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
     {
         inGameUI->openMeetingUI(nullptr, player);
     }
+    else if(messagePart.startsWith("Sabotage_doors ")) {
+        const int prefixSize = QString("Sabotage_doors ").size();
+        bool ok = false;
+        QString roomIdString = messagePart.mid(prefixSize);
+        uint iRoom = roomIdString.toUInt(&ok);
+        if(!ok) {
+            qWarning() << "Received invalid door sabotage message:" << roomIdString << "is not an unsigned integer";
+            return;
+        }
+        if(iRoom >= inGameUI->rooms.size()) {
+            qWarning() << "Received invalid door sabotage message:" << iRoom << "is not a valid room ID, there are" << inGameUI->rooms.size() << "rooms";
+            return;
+        }
+        inGameUI->rooms[iRoom].sabotage();
+    }
     else if(messagePart.startsWith("YourAddress "))
     {
         messagePart = messagePart.replace("YourAddress ", "");

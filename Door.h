@@ -17,9 +17,10 @@ class Door {
     qint64 lastClosed;
 
 public:
+    QRect getHitbox();
     bool isClosed();
     void close();
-    bool collidesWithPlayer(Player *player);
+    bool collidesWithPosition(int x, int y);
     void ejectPlayer(Player *player);
     void draw(QPainter *painter, int leftBackground, int topBackground);
     Door();

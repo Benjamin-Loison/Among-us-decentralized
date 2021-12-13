@@ -80,6 +80,18 @@ QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2) {
     return QPixmap::fromImage(tmp);
 }
 
+QPixmap getDisabledButton(const QPixmap &origButton) {
+    QImage tmp = origButton.toImage().copy();
+    for(quint16 y = 0; y < tmp.height(); y++)
+        for(quint16 x = 0; x < tmp.width(); x++) {
+            QColor color = tmp.pixelColor(x,y);
+            int alpha = color.alpha();
+            int gray = (int)(.8*qGray(color.rgb()));
+            tmp.setPixelColor(x, y, QColor(gray, gray, gray, alpha));
+        }
+    return QPixmap::fromImage(tmp);
+}
+
 void playSound(QString soundFile) // could assume all sounds are .wav so can append it here
 {
     if(!soundEffectMap.count(soundFile)) {

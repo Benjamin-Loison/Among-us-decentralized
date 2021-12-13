@@ -20,7 +20,8 @@ SOURCES += \
     EnterIDCode.cpp \
     AlignEngine.cpp \
     Vents.cpp \
-    Door.cpp
+    Door.cpp \
+    Room.cpp
 
 HEADERS += \
     InGameUI.h \

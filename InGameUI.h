@@ -40,7 +40,6 @@ class InGameUI : public QLabel
 
     private:
         QVector<Task*> tasks;
-        QVector<Door> doors;
         int topBackground, leftBackground;
         bool everyoneReady;
         QPixmap* backgroundPixmap;
@@ -67,6 +66,7 @@ class InGameUI : public QLabel
 
     public:
         QVector<Room> rooms;
+        QVector<Door> doors; // temporarily public
         Player currPlayer; // used to be private
         QMap<QString, Player> otherPlayers; //same
         QLabel *qLabel;

@@ -11,7 +11,7 @@ const QRect DOOR_HITBOX[2] = { // 0: horizontal, 1: vertical
 
 QPixmap* doorPixmap[2] = {nullptr, nullptr};
 
-Door::Door() : hitbox(), drawPoint(), isVertical(false), lastClosed(0) {}
+Door::Door() : hitbox(), drawPoint(), isVertical(false), lastClosed(-(DOOR_CLOSURE_DURATION_SECS+1)*(qint64)1000) {}
 
 Door::Door(int x, int y, bool isVertical) :
     hitbox(QPoint(x+DOOR_HITBOX[isVertical].x(), y+DOOR_HITBOX[isVertical].y()), DOOR_HITBOX[isVertical].size()),
@@ -23,6 +23,11 @@ Door::Door(int x, int y, bool isVertical) :
         else
             doorPixmap[isVertical] = getQPixmap("doorFrontClosed.png");
     }
+    lastClosed = -(DOOR_CLOSURE_DURATION_SECS+1)*(qint64)1000;
+}
+
+QRect Door::getHitbox() {
+    return hitbox;
 }
 
 bool Door::isClosed() {
@@ -32,14 +37,12 @@ bool Door::isClosed() {
 
 void Door::close() {
     lastClosed = inGameUI->currTimer();
-    if(collidesWithPlayer(&(inGameUI->currPlayer)))
+    if(collidesWithPosition(inGameUI->currPlayer.x, inGameUI->currPlayer.y))
         ejectPlayer(&(inGameUI->currPlayer));
 }
 
-bool Door::collidesWithPlayer(Player *player) {
-    if(player->isGhost || !isClosed())
-        return false;
-    return hitbox.contains(player->x, player->y);
+bool Door::collidesWithPosition(int x, int y) {
+    return isClosed() && hitbox.contains(x, y);
 }
 
 void Door::ejectPlayer(Player *player) {
@@ -61,5 +64,5 @@ void Door::ejectPlayer(Player *player) {
 
 void Door::draw(QPainter *painter, int leftBackground, int topBackground) {
     if(isClosed())
-        painter->drawPixmap(drawPoint, *doorPixmap[isVertical]);
+        painter->drawPixmap(leftBackground + drawPoint.x(), topBackground + drawPoint.y(), *doorPixmap[isVertical]);
 }

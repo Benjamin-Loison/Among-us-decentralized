@@ -1,19 +1,23 @@
 #include "GameMap.h"
 #include "qPlus.h"
+#include "Server.h"
 #include <QPixmap>
 #include <QPoint>
 
 QPixmap* taskIconPixmap = nullptr;
 QPixmap* mapLayoutPixmap = nullptr;
 QPixmap* sabotageDoorsPixmap = nullptr;
+QPixmap* disabledSabotageDoorsPixmap;
 
 GameMap::GameMap(InGameUI* ui): ui(ui), currPixmap(nullptr) {
     if(!taskIconPixmap)
         taskIconPixmap = getQPixmap("task.png");
     if(!mapLayoutPixmap)
         mapLayoutPixmap = getQPixmap("mapLayout.png");
-    if(!sabotageDoorsPixmap)
+    if(!sabotageDoorsPixmap) {
         sabotageDoorsPixmap = getQPixmap("sabotage_Doors.png");
+        disabledSabotageDoorsPixmap = new QPixmap(getDisabledButton(*sabotageDoorsPixmap));
+    }
 }
 
 QRect getSabotageIconRect(const QPoint &roomCenterMinimap) {
@@ -72,8 +76,12 @@ void GameMap::redraw() {
             labelTop = roomCenterMinimap.y() - sabotageDoorsPixmap->size().height()/2 - fontSizePx/2;
         QRect textRect(roomCenterMinimap.x(), labelTop, 1, fontSizePt);
         painter->drawText(textRect, Qt::TextDontClip | Qt::AlignCenter, room.roomName);
-        if(showSabotageButton)
-            drawPixmapCentered(painter, roomCenterMinimap, *sabotageDoorsPixmap);
+        if(showSabotageButton) {
+            if(room.isCoolingDown())
+                drawPixmapCentered(painter, roomCenterMinimap, *disabledSabotageDoorsPixmap);
+            else
+                drawPixmapCentered(painter, roomCenterMinimap, *sabotageDoorsPixmap);
+        }
     }
     //newPainter->setPen(oldPen);
     delete painter;
@@ -81,4 +89,17 @@ void GameMap::redraw() {
     if(currPixmap)
         delete currPixmap;
     currPixmap = newPixmap;
+}
+
+void GameMap::onLeftOrDoubleClick(QMouseEvent *event) {
+    qInfo() << "Parent position:" << event->pos() << "- Minimap position:" << mapFromParent(event->pos());
+    if(ui->currPlayer.isImpostor && !ui->currPlayer.isGhost) {
+        for(Room &room : ui->rooms) {
+            if(!room.isCoolingDown() && getSabotageIconRect(toMinimapPoint(room.roomCenter)).contains(mapFromParent(event->pos()))) {
+                room.sabotage();
+                sendToAll(QString("Sabotage_doors %1").arg(room.id));
+                return;
+            }
+        }
+    }
 }

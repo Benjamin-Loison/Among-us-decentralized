@@ -17,6 +17,7 @@ private:
 public:
     GameMap(InGameUI* ui);
     void redraw();
+    void onLeftOrDoubleClick(QMouseEvent *event);
 };
 
 #endif
