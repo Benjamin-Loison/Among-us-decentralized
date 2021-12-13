@@ -66,7 +66,7 @@ void Client::dataReceived()
     in >> receivedMessage;
 
     // got problem on client side this time (server sent but no client received...)
-    qInfo() << "client received:" << receivedMessage;
+    qInfo() << "client received from" << socketToString(socket) << ":" << receivedMessage;
     /*if(askingAll)
     {
         QString peerString = socketToString(socket);
