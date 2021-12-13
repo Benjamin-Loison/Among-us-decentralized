@@ -5,6 +5,7 @@
 using namespace std;
 
 // should use IPv6 by default
+// could say what ip and port received data from for client and server
 
 bool askingAll = false, needEverybodyReadyCall = false;
 QMap<QTcpSocket*, quint16> peersPorts;
@@ -195,6 +196,7 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
                 res += "peers " + fullAddresses.join(' ');
             }
             res = "YourAddress " + socketWithoutPortToString(socket) + (res != "" ? NETWORK_SEPARATOR + res : "");
+            // doesn't solve the double NETWORK_SEPARATOR: sending to 192.168.1.20:45282: YourAddress 192.168.1.20#SEP##SEP#peers 192.168.1.55:10821!
         }
         else if(messagePart == "nicknames")
         {
