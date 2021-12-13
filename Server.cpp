@@ -38,6 +38,7 @@ void Server::dataReceived()
     // 1 : on reçoit un paquet (ou un sous-paquet) d'un des clients
 
     // On détermine quel client envoie le message (recherche du QTcpSocket du client)
+    qInfo("dataReceived begin");
     QTcpSocket* socket = qobject_cast<QTcpSocket*>(sender());
     if(socket == 0) // Si par hasard on n'a pas trouvé le client à l'origine du signal, on arrête la méthode
         return;
@@ -74,6 +75,7 @@ void Server::dataReceived()
         qInfo("Server::dataReceived recursive was needed");
         dataReceived();
     }
+    qInfo("dataReceived end");
 }
 
 void processMessageCommon(QTcpSocket* socket, QString messagePart)
@@ -149,21 +151,6 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
     else if(messagePart == "Emergency meeting")
     {
         inGameUI->openMeetingUI(nullptr, player);
-    }
-    else if(messagePart.startsWith("Sabotage_doors ")) {
-        const int prefixSize = QString("Sabotage_doors ").size();
-        bool ok = false;
-        QString roomIdString = messagePart.mid(prefixSize);
-        uint iRoom = roomIdString.toUInt(&ok);
-        if(!ok) {
-            qWarning() << "Received invalid door sabotage message:" << roomIdString << "is not an unsigned integer";
-            return;
-        }
-        if(iRoom >= inGameUI->rooms.size()) {
-            qWarning() << "Received invalid door sabotage message:" << iRoom << "is not a valid room ID, there are" << inGameUI->rooms.size() << "rooms";
-            return;
-        }
-        inGameUI->rooms[iRoom].sabotage();
     }
     else if(messagePart.startsWith("YourAddress "))
     {
@@ -250,6 +237,7 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
 void Server::clientDisconnected()
 {
     // On détermine quel client se déconnecte
+    qInfo("clientDisconnected");
     QTcpSocket* socket = qobject_cast<QTcpSocket*>(sender());
     if(socket == 0) // Si par hasard on n'a pas trouvé le client à l'origine du signal, on arrête la méthode
         return;
@@ -285,6 +273,7 @@ void sendToSocket(QTcpSocket* socket, QString messageToSend)
     if(!socket->waitForBytesWritten())
         qInfo("wait for bytes error");
     socket->flush(); // maybe it's the solution https://doc.qt.io/qt-5/qabstractsocket.html#flush
+    qInfo("sendToSocket end");
     // still having the problem (without error message)
     // the syncing problem seem to really be at sending step because dataReceived isn't ever triggered when there is the bug
     // flushing and waitForReadyRead may be interesting ? https://forum.qt.io/topic/46323/solved-qtcpsocket-would-not-receiving-all-data/2
