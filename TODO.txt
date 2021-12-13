@@ -15,7 +15,7 @@ network debugging
 code coverage
 bonus: vent
 
-would be nice to prepare what to give to the other groups: comment code, GitHub access, make again a release?, make a test video with all features, give access to Sprite folder, give access to development Discord ?
+would be nice to prepare what to give to the other groups: comment code, GitHub access, make again a release? (make a git clone just in case at least), make a test video with all features, give access to Sprite folder, give access to development Discord ?
 and in the other way too ask for Git access etc
 
 pour présentation, préparer diapo expliquant : architecture + fonctionnement en groupe...
