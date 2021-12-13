@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     {
         peerAddress = getText(QObject::tr("Peer address"), QObject::tr("A peer address"), isDefaultServerPortInUse ? QString::number(DEFAULT_SERVER_PORT) : "");
         if(isAPositiveInteger(peerAddress))
-            peerAddress = "localhost:" + peerAddress;
+            peerAddress = "127.0.0.1:" + peerAddress; // localhost binds to ::1
         qInfo() << "peerAddress:" << peerAddress;
     }
 

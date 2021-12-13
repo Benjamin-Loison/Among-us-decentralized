@@ -11,7 +11,7 @@ v2:
 
 doors
 who is where
-network debugging: no bug if 0. start, 1. connect to 0., 2. connect to 1.
+network debugging: no bug if 0. starts, 1. connects to 0., 2. connects to 1. but it seems to have one after a "random" time... but if 2. connects to 0. no problem
 code coverage
 bonus: vent
 

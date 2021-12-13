@@ -504,6 +504,10 @@ void InGameUI::redraw()
     windowPixmap = new QPixmap(qSize);
     QPainter painter(windowPixmap);
     setCenterBorderLimit(currPlayer.x, currPlayer.y - currPlayer.playerPixmap->size().height() / 2, &painter);
+    // doors loop used to be reversed with players, but likewise doors look like map background there isn't misorder with map/door/player
+    for(Door& door : doors)
+        door.draw(&painter, leftBackground, topBackground);
+
     // Display players with ascending y, then ascending x.
     // Display ghosts above alive players and dead bodies.
     QVector<Player *> players;
@@ -536,9 +540,6 @@ void InGameUI::redraw()
         displayPlayer(*player, &painter, true);
 
     // Display doors above players (could largely be improved!).
-    for(Door& door : doors)
-        door.draw(&painter, leftBackground, topBackground);
-
 
     int fontSizePt = 23;
     // Impostor message
