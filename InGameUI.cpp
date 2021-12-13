@@ -97,20 +97,20 @@ void InGameUI::initDoorsAndRooms() {
         Door(5153, 3220, true)
     };
     rooms = {
-        {tr("Upper Engine"), 0, QPoint(1900, 1100), {&doors[0], &doors[1]}},
-        {tr("MedBay"), 1, QPoint(3350, 1800), {&doors[4]}},
-        {tr("Cafeteria"), 2, QPoint(4850, 1050), {&doors[2], &doors[3]}},
-        {tr("Weapons"), 3, QPoint(6650, 950), {}},
-        {tr("Reactor"), 4, QPoint(1150, 2200), {}},
-        {tr("Security"), 5, QPoint(2600, 2150), {&doors[5]}},
-        {tr("Admin"), 6, QPoint(5800, 2700), {}},
-        {tr("O2"), 7, QPoint(6100, 1900), {}},
-        {tr("Navigation"), 8, QPoint(8050, 2100), {}},
-        {tr("Lower Engine"), 9, QPoint(1900, 3300), {&doors[6], &doors[7]}},
-        {tr("Electrical"), 10, QPoint(3500, 3000), {&doors[8]}},
-        {tr("Storage"), 11, QPoint(4600, 3550), {&doors[9], &doors[10], &doors[11]}},
-        {tr("Communications"), 12, QPoint(5700, 4050), {}},
-        {tr("Shields"), 13, QPoint(6650, 3500), {}}
+        Room(tr("Upper Engine"), 0, QPoint(1900, 1100), {&doors[0], &doors[1]}),
+        Room(tr("MedBay"), 1, QPoint(3350, 1800), {&doors[4]}),
+        Room(tr("Cafeteria"), 2, QPoint(4850, 1050), {&doors[2], &doors[3]}),
+        Room(tr("Weapons"), 3, QPoint(6650, 950), {}),
+        Room(tr("Reactor"), 4, QPoint(1150, 2200), {}),
+        Room(tr("Security"), 5, QPoint(2600, 2150), {&doors[5]}),
+        Room(tr("Admin"), 6, QPoint(5800, 2700), {}),
+        Room(tr("O2"), 7, QPoint(6100, 1900), {}),
+        Room(tr("Navigation"), 8, QPoint(8050, 2100), {}),
+        Room(tr("Lower Engine"), 9, QPoint(1900, 3300), {&doors[6], &doors[7]}),
+        Room(tr("Electrical"), 10, QPoint(3500, 3000), {&doors[8]}),
+        Room(tr("Storage"), 11, QPoint(4600, 3550), {&doors[9], &doors[10], &doors[11]}),
+        Room(tr("Communications"), 12, QPoint(5700, 4050), {}),
+        Room(tr("Shields"), 13, QPoint(6650, 3500), {})
     };
 }
 

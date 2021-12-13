@@ -17,10 +17,13 @@ struct Room {
     // the room label will be centered
     QPoint roomCenter;
     QVector<Door*> doors;
-    qint64 lastDoorSabotage = -DOOR_SABOTAGE_COOLDOWN_SECS*1000;
+    qint64 lastDoorSabotage;
 
     bool isCoolingDown();
     void sabotage(); // no checks performed
+
+    Room();
+    Room(const QString &roomName, const quint8 &id, const QPoint &roomCenter, const QVector<Door*> &doors);
 };
 
 #endif
