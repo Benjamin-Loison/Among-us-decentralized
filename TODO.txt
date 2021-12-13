@@ -11,7 +11,7 @@ v2:
 
 doors
 who is where
-network debugging
+network debugging: no bug if 0. start, 1. connect to 0., 2. connect to 1.
 code coverage
 bonus: vent
 
