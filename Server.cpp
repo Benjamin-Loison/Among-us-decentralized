@@ -5,7 +5,6 @@
 using namespace std;
 
 // should use IPv6 by default
-// could say what ip and port received data from for client and server
 
 bool askingAll = false, needEverybodyReadyCall = false;
 QMap<QTcpSocket*, quint16> peersPorts;
@@ -62,7 +61,7 @@ void Server::dataReceived()
     // Si ces lignes s'exécutent, c'est qu'on a reçu tout le message : on peut le récupérer !
     QString message;
     in >> message;
-    qInfo("server received: %s", message.toStdString().c_str()); // not logging Position and keep logged all network stuff
+    qInfo() << "server received from" << socketToString(socket) << ":" << message; // not logging Position and keep logged all network stuff
     message = processMessageServer(socket, message);
 
     //message = processMessage(message);
@@ -185,11 +184,6 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
         {
             QString remotePort = messagePart.replace("discovering ", "");
             peersPorts[socket] = remotePort.toUInt();
-            QList<QTcpSocket*> sockets = peersPorts.keys();
-            for(QTcpSocket* s : sockets)
-            {
-                qInfo() << "socket" << socketToString(s) << peersPorts[s];
-            }
             QList<QTcpSocket*> peers = getPeers();
             quint16 peersSize = peers.size();
             if(peersSize > 1)
