@@ -202,3 +202,12 @@ void drawCenteredText(QPainter* painter, quint16 x, quint16 y, QString text)
     QRect rect = fm.boundingRect(text);
     painter->drawText(x - rect.width() / 2, y + rect.height() / 2, text);
 }
+
+// https://stackoverflow.com/questions/42141354/convert-pixel-size-to-point-size-for-fonts-on-multiple-platforms
+double ptToPx(double pt) {
+    return pt/72*QGuiApplication::primaryScreen()->physicalDotsPerInch();
+}
+
+double pxToPt(double px) {
+    return px*72/QGuiApplication::primaryScreen()->physicalDotsPerInch();
+}

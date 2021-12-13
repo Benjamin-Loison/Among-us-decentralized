@@ -13,11 +13,13 @@
 #include <QString>
 #include <QElapsedTimer>
 #include <QPushButton>
+#include "Door.h"
 #include "fixWiring.h"
 #include "GameMap.h"
 #include "meetings.h"
 #include "Player.h"
 #include "qPlus.h"
+#include "Room.h"
 #include "Task.h"
 #include "Vents.h"
 #include <QThread>
@@ -29,6 +31,7 @@
 
 const int FPS = 30;
 
+class Door;
 class GameMap;
 
 class InGameUI : public QLabel
@@ -37,6 +40,7 @@ class InGameUI : public QLabel
 
     private:
         QVector<Task*> tasks;
+        QVector<Door> doors;
         int topBackground, leftBackground;
         bool everyoneReady;
         QPixmap* backgroundPixmap;
@@ -62,6 +66,7 @@ class InGameUI : public QLabel
         qint64 lastKillTime;
 
     public:
+        QVector<Room> rooms;
         Player currPlayer; // used to be private
         QMap<QString, Player> otherPlayers; //same
         QLabel *qLabel;
@@ -69,6 +74,7 @@ class InGameUI : public QLabel
         MeetingResultsUI *meetingResultsWidget;
         void initialize(QString nickname);
         void initDisplay();
+        void initDoorsAndRooms();
         qint64 currTimer();
         void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
         void displayPlayer(const Player &player, QPainter *painter = nullptr, bool showGhost = false, quint16 forceX = 0, quint16 forceY = 0);

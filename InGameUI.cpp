@@ -36,6 +36,7 @@ void InGameUI::initialize(QString nickname)
     isPressed[Qt::Key_Left] = false;
     isPressed[Qt::Key_Right] = false;
     initDisplay();
+    initDoorsAndRooms();
 }
 
 qint64 InGameUI::currTimer() {
@@ -72,6 +73,39 @@ void InGameUI::initDisplay()
                     found = true;
     }
     //setAlignment(Qt::AlignLeft | Qt::AlignTop);
+}
+
+void InGameUI::initDoorsAndRooms() {
+    doors = {
+        Door(2307, 824, true), // Upper Engine
+        Door(1798, 1525, false),
+        Door(3799, 823, true), // Cafeteria
+        Door(5875, 823, true),
+        Door(3199, 1223, false), // MedBay
+        Door(2296, 1990, true), // Security
+        Door(1798, 2755, false), // Lower Engine
+        Door(2307, 3122, true),
+        Door(3129, 3356, false), // Electrical
+        Door(4001, 3634, true), // Storage
+        Door(4717, 2682, false),
+        Door(5153, 3220, true)
+    };
+    rooms = {
+        {tr("Upper Engine"), QPoint(1900, 1100), {&doors[0], &doors[1]}},
+        {tr("MedBay"), QPoint(3350, 1800), {&doors[4]}},
+        {tr("Cafeteria"), QPoint(4850, 1050), {&doors[2], &doors[3]}},
+        {tr("Weapons"), QPoint(6650, 950), {}},
+        {tr("Reactor"), QPoint(1150, 2200), {}},
+        {tr("Security"), QPoint(2600, 2150), {&doors[5]}},
+        {tr("Admin"), QPoint(5800, 2700), {}},
+        {tr("O2"), QPoint(6100, 1900), {}},
+        {tr("Navigation"), QPoint(8050, 2100), {}},
+        {tr("Lower Engine"), QPoint(1900, 3300), {&doors[6], &doors[7]}},
+        {tr("Electrical"), QPoint(3500, 3000), {&doors[8]}},
+        {tr("Storage"), QPoint(4600, 3550), {&doors[9], &doors[10], &doors[11]}},
+        {tr("Communications"), QPoint(5700, 4050), {}},
+        {tr("Shields"), QPoint(6650, 3500), {}}
+    };
 }
 
 /**
@@ -493,6 +527,11 @@ void InGameUI::redraw()
           });
     for (Player *player : players)
         displayPlayer(*player, &painter, true);
+
+    // Display doors above players (could largely be improved!).
+    for(Door& door : doors)
+        door.draw(&painter, leftBackground, topBackground);
+
 
     int fontSizePt = 23;
     // Impostor message
