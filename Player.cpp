@@ -9,6 +9,7 @@ const QColor colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
                              {QColor(193, 17, 17), QColor(120, 8, 57)},
                              {QColor(62, 71, 78), QColor(30, 30, 38)},
                              {QColor(244, 244, 86), QColor(194, 134, 34)}};
+                             // should add skins and a limit of 15 players (source: https://fr.wikipedia.org/wiki/Among_Us)
 
 Player::Player(QString nickname):
     x(X_SPAWN),
