@@ -32,13 +32,14 @@ int main(int argc, char *argv[])
 
     QList<QHostAddress> allAddresses = QNetworkInterface::allAddresses();
     quint32 allAddressesSize = allAddresses.size();
-    if(allAddressesSize > 2)
+    if(allAddressesSize > 2) // could check more precisely if not just having an IPv6
     {
         qInfo("My IPs:");
         for(quint32 allAddressesIndex = /*0*/2; allAddressesIndex < allAddressesSize; allAddressesIndex++)
         {
             QHostAddress address = allAddresses[allAddressesIndex];
-            qInfo() << addressToString(address);
+            if(address.protocol() != QAbstractSocket::IPv6Protocol)
+                qInfo() << addressToString(address);
             // for real users only global addresses seem interesting
             // broadcast global linkLocal loopback multicast siteLocal uniqueLocalUnicast
             //qInfo() << address.isBroadcast() << address.isGlobal() << address.isLinkLocal() << address.isLoopback() << address.isMulticast() << address.isSiteLocal() << address.isUniqueLocalUnicast();
@@ -68,7 +69,7 @@ int main(int argc, char *argv[])
     {
         peerAddress = getText(QObject::tr("Peer address"), QObject::tr("A peer address"), isDefaultServerPortInUse ? QString::number(DEFAULT_SERVER_PORT) : "");
         if(isAPositiveInteger(peerAddress))
-            peerAddress = "127.0.0.1:" + peerAddress; // localhost binds to ::1
+            peerAddress = "localhost:" + peerAddress;
         qInfo() << "peerAddress:" << peerAddress;
     }
 
@@ -96,7 +97,6 @@ int main(int argc, char *argv[])
     QStringList nicknames;
     // likewise if using multiple client for developing for instance we don't have problems
     QSettings settings("settings.ini", QSettings::IniFormat);
-    // like nickname could save peer address
     QString nickname,
             oldNickname = isDefaultServerPortInUse ? "" : settings.value("nickname").toString();
     while(true)
