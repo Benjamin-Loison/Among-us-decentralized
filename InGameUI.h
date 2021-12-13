@@ -19,6 +19,7 @@
 #include "Player.h"
 #include "qPlus.h"
 #include "Task.h"
+#include "Vents.h"
 #include <QThread>
 #include "EnterIDCode.h"
 #include "AlignEngine.h"
@@ -45,6 +46,7 @@ class InGameUI : public QLabel
         QImage reportButtonImage;
         QImage useButtonImage;
         QImage playAgainButtonImage;
+        QImage ventArrowImage;
         QPixmap* windowPixmap;
         QTimer* timer;
         QElapsedTimer* elapsedTimer;
