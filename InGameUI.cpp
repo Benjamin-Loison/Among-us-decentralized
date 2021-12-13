@@ -531,13 +531,13 @@ void InGameUI::redraw()
                   return a->x < b->x;
               return a->nickname.compare(b->nickname) < 0;
           });
+    // doors loop used to be reversed with players, but likewise doors look like map background there isn't misorder with map/door/player
+    for(Door& door : doors)
+        door.draw(&painter, leftBackground, topBackground);
     for (Player *player : players)
         displayPlayer(*player, &painter, true);
 
     // Display doors above players (could largely be improved!).
-    for(Door& door : doors)
-        door.draw(&painter, leftBackground, topBackground);
-
 
     int fontSizePt = 23;
     // Impostor message
