@@ -14,7 +14,7 @@ const int KILL_COOLDOWN_SEC = 45;
 const int MAX_EMERGENCY_PER_PLAYER = 1;
 
 // should make a function to get new player
-InGameUI::InGameUI(QLabel* parent) : QLabel(parent), lastNx(0), lastNy(0), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr), lastKillTime(0)
+InGameUI::InGameUI(QLabel* parent) : QLabel(parent), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr), lastKillTime(0)
 {
     // doing this at the very first window would be nice (when asking nickname etc)
     setWindowIcon(QIcon(assetsFolder + "logo.png"));
@@ -36,6 +36,10 @@ void InGameUI::initialize(QString nickname)
     isPressed[Qt::Key_Left] = false;
     isPressed[Qt::Key_Right] = false;
     initDisplay();
+}
+
+qint64 InGameUI::currTimer() {
+    return elapsedTimer->elapsed();
 }
 
 bool InGameUI::isCollision(quint16 x, quint16 y)
@@ -132,8 +136,10 @@ void InGameUI::setCenterBorderLimit(int x, int y, QPainter *painter = nullptr)
  * @param dirHoriz Horizontal direction. Can be +1 for positive x, 0 for unchanged x or -1 for negative x.
  * @return Whether the movement was successful (i.e. not prevented by map borders or an obstacle).
  */
-bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz) // seems to be executed even if not using movement keys... leading to existence of lastNx/y
+bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz)
 {
+    if(!dirVert && !dirHoriz) // no movement!
+        return true;
     int delta;
     if (dirVert && dirHoriz)
         delta = elapsed * MOVEMENT_SPEED_SEC / 1414; // 1000*sqrt(2)
@@ -182,19 +188,7 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz) // see
             currPlayer.playerFacingLeft = true;
         else if (nx > currPlayer.x)
             currPlayer.playerFacingLeft = false;
-        currPlayer.x = nx;
-        currPlayer.y = ny;
-        if(lastNx == 0 && lastNy == 0)
-        {
-            lastNx = nx;
-            lastNy = ny;
-        }
-        if(lastNx != nx || lastNy != ny)
-        {
-            sendToAll("Position " + QString::number(nx) + " " + QString::number(ny));
-            lastNx = nx;
-            lastNy = ny;
-        }
+        currPlayer.moveTo(nx, ny);
         return true;
     }
     else

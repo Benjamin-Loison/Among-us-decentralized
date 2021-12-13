@@ -37,7 +37,6 @@ class InGameUI : public QLabel
     private:
         QVector<Task*> tasks;
         int topBackground, leftBackground;
-        quint32 lastNx, lastNy;
         bool everyoneReady;
         QPixmap* backgroundPixmap;
         QPixmap* collisionPixmap;
@@ -68,6 +67,7 @@ class InGameUI : public QLabel
         MeetingResultsUI *meetingResultsWidget;
         void initialize(QString nickname);
         void initDisplay();
+        qint64 currTimer();
         void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
         void displayPlayer(const Player &player, QPainter *painter = nullptr, bool showGhost = false, quint16 forceX = 0, quint16 forceY = 0);
         bool performMovement(qint64 elapsed, int dirVert, int dirHoriz);
