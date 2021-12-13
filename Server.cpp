@@ -5,6 +5,7 @@
 using namespace std;
 
 // should use IPv6 by default
+// could say what ip and port received data from for client and server
 
 bool askingAll = false, needEverybodyReadyCall = false;
 QMap<QTcpSocket*, quint16> peersPorts;
