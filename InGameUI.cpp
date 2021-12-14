@@ -549,7 +549,7 @@ void InGameUI::redraw()
         }
         if(findReportableBody())
             painter.drawImage(qWidth - 110, qHeight - 110, reportButtonImage);
-        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y)))
+        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || (IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y)) && (current_vent== NULL_VENT)))
             painter.drawImage(qWidth - 110, qHeight - 220, useButtonImage);
         
     }
@@ -847,8 +847,18 @@ void InGameUI::onClickUse() {
         return;
     }
 
-    if(IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y))){
+    if((IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y)))&& (current_vent==NULL_VENT)  ){
         current_vent = VentNear(QPoint(currPlayer.x,currPlayer.y));
+        QPoint new_pos = PosOfVent(current_vent);
+        currPlayer.x = new_pos.x();
+        currPlayer.y = new_pos.y();
+        currentInGameGUI = IN_GAME_GUI_VENT;
+        qLabel = EnterVent(current_vent);
+        currHLayout = new QHBoxLayout;
+        currHLayout->addStretch();
+        currHLayout->addWidget(qLabel);
+        currHLayout->addStretch();
+        setLayout(currHLayout);
         return;
     }
 
@@ -950,6 +960,14 @@ void InGameUI::openMeetingUI(Player* reportedPlayer, Player* reportingPlayer) {
         closeTask();
     if(currentInGameGUI == IN_GAME_GUI_MAP)
         closeMap();
+    if(currentInGameGUI == IN_GAME_GUI_VENT){
+        ExitVent();
+        current_vent = NULL_VENT;
+        currentInGameGUI = IN_GAME_GUI_NONE;
+        delete currHLayout;
+        delete qLabel;
+        qLabel = nullptr;
+    }
     meetingWidget = new MeetingUI(this, reportedPlayer, reportingPlayer);
 
     currHLayout = makeCenteredLayout(meetingWidget);
@@ -986,6 +1004,7 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
                 onClickUse();
             else if(qLabel)
                 closeTask();
+                ExitVent();
         }
         break;
     case Qt::Key_K:
@@ -1057,6 +1076,9 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                 onMouseEventEnterIDCode(mouseEvent);
             else if (currentInGameGUI == IN_GAME_GUI_ALIGN_ENGINE)
                 onMouseEventAlignEngine(mouseEvent);
+            /*else if (currentInGameGUI = IN_GAME_GUI_VENT){
+                QPoint new_pos = onMouseEventVent(current_vent ,mouseEvent);
+            }*/
         }
         else if(isWinScreen())
         {
