@@ -2,6 +2,11 @@ QT += widgets
 QT += network
 QT += multimedia
 
+CONFIG(debug, debug|release) {
+    QMAKE_CXXFLAGS += --coverage
+    QMAKE_LFLAGS += --coverage
+}
+
 TRANSLATIONS = AmongUsDecentralizedFR.ts
 RC_ICONS += assets/logo.ico
 
