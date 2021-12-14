@@ -25,6 +25,7 @@ double distance(quint16 x0, quint16 y0, quint16 x1, quint16 y1);
 extern QString assetsFolder;
 QPixmap* getQPixmap(QString filePath);
 QPixmap* getQPixmap(quint16 width,quint16 height);
+QPixmap getDisabledButton(const QPixmap &origButton);
 void playSound(QString soundFile);
 void msleepWithEvents(quint32 ms);
 void sleepWithEvents(quint16 s);
@@ -39,5 +40,7 @@ bool isAPositiveInteger(QString s);
 QString firstUppercase(QString s);
 bool isTCPPortInUse(quint16 port);
 void drawCenteredText(QPainter* painter, quint16 x, quint16 y, QString text);
+double ptToPx(double pt);
+double pxToPt(double px);
 
 #endif

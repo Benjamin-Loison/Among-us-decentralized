@@ -1,6 +1,5 @@
 # Among us decentralized
 
-<!--[![Travis Build Status](https://travis-ci.com/Benjamin-Loison/Among-us-decentralized.svg?branch=main)](https://app.travis-ci.com/Benjamin-Loison/Among-us-decentralized)-->
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/Benjamin-Loison/Among-us-decentralized?branch=main&svg=true)](https://ci.appveyor.com/project/Benjamin-Loison/Among-us-decentralized)
 [![Mac](https://github.com/Benjamin-Loison/Among-us-decentralized/actions/workflows/mac.yml/badge.svg)](https://github.com/Benjamin-Loison/Among-us-decentralized/actions/workflows/mac.yml)
 [![Linux](https://github.com/Benjamin-Loison/Among-us-decentralized/actions/workflows/linux.yml/badge.svg)](https://github.com/Benjamin-Loison/Among-us-decentralized/actions/workflows/linux.yml)
@@ -18,17 +17,19 @@ Course schedule: http://www.lsv.fr/~chatain/enseignement/GL/
 - [X] Maintain game state
 - [X] Display other players
 - [X] Display name tags
-- [ ] Menu (main menu and "meetings")
+- [X] Menu (main menu and "meetings")
 - [ ] Network: peer-to-peer with secret (visibility) - using OpenSSL/Helib for cryptography
 - [ ] Tasks:
     - [X] Fix Wiring
     - [X] Asteroids
     - [ ] Swipe Card
-    - [ ] Enter Id Code
+    - [X] Enter Id Code
     - [ ] Scan Boarding Pass
     - [ ] Unlock Manifolds
+    - [X] Align Engine
     - [X] Set places for tasks (currently not very user-friendly, as players need to know where the tasks are)
 - [X] Show small map with tasks and player location
+- [X] Door sabotage
 - [ ] Vocal chat during "meetings" (not prioritary)
 - [ ] Extra anti cheat (not prioritary)
 - [ ] Packaging (documentation ?)

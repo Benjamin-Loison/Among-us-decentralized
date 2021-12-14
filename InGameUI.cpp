@@ -17,7 +17,7 @@ const int MAX_EMERGENCY_PER_PLAYER = 1;
 enum VentsID current_vent = NULL_VENT;
 
 // should make a function to get new player
-InGameUI::InGameUI(QLabel* parent) : QLabel(parent), lastNx(0), lastNy(0), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr), lastKillTime(0)
+InGameUI::InGameUI(QLabel* parent) : QLabel(parent), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr), lastKillTime(0)
 {
     // doing this at the very first window would be nice (when asking nickname etc)
     setWindowIcon(QIcon(assetsFolder + "logo.png"));
@@ -39,11 +39,22 @@ void InGameUI::initialize(QString nickname)
     isPressed[Qt::Key_Left] = false;
     isPressed[Qt::Key_Right] = false;
     initDisplay();
+    initDoorsAndRooms();
+}
+
+qint64 InGameUI::currTimer() {
+    return elapsedTimer->elapsed();
 }
 
 bool InGameUI::isCollision(quint16 x, quint16 y)
 {
-    return !currPlayer.isGhost && collisionImage.pixelColor(x, y) == QColor(255, 0, 0);
+    bool collidesWithDoor = false;
+    for(Door &door : doors)
+        if(door.collidesWithPosition(x, y)) {
+            collidesWithDoor = true;
+            break;
+        }
+    return !currPlayer.isGhost && (collidesWithDoor || collisionImage.pixelColor(x, y) == QColor(255, 0, 0));
 }
 
 void InGameUI::initDisplay()
@@ -69,6 +80,40 @@ void InGameUI::initDisplay()
                     found = true;
     }
     //setAlignment(Qt::AlignLeft | Qt::AlignTop);
+}
+
+void InGameUI::initDoorsAndRooms() {
+    doors = {
+        Door(2307, 824, true), // Upper Engine
+        Door(1798, 1525, false),
+        Door(3799, 823, true), // Cafeteria
+        Door(4718, 2040, false),
+        Door(5875, 823, true),
+        Door(3199, 1223, false), // MedBay
+        Door(2296, 1990, true), // Security
+        Door(1798, 2755, false), // Lower Engine
+        Door(2307, 3122, true),
+        Door(3129, 3556, false), // Electrical
+        Door(4001, 3634, true), // Storage
+        Door(4718, 2682, false),
+        Door(5153, 3220, true)
+    };
+    rooms = {
+        Room(tr("Upper Engine"), 0, QPoint(1900, 1100), {&doors[0], &doors[1]}),
+        Room(tr("MedBay"), 1, QPoint(3350, 1800), {&doors[5]}),
+        Room(tr("Cafeteria"), 2, QPoint(4850, 1050), {&doors[2], &doors[3], &doors[4]}),
+        Room(tr("Weapons"), 3, QPoint(6650, 950), {}),
+        Room(tr("Reactor"), 4, QPoint(1150, 2200), {}),
+        Room(tr("Security"), 5, QPoint(2600, 2150), {&doors[6]}),
+        Room(tr("Admin"), 6, QPoint(5800, 2700), {}),
+        Room(tr("O2"), 7, QPoint(6100, 1900), {}),
+        Room(tr("Navigation"), 8, QPoint(8050, 2100), {}),
+        Room(tr("Lower Engine"), 9, QPoint(1900, 3300), {&doors[7], &doors[8]}),
+        Room(tr("Electrical"), 10, QPoint(3500, 3000), {&doors[9]}),
+        Room(tr("Storage"), 11, QPoint(4600, 3550), {&doors[10], &doors[11], &doors[12]}),
+        Room(tr("Communications"), 12, QPoint(5700, 4050), {}),
+        Room(tr("Shields"), 13, QPoint(6650, 3500), {})
+    };
 }
 
 /**
@@ -135,8 +180,10 @@ void InGameUI::setCenterBorderLimit(int x, int y, QPainter *painter = nullptr)
  * @param dirHoriz Horizontal direction. Can be +1 for positive x, 0 for unchanged x or -1 for negative x.
  * @return Whether the movement was successful (i.e. not prevented by map borders or an obstacle).
  */
-bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz) // seems to be executed even if not using movement keys... leading to existence of lastNx/y
+bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz)
 {
+    if(!dirVert && !dirHoriz) // no movement!
+        return true;
     int delta;
     if (dirVert && dirHoriz)
         delta = elapsed * MOVEMENT_SPEED_SEC / 1414; // 1000*sqrt(2)
@@ -185,19 +232,7 @@ bool InGameUI::performMovement(qint64 elapsed, int dirVert, int dirHoriz) // see
             currPlayer.playerFacingLeft = true;
         else if (nx > currPlayer.x)
             currPlayer.playerFacingLeft = false;
-        currPlayer.x = nx;
-        currPlayer.y = ny;
-        if(lastNx == 0 && lastNy == 0)
-        {
-            lastNx = nx;
-            lastNy = ny;
-        }
-        if(lastNx != nx || lastNy != ny)
-        {
-            sendToAll("Position " + QString::number(nx) + " " + QString::number(ny));
-            lastNx = nx;
-            lastNy = ny;
-        }
+        currPlayer.moveTo(nx, ny);
         return true;
     }
     else
@@ -470,6 +505,10 @@ void InGameUI::redraw()
     windowPixmap = new QPixmap(qSize);
     QPainter painter(windowPixmap);
     setCenterBorderLimit(currPlayer.x, currPlayer.y - currPlayer.playerPixmap->size().height() / 2, &painter);
+    // doors loop used to be reversed with players, but likewise doors look like map background there isn't misorder with map/door/player
+    for(Door& door : doors)
+        door.draw(&painter, leftBackground, topBackground);
+
     // Display players with ascending y, then ascending x.
     // Display ghosts above alive players and dead bodies.
     QVector<Player *> players;
@@ -500,6 +539,8 @@ void InGameUI::redraw()
           });
     for (Player *player : players)
         displayPlayer(*player, &painter, true);
+
+    // Display doors above players (could largely be improved!).
 
     int fontSizePt = 23;
     // Impostor message
@@ -923,10 +964,7 @@ void InGameUI::openMap() {
     if(gameMap || currentInGameGUI != IN_GAME_GUI_NONE || !everyoneReady)
         return;
     gameMap = new GameMap(this);
-    currHLayout = new QHBoxLayout;
-    currHLayout->addStretch();
-    currHLayout->addWidget(gameMap);
-    currHLayout->addStretch();
+    currHLayout = makeCenteredLayout(gameMap);
     setLayout(currHLayout);
     currentInGameGUI = IN_GAME_GUI_MAP;
 }
@@ -1069,6 +1107,8 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                 else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton() || IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y))))
                         onClickUse();
             }
+            else if(currentInGameGUI == IN_GAME_GUI_MAP)
+                gameMap->onLeftOrDoubleClick(mouseEvent);
             else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS) {
                 onMouseEventAsteroids(mouseEvent);
             }

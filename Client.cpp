@@ -11,19 +11,9 @@ Client::Client(QString peerAddress) : socket(new QTcpSocket(this)), messageSize(
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
 
     socket->abort(); // On désactive les connexions précédentes s'il y en a
-    quint16 serverPort = DEFAULT_SERVER_PORT;
-    if(peerAddress.contains(':'))
-    {
-        QStringList peerAddressParts = peerAddress.split(':');
-        //quint8 peerAddressPartsSize = peerAddressParts.size();
-        quint16 potentialPort = peerAddressParts.last().toUInt();
-        if(potentialPort > 255)
-        {
-            serverPort = potentialPort;
-        }
-        peerAddressParts.removeLast();
-        peerAddress = peerAddressParts.join(':');
-    }
+    QStringList peerAddressParts = peerAddress.split(':');
+    peerAddress = peerAddressParts[0];
+    quint16 serverPort = peerAddressParts[1].toUInt();
     qInfo() << "client connecting to" << peerAddress << "on port" << serverPort << "...";
     socket->connectToHost(peerAddress, serverPort);
     // could wait connected before logging discovering otherwise IP is incorrect
@@ -58,7 +48,7 @@ void Client::dataReceived()
     On essaie de récupérer la taille du message
     Une fois qu'on l'a, on attend d'avoir reçu le message entier (en se basant sur la taille annoncée messageSize)*/
 
-    //qInfo("Client::dataReceived"); // no bug at this level
+    qInfo("Client::dataReceived begin"); // no bug at this level
     QDataStream in(socket);
 
     if(messageSize == 0)
@@ -76,7 +66,7 @@ void Client::dataReceived()
     in >> receivedMessage;
 
     // got problem on client side this time (server sent but no client received...)
-    qInfo() << "client received:" << receivedMessage;
+    qInfo() << "client received from" << socketToString(socket) << ":" << receivedMessage;
     /*if(askingAll)
     {
         QString peerString = socketToString(socket);
@@ -100,6 +90,7 @@ void Client::dataReceived()
         qInfo("Client::dataReceived recursive was needed");
         dataReceived();
     }
+    qInfo("dataReceived end");
 }
 
 void Client::processMessageClient(QString message)
@@ -152,6 +143,8 @@ void Client::socketError(QAbstractSocket::SocketError error) // not used
 
 void discoverClient(QString peerAddress)
 {
+    if(!peerAddress.contains(':'))
+        peerAddress += ':' + QString::number(DEFAULT_SERVER_PORT);
     Client* client = new Client(peerAddress);
     clients.push_back(client);
     QStringList peerAddressParts = peerAddress.split(':');

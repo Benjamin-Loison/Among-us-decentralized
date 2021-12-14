@@ -9,32 +9,102 @@
         <translation>Among Us décentralisé</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="400"/>
+        <location filename="InGameUI.cpp" line="100"/>
+        <source>Upper Engine</source>
+        <translation>Moteur supérieur</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="101"/>
+        <source>MedBay</source>
+        <translation>Infirmerie</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="102"/>
+        <source>Cafeteria</source>
+        <translation>Cafétéria</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="103"/>
+        <source>Weapons</source>
+        <translation>Armes</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="104"/>
+        <source>Reactor</source>
+        <translation>Réacteur</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="105"/>
+        <source>Security</source>
+        <translation>Sécurité</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="106"/>
+        <source>Admin</source>
+        <translation>Administration</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="107"/>
+        <source>O2</source>
+        <translation>O2</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="108"/>
+        <source>Navigation</source>
+        <translation>Navigation</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="109"/>
+        <source>Lower Engine</source>
+        <translation>Moteur inférieur</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="110"/>
+        <source>Electrical</source>
+        <translation>Électricité</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="111"/>
+        <source>Storage</source>
+        <translation>Cargo</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="112"/>
+        <source>Communications</source>
+        <translation>Radio</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="113"/>
+        <source>Shields</source>
+        <translation>Boucliers</translation>
+    </message>
+    <message>
+        <location filename="InGameUI.cpp" line="437"/>
         <source>crewmates</source>
         <translation>équipiers</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="400"/>
+        <location filename="InGameUI.cpp" line="437"/>
         <source>impostors</source>
         <translation>imposteurs</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="402"/>
+        <location filename="InGameUI.cpp" line="439"/>
         <source>%1&apos; victory</source>
         <translation>victoire des %1</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="500"/>
+        <location filename="InGameUI.cpp" line="550"/>
         <source>You are an Impostor !</source>
         <translation>Vous êtes un imposteur !</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="548"/>
+        <location filename="InGameUI.cpp" line="598"/>
         <source>Ready</source>
         <translation>Prêt</translation>
     </message>
     <message>
-        <location filename="InGameUI.cpp" line="576"/>
+        <location filename="InGameUI.cpp" line="626"/>
         <source>Waiting for other players</source>
         <translation>En attente des autres joueurs</translation>
     </message>
@@ -143,38 +213,38 @@
         <translation>%1 restant(s)</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="54"/>
+        <location filename="main.cpp" line="55"/>
         <source>First to run</source>
         <translation>Premier à rejoindre la partie</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="54"/>
+        <location filename="main.cpp" line="55"/>
         <source>Are you the first to run for this game ?</source>
         <translation>Êtes-vous le premier à rejoindre la partie ?</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="69"/>
+        <location filename="main.cpp" line="70"/>
         <source>Peer address</source>
         <translation>Adresse d&apos;un participant</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="69"/>
+        <location filename="main.cpp" line="70"/>
         <source>A peer address</source>
         <translation>L&apos;adresse d&apos;un participant</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="103"/>
-        <location filename="main.cpp" line="120"/>
+        <location filename="main.cpp" line="104"/>
+        <location filename="main.cpp" line="121"/>
         <source>Nickname</source>
         <translation>Pseudonyme</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="103"/>
+        <location filename="main.cpp" line="104"/>
         <source>Your nickname</source>
         <translation>Votre pseudonyme</translation>
     </message>
     <message>
-        <location filename="main.cpp" line="120"/>
+        <location filename="main.cpp" line="121"/>
         <source>This nickname is already used!</source>
         <translation>Ce pseudonyme est déjà utilisé !</translation>
     </message>

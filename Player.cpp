@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "qPlus.h"
 #include "main.h"
+#include "Server.h"
 
 const QColor colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
                              {QColor(20, 156, 20), QColor(8, 99, 64)},
@@ -9,6 +10,7 @@ const QColor colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
                              {QColor(193, 17, 17), QColor(120, 8, 57)},
                              {QColor(62, 71, 78), QColor(30, 30, 38)},
                              {QColor(244, 244, 86), QColor(194, 134, 34)}};
+                             // should add skins and a limit of 15 players (source: https://fr.wikipedia.org/wiki/Among_Us)
 
 Player::Player(QString nickname):
     x(X_SPAWN),
@@ -44,3 +46,9 @@ Player::Player(): x(0), y(0), nickname(""), playerFacingLeft(false), playerPixma
     flippedGhostPixmap = new QPixmap(ghostPixmap->transformed(QTransform().scale(-1,1)));
 }
 
+void Player::moveTo(int x, int y) {
+    this->x = x;
+    this->y = y;
+    if(this == &inGameUI->currPlayer)
+        sendToAll("Position " + QString::number(x) + " " + QString::number(y));
+}

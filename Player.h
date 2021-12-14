@@ -30,6 +30,8 @@ public:
     QPixmap* flippedGhostPixmap;
     QPixmap* iconOnMapPixmap;
 
+    void moveTo(int x, int y);
+
 };
 
 #endif

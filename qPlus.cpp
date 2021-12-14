@@ -80,6 +80,18 @@ QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2) {
     return QPixmap::fromImage(tmp);
 }
 
+QPixmap getDisabledButton(const QPixmap &origButton) {
+    QImage tmp = origButton.toImage().copy();
+    for(quint16 y = 0; y < tmp.height(); y++)
+        for(quint16 x = 0; x < tmp.width(); x++) {
+            QColor color = tmp.pixelColor(x,y);
+            int alpha = color.alpha();
+            int gray = (int)(.8*qGray(color.rgb()));
+            tmp.setPixelColor(x, y, QColor(gray, gray, gray, alpha));
+        }
+    return QPixmap::fromImage(tmp);
+}
+
 void playSound(QString soundFile) // could assume all sounds are .wav so can append it here
 {
     if(!soundEffectMap.count(soundFile)) {
@@ -201,4 +213,13 @@ void drawCenteredText(QPainter* painter, quint16 x, quint16 y, QString text)
     QFontMetrics fm(painter->font());
     QRect rect = fm.boundingRect(text);
     painter->drawText(x - rect.width() / 2, y + rect.height() / 2, text);
+}
+
+// https://stackoverflow.com/questions/42141354/convert-pixel-size-to-point-size-for-fonts-on-multiple-platforms
+double ptToPx(double pt) {
+    return pt/72*QGuiApplication::primaryScreen()->physicalDotsPerInch();
+}
+
+double pxToPt(double px) {
+    return px*72/QGuiApplication::primaryScreen()->physicalDotsPerInch();
 }
