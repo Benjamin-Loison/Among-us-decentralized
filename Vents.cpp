@@ -1,7 +1,7 @@
 #include "Vents.h"
 
 const int VENT_RANGE_SQUARED = qPow(150,2);
-const int CLICKABLE_RADIUS  = qPow(100,2);
+const int CLICKABLE_RADIUS  = qPow(20,2);
 
 QLabel* VentLabel = nullptr;
 QPixmap* VentPixmap = nullptr;
@@ -30,10 +30,10 @@ QVector<VentsID> VentsNames{
     };
 
 QMap<VentsID, QPoint> VentsPositions{
-    {WEAPONS, QPoint(6750,690)},
+    {WEAPONS, QPoint(6560,690)},
     {NAV_TOP, QPoint(7870,1850)},
     {NAV_BOT, QPoint(7870,2420)},
-    {SHIELDS, QPoint(7700,3860)},
+    {SHIELDS, QPoint(6700,3860)},
     {EAST_CORRIDOR, QPoint(6680,2440)},
     {ADMIN, QPoint(5450,3070)},
     {CAFETARIA, QPoint(5750,1320)},
@@ -50,7 +50,7 @@ QMap<VentsID, QVector<VentsID>> VentsLink{
     {WEAPONS, {NAV_TOP}},
     {NAV_TOP, {WEAPONS}},
     {NAV_BOT, {SHIELDS}},
-    {SHIELDS, {SHIELDS}},
+    {SHIELDS, {NAV_BOT}},
     {EAST_CORRIDOR, {CAFETARIA,ADMIN}},
     {ADMIN, {CAFETARIA,EAST_CORRIDOR}},
     {CAFETARIA, {EAST_CORRIDOR,ADMIN}},
@@ -98,9 +98,6 @@ void drawArrow(QPainter* painter, QPoint pos, qint16 angle, QImage image){
     painter->translate(ARROW_ANCHOR_X,ARROW_ANCHOR_Y);
     painter->rotate(angle);
     painter->translate(-ARROW_ANCHOR_X,-ARROW_ANCHOR_Y);
-    //qreal theta = angle* atan(1)/45;
-    //qInfo()<< theta;
-    //painter->translate(ARROW_OFFSET * qCos(theta), ARROW_OFFSET * qSin(theta));
     painter->drawImage(0,0,image);
     painter->restore();
 }
@@ -110,7 +107,6 @@ QPair<QPixmap *, QPainter*> getVentPixmapPainter(){
     QPixmap* pixmap = new QPixmap(PIXMAP_SIZE_X,PIXMAP_SIZE_Y);
     pixmap->fill(Qt::transparent);
     QPainter* painter = new QPainter(pixmap);
-    qInfo()<< "reached";
     return qMakePair(pixmap, painter);
 }
 
@@ -150,7 +146,6 @@ QLabel* EnterVent(VentsID vent){
 
 
 void ExitVent(){
-    qInfo() << "close vent";
     playSound("Vent_open.wav");
     if(VentLabel)
         VentLabel = nullptr;
@@ -160,9 +155,31 @@ void ExitVent(){
 
 
 //very lazy way to check if the arrow is clicked,we just make sure its in a circle with same center as the arrow
-/*bool ArrowClicked(QPoint pos, QPoint mouse, qint16 angle){
-    QPoint arrow_center = QPoint(pos.x()+ ARROW_OFFSET * qCos(angle), pos.y()+ ARROW_OFFSET * qSin(angle));
-    return ((qPow(mouse.x(),2)  + qPow(mouse.y(),2))< CLICKABLE_RADIUS);
+bool ArrowClicked(QPoint pos, QPoint mouse, qreal angle){
+    qreal theta = angle * qAtan(1) / 45;
+    QPoint arrow_center = QPoint(pos.x()+ ARROW_OFFSET * qCos(theta), pos.y()+ ARROW_OFFSET * qSin(theta));
+    return ((qPow(mouse.x() - arrow_center.x(),2)  + qPow(mouse.y() - arrow_center.y(),2))< CLICKABLE_RADIUS);
 }
-*/
 
+
+enum VentsID onMouseEventVent(VentsID vent, QMouseEvent* mouseEvent){
+    QPair<QPixmap*, QPainter*> pixmapPainter = getVentPixmapPainter() ;
+    QPixmap* qBackgroundPixmap = pixmapPainter.first;
+    QSize pixmapSize = qBackgroundPixmap->size(),
+          windowSize = inGameUI->size();
+    QPainter* painter = pixmapPainter.second;
+    QPoint position = mouseEvent->pos();
+    qint16 mouseY = position.y() - (windowSize.height() - pixmapSize.height()) / 2,
+           mouseX = position.x() - (windowSize.width() - pixmapSize.width()) / 2;
+    QPoint mouse = QPoint(mouseX,mouseY);
+
+    VentsID new_vent = NULL_VENT;
+    QVector<VentsID> linkedvents = VentsLink.value(vent);
+    for (int i = 0; i< linkedvents.size(); i++){
+        qreal angle = GetAngle(vent, linkedvents.at(i));
+        if (ArrowClicked(QPoint(MOUSE_GRID_X,MOUSE_GRID_Y),mouse,angle)){
+            new_vent = linkedvents.at(i);
+        };
+    }
+    return new_vent;
+}

@@ -10,6 +10,8 @@
 #include <QLabel>
 #include <QPair>
 #include <QtDebug>
+#include <QMouseEvent>
+#include "main.h"
 #include "qPlus.h"
 
 #define PIXMAP_SIZE_X 500
@@ -19,7 +21,10 @@
 #define ARROW_START_Y 300
 #define ARROW_ANCHOR_X -40
 #define ARROW_ANCHOR_Y 30
-#define ARROW_OFFSET 100
+#define ARROW_OFFSET 70
+
+#define MOUSE_GRID_X 257
+#define MOUSE_GRID_Y 338
 
 
 
@@ -43,14 +48,14 @@ enum VentsID{
     };
 
 
-enum VentsID VentNear(QPoint position);
+enum VentsID VentNear(QPoint position),
+    onMouseEventVent(VentsID vent, QMouseEvent* mouseEvent);
 
 bool IsThereAnyVentNear(QPoint position);
 
 QLabel* EnterVent(VentsID vent);
 
 QPoint PosOfVent(VentsID vent);
-//QPoint onMouseEventVent(VentsID vent, QMouseEvent* mouseEvent);
 
 void drawArrow(QPainter* painter, QPoint pos, qint16 angle, QImage image),
     ExitVent();

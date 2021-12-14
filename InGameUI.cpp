@@ -565,8 +565,8 @@ void InGameUI::redraw()
     boundingRect.setLeft(qWidth - 1 - boundingRect.width());
     boundingRect.setRight(qWidth - 1);
     painter.fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
-    painter.drawText(boundingRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y));*/
-
+    painter.drawText(boundingRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y));
+    */
     // Game buttons
     if(everyoneReady)
     {
@@ -1040,9 +1040,19 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
         if(everyoneReady) {
             if (qLabel == nullptr && currentInGameGUI == IN_GAME_GUI_NONE)
                 onClickUse();
-            else if(qLabel)
-                closeTask();
+            else if(qLabel){
+                if (currentInGameGUI == IN_GAME_GUI_VENT){    
                 ExitVent();
+                current_vent = NULL_VENT;
+                currentInGameGUI = IN_GAME_GUI_NONE;
+                delete currHLayout;
+                delete qLabel;
+                qLabel = nullptr;
+                }
+
+                else {closeTask();};
+            }
+                
         }
         break;
     case Qt::Key_K:
@@ -1116,9 +1126,28 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                 onMouseEventEnterIDCode(mouseEvent);
             else if (currentInGameGUI == IN_GAME_GUI_ALIGN_ENGINE)
                 onMouseEventAlignEngine(mouseEvent);
-            /*else if (currentInGameGUI = IN_GAME_GUI_VENT){
-                QPoint new_pos = onMouseEventVent(current_vent ,mouseEvent);
-            }*/
+            else if (currentInGameGUI = IN_GAME_GUI_VENT){
+                VentsID new_vent = onMouseEventVent(current_vent ,mouseEvent);
+                if (new_vent!=NULL_VENT){
+                    ExitVent();
+                    current_vent = NULL_VENT;
+                    currentInGameGUI = IN_GAME_GUI_NONE;
+                    delete currHLayout;
+                    delete qLabel;
+                    qLabel = nullptr;
+                    QPoint new_pos = PosOfVent(new_vent);
+                    currPlayer.x = new_pos.x();
+                    currPlayer.y = new_pos.y();
+                    currentInGameGUI = IN_GAME_GUI_VENT;
+                    qLabel = EnterVent(new_vent);
+                    currHLayout = new QHBoxLayout;
+                    currHLayout->addStretch();
+                    currHLayout->addWidget(qLabel);
+                    currHLayout->addStretch();
+                    setLayout(currHLayout);
+
+                }
+            }
         }
         else if(isWinScreen())
         {
