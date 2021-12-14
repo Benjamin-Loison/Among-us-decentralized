@@ -51,7 +51,7 @@ Don't forget to put the .qm file into the directory storing the AmongUsDecentral
 
 ## Code coverage testing
 To test code coverage on Linux and Mac (requires `gcov` and `lcov`):
-- build in debug mode (in a command line: run `qmake CONFIG+=debug path/to/AmongUsDecentralized.pro` then `make`),
+- build in debug mode (in a command line: run `qmake CONFIG+=debug path/to/AmongUsDecentralized.pro`, then `make clean`, then `make`),
 - run the game,
 - from the build directory, run the script `runCoverage.sh` on Linux or `runCoverageMac.sh` on Mac.
 
