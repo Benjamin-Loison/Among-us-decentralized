@@ -43,7 +43,6 @@ enum VentsID{
     };
 
 
-<<<<<<< HEAD
 enum VentsID VentNear(QPoint position);
 
 bool IsThereAnyVentNear(QPoint position);
@@ -57,6 +56,3 @@ void drawArrow(QPainter* painter, QPoint pos, qint16 angle, QImage image),
     ExitVent();
 
 #endif
-=======
-#endif
->>>>>>> ebb2347796532c1d4e0190fd0076867bde82496c
