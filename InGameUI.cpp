@@ -13,6 +13,9 @@ const int EMERGENCY_RANGE_SQUARED = qPow(250, 2);
 const int KILL_COOLDOWN_SEC = 45;
 const int MAX_EMERGENCY_PER_PLAYER = 1;
 
+
+enum VentsID current_vent = NULL_VENT;
+
 // should make a function to get new player
 InGameUI::InGameUI(QLabel* parent) : QLabel(parent), lastNx(0), lastNy(0), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr), lastKillTime(0)
 {
@@ -56,8 +59,6 @@ void InGameUI::initDisplay()
     useButtonImage = useButtonPixmap->toImage();
     QPixmap* playAgainButtonPixmap = getQPixmap("playAgainButton.png");
     playAgainButtonImage = playAgainButtonPixmap->toImage();
-    QPixmap* ventArrowPixmap = getQPixmap("Arrow.png");
-    ventArrowImage = ventArrowPixmap->toImage();
 
     if (isCollision(currPlayer.x, currPlayer.y))
     {
@@ -548,7 +549,7 @@ void InGameUI::redraw()
         }
         if(findReportableBody())
             painter.drawImage(qWidth - 110, qHeight - 110, reportButtonImage);
-        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || (VentNear(QPoint(currPlayer.x,currPlayer.y)) != NULL_VENT))
+        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y)))
             painter.drawImage(qWidth - 110, qHeight - 220, useButtonImage);
         
     }
@@ -846,6 +847,11 @@ void InGameUI::onClickUse() {
         return;
     }
 
+    if(IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y))){
+        current_vent = VentNear(QPoint(currPlayer.x,currPlayer.y));
+        return;
+    }
+
     QVector<Task*> usableTasks = getUsableTasksByDistance();
     if(usableTasks.size() > 0) {
         Task* task = usableTasks[0];
@@ -1041,7 +1047,7 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                     onClickKill();
                 else if(isBottomRight && findReportableBody())
                     onClickReport();
-                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton()))
+                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton() || IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y))))
                         onClickUse();
             }
             else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS) {
