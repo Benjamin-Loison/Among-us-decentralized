@@ -1,6 +1,7 @@
 #include "InGameUI.h"
 #include "main.h"
 #include "asteroids.h"
+#include "camera.h"
 #include <QPushButton>
 #include <algorithm>
 using namespace std;
@@ -590,7 +591,7 @@ void InGameUI::redraw()
         }
         if(findReportableBody())
             painter.drawImage(qWidth - 110, qHeight - 110, reportButtonImage);
-        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || (isThereAnyVentNear() && (current_vent== NULL_VENT)))
+        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || isNearCamera() || (isThereAnyVentNear() && (current_vent== NULL_VENT)))
             painter.drawImage(qWidth - 110, qHeight - 220, useButtonImage);
         
     }

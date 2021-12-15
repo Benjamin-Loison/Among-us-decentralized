@@ -14,6 +14,7 @@ SOURCES += \
     InGameUI.cpp \
     asteroids.cpp \
     Player.cpp \
+    camera.cpp \
     fixWiring.cpp \
     main.cpp \
     qPlus.cpp \
@@ -32,6 +33,7 @@ HEADERS += \
     InGameUI.h \
     asteroids.h \
     Player.h \
+    camera.h \
     fixWiring.h \
     main.h \
     qPlus.h \
