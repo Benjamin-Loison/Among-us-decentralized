@@ -590,7 +590,7 @@ void InGameUI::redraw()
         }
         if(findReportableBody())
             painter.drawImage(qWidth - 110, qHeight - 110, reportButtonImage);
-        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || (IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y)) && (current_vent== NULL_VENT)))
+        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || (isThereAnyVentNear() && (current_vent== NULL_VENT)))
             painter.drawImage(qWidth - 110, qHeight - 220, useButtonImage);
         
     }
@@ -888,7 +888,7 @@ void InGameUI::onClickUse() {
         return;
     }
 
-    if((IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y)))&& (current_vent==NULL_VENT)  ){
+    if((isThereAnyVentNear())&& (current_vent==NULL_VENT)  ){
         current_vent = VentNear(QPoint(currPlayer.x,currPlayer.y));
         QPoint new_pos = PosOfVent(current_vent);
         currPlayer.x = new_pos.x();
@@ -1114,7 +1114,7 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                     onClickKill();
                 else if(isBottomRight && findReportableBody())
                     onClickReport();
-                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton() || IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y))))
+                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton() || isThereAnyVentNear()))
                         onClickUse();
             }
             else if(currentInGameGUI == IN_GAME_GUI_MAP)

@@ -79,8 +79,8 @@ enum VentsID VentNear(QPoint pos){
     return near_vent;
 }
 
-bool IsThereAnyVentNear(QPoint position){
-    return (VentNear(position) != NULL_VENT);
+bool isThereAnyVentNear(){
+    return inGameUI->currPlayer.isImpostor && (VentNear(QPoint(inGameUI->currPlayer.x, inGameUI->currPlayer.y)) != NULL_VENT);
 }
 
 
