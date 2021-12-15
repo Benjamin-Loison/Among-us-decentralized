@@ -41,7 +41,7 @@ Course schedule: http://www.lsv.fr/~chatain/enseignement/GL/
         - [X] Windows (Helib incompatible?)
         - [X] Linux
         - [X] MacOS
-    - [ ] Code coverage
+    - [X] Code coverage
     - [ ] Other tests
 
 ## Building
