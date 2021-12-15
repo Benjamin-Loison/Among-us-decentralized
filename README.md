@@ -18,7 +18,8 @@ Course schedule: http://www.lsv.fr/~chatain/enseignement/GL/
 - [X] Display other players
 - [X] Display name tags
 - [X] Menu (main menu and "meetings")
-- [ ] Network: peer-to-peer with secret (visibility) - using OpenSSL/Helib for cryptography
+- [X] Network: peer-to-peer
+  - [ ] with secret (visibility) - using OpenSSL/Helib for cryptography
 - [ ] Tasks:
     - [X] Fix Wiring
     - [X] Asteroids
@@ -27,17 +28,20 @@ Course schedule: http://www.lsv.fr/~chatain/enseignement/GL/
     - [ ] Scan Boarding Pass
     - [ ] Unlock Manifolds
     - [X] Align Engine
-    - [X] Set places for tasks (currently not very user-friendly, as players need to know where the tasks are)
+    - [X] Set places for tasks
 - [X] Show small map with tasks and player location
 - [X] Door sabotage
+- [ ] Cameras (Security)
 - [ ] Vocal chat during "meetings" (not prioritary)
 - [ ] Extra anti cheat (not prioritary)
-- [ ] Packaging (documentation ?)
+- [X] Packaging
+- [ ] (documentation ?)
 - Tests :
     - Continuous integration:
         - [X] Windows (Helib incompatible?)
         - [X] Linux
         - [X] MacOS
+    - [ ] Code coverage
     - [ ] Other tests
 
 ## Building
@@ -51,9 +55,11 @@ Don't forget to put the .qm file into the directory storing the AmongUsDecentral
 
 ## Code coverage testing
 To test code coverage on Linux and Mac (requires `gcov` and `lcov`):
-- build in debug mode (in a command line: run `qmake CONFIG+=debug path/to/AmongUsDecentralized.pro`, then `make clean`, then `make`),
-- run the game,
+- build in debug mode (in a command line: from the build directory, run `make clean`, then `qmake CONFIG+=debug path/to/AmongUsDecentralized.pro`, then `make`),
+- play the game and test the features you would like to test,
 - from the build directory, run the script `runCoverage.sh` on Linux or `runCoverageMac.sh` on Mac.
+
+A webpage should open, where you can browse the code and see the coverage of each source file and folder.
 
 <!-------------
 
