@@ -13,23 +13,20 @@
 #include "main.h"
 #include "qPlus.h"
 
-
 quint8 code[DIGIT_NUMBER] = {DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED};
 quint8 answer[DIGIT_NUMBER] = {DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED};
 
-int current_digit = 0  ;
+int current_digit = 0;
 
 QPixmap* EnterIDCodeBackgroundPixmap = nullptr;
 QPixmap* currEnterIDCodePixmap = nullptr;
 QLabel* currEnterIDCodeLabel = nullptr;
-
 
 void randomCode(){
     for (quint8 i = 0; i< DIGIT_NUMBER; i++){
         quint8 randomdigit = QRandomGenerator::global()->bounded(MAX_DIGIT+1);
         code[i]=randomdigit;
     }
-
 }
 
 QString getStringofcode(quint8* c){
@@ -41,8 +38,6 @@ QString getStringofcode(quint8* c){
     }
     return string_code;
 }
-
-
 
 //generates the painter and draw the code on the card
 QPair<QPixmap*, QPainter*> getEnterIDCodePixmapPainter()
@@ -59,7 +54,6 @@ QPair<QPixmap*, QPainter*> getEnterIDCodePixmapPainter()
     return qMakePair(pixmap, painter);
 }
 
-
 QLabel* getEnterIDCode(){
     if(!EnterIDCodeBackgroundPixmap) {EnterIDCodeBackgroundPixmap = getQPixmap("EnterIdCode_resized.png");};
 
@@ -68,7 +62,6 @@ QLabel* getEnterIDCode(){
 
     randomCode();
 
-    
     QPair<QPixmap*, QPainter*> pixmapPainter = getEnterIDCodePixmapPainter();
     QPixmap* pixmap = pixmapPainter.first;
     QPainter* painter = pixmapPainter.second;
@@ -88,7 +81,6 @@ QLabel* getEnterIDCode(){
     currEnterIDCodeLabel = qLabel;
 
     return qLabel;
-
 } 
 
 //return the digit clicked on the panel, can return 10 an 11 for the cancel and validate buttons 
@@ -133,9 +125,6 @@ quint8 DigitClicked(quint16 x, quint16 y)
     else return 12;
 }
 
-
-
-
 //draw the code answer
 void drawAnswer(QPainter* painter){
     QString s = getStringofcode(answer);
@@ -144,7 +133,6 @@ void drawAnswer(QPainter* painter){
     painter->setFont(font);
     painter-> drawText(WRITE_X,WRITE_Y,s);
 }
-
 
 void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
 {   
@@ -171,14 +159,12 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
         answer[current_digit]=digit;
         current_digit++;
     }
-
     else if (digit==DIGIT_UNDEFINED){
         for (quint8 i = 0;i<DIGIT_NUMBER;i++){
             answer[i]=DIGIT_UNDEFINED;
         }
         current_digit=0;
     }
-
     else if (digit == DIGIT_UNDEFINED +1 ){
         correct = true;
         for (quint8 i =0;i<DIGIT_NUMBER;i++){
@@ -194,7 +180,6 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
         }
     }
 
-
     drawAnswer(painter);
 
     delete painter;
@@ -205,12 +190,11 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
         delete currEnterIDCodePixmap;
     currEnterIDCodePixmap = qBackgroundPixmap;
     if (correct){
-        playSound("task_Complete.wav");
+        playSound("task_completed.wav");
         inGameUI->finishTask();
         inGameUI->closeTask();
     };
 }
-
 
 void onCloseEnterIDCode() {
     playSound("fix_wiring_task_close.wav");
@@ -220,7 +204,6 @@ void onCloseEnterIDCode() {
     if(currEnterIDCodePixmap)
         currEnterIDCodePixmap = nullptr;
 }
-
 
 void resetCode() {
     for(quint8 i = 0; i< DIGIT_NUMBER; i++){
