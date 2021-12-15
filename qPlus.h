@@ -19,6 +19,8 @@ class MessageBoxCross : public QMessageBox {
 protected:
     void closeEvent(QCloseEvent *event);
 
+public:
+    MessageBoxCross(QWidget *parent = nullptr);
 };
 
 double distance(quint16 x0, quint16 y0, quint16 x1, quint16 y1);

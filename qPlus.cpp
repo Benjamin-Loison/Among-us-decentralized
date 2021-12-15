@@ -108,10 +108,12 @@ void MessageBoxCross::closeEvent(QCloseEvent* closeEvent) {
     exit(0);
 }
 
+MessageBoxCross::MessageBoxCross(QWidget *parent) : QMessageBox(parent) {}
+
 bool getBool(QString title, QString label)
 {
     // X only works if add "| QMessageBox::Close" but it also add a button... same problem as (but potential answer doesn't solve the problem) https://forum.qt.io/topic/74991/qmessagebox-question-does-not-close-when-i-click-on-x-button-but-works-when-we-have-cancel-button-why-so
-    MessageBoxCross msgBox;
+    MessageBoxCross msgBox(inGameUI);
     msgBox.setWindowTitle(title);
     msgBox.setText(label);
     msgBox.setStandardButtons(QMessageBox ::Yes | QMessageBox::No);
