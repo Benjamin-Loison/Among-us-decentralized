@@ -59,7 +59,7 @@ void drawAssets(QPainter* painter, qreal angle){
 
 
 QLabel* getAlignEngine(){
-    if(!AlignEngineBackgroundPixmap) {AlignEngineBackgroundPixmap = getQPixmap("Align_Engine_Output_clean.png");};
+    if(!AlignEngineBackgroundPixmap) AlignEngineBackgroundPixmap = getQPixmap("Align_Engine_Output_clean.png");
 
     playSound("fix_wiring_task_open.wav");
     QLabel* qLabel = new QLabel;
@@ -69,8 +69,8 @@ QLabel* getAlignEngine(){
     QPixmap* pixmap = pixmapPainter.first;
     QPainter* painter = pixmapPainter.second;
 
-    if(!pattern) {pattern = getQPixmap("Engine_Pattern.png");};
-    if(!arrow) {arrow = getQPixmap("Engine_Arrow.png");};
+    if(!pattern) pattern = getQPixmap("Engine_Pattern.png");
+    if(!arrow) arrow = getQPixmap("Engine_Arrow.png");
 
     theta = DEFAULT_ANGLE;
     drawAssets(painter,theta);
@@ -92,7 +92,6 @@ QLabel* getAlignEngine(){
     currAlignEngineLabel = qLabel;
 
     return qLabel;
-
 } 
 
 void drawGreenLines(QPainter* painter){

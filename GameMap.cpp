@@ -8,6 +8,7 @@ QPixmap* taskIconPixmap = nullptr;
 QPixmap* mapLayoutPixmap = nullptr;
 QPixmap* sabotageDoorsPixmap = nullptr;
 QPixmap* disabledSabotageDoorsPixmap;
+//QPoint lastClick;
 
 GameMap::GameMap(InGameUI* ui): ui(ui), currPixmap(nullptr) {
     if(!taskIconPixmap)
@@ -61,8 +62,6 @@ void GameMap::redraw() {
             drawPixmapCentered(painter, toMinimapPoint(task->location), *taskIconPixmap);
 
     // Rooms and door sabotage buttons
-    /*QPen oldPen = newPainter->pen();
-    newPainter->setPen(Qt::white);*/
     const int fontSizePt = 15;
     const int fontSizePx = (int)ptToPx(fontSizePt);
     painter->setFont(QFont("Liberation Sans", fontSizePt));
@@ -83,7 +82,14 @@ void GameMap::redraw() {
                 drawPixmapCentered(painter, roomCenterMinimap, *sabotageDoorsPixmap);
         }
     }
-    //newPainter->setPen(oldPen);
+
+    // Debugging cross
+    /*QPen debugPen(QColor(0, 200, 0));
+    debugPen.setWidth(3);
+    painter->setPen(debugPen);
+    painter->drawLine(lastClick.x()-10, lastClick.y(), lastClick.x()+10, lastClick.y());
+    painter->drawLine(lastClick.x(), lastClick.y()-10, lastClick.x(), lastClick.y()+10);*/
+
     delete painter;
     setPixmap(*newPixmap);
     if(currPixmap)
@@ -92,7 +98,8 @@ void GameMap::redraw() {
 }
 
 void GameMap::onLeftOrDoubleClick(QMouseEvent *event) {
-    qInfo() << "Parent position:" << event->pos() << "- Minimap position:" << mapFromParent(event->pos());
+    //qInfo() << "Parent position:" << event->pos() << "- Minimap position:" << mapFromParent(event->pos());
+    //lastClick = mapFromParent(event->pos());
     if(ui->currPlayer.isImpostor && !ui->currPlayer.isGhost) {
         for(Room &room : ui->rooms) {
             if(!room.isCoolingDown() && getSabotageIconRect(toMinimapPoint(room.roomCenter)).contains(mapFromParent(event->pos()))) {
