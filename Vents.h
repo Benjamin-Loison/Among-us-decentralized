@@ -1,6 +1,7 @@
 #ifndef VENTS_H
 #define VENTS_H
 
+
 #include <QPoint>
 #include <QMap>
 #include <QPainter>
@@ -16,14 +17,16 @@
 #define PIXMAP_SIZE_X 500
 #define PIXMAP_SIZE_Y 500
 
-#define ARROW_START_X 290
-#define ARROW_START_Y 300
-#define ARROW_ANCHOR_X -40
-#define ARROW_ANCHOR_Y 30
-#define ARROW_OFFSET 70
+#define ARROW_VENT_START_X 290
+#define ARROW_VENT_START_Y 300
+#define ARROW_VENT_ANCHOR_X -40
+#define ARROW_VENT_ANCHOR_Y 30
+#define ARROW_VENT_OFFSET 70
 
 #define MOUSE_GRID_X 257
 #define MOUSE_GRID_Y 338
+
+
 
 enum VentsID{
     NULL_VENT, 
@@ -44,16 +47,17 @@ enum VentsID{
     FINAL_VENT,
     };
 
-VentsID VentNear(QPoint position),
-        onMouseEventVent(VentsID vent, QMouseEvent* mouseEvent);
 
-bool isThereAnyVentNear();
+enum VentsID VentNear(QPoint position),
+    onMouseEventVent(VentsID vent, QMouseEvent* mouseEvent);
+
+bool IsThereAnyVentNear(QPoint position);
 
 QLabel* EnterVent(VentsID vent);
 
 QPoint PosOfVent(VentsID vent);
 
 void drawArrow(QPainter* painter, QPoint pos, qint16 angle, QImage image),
-     ExitVent();
+    ExitVent();
 
 #endif
