@@ -591,7 +591,7 @@ void InGameUI::redraw()
         }
         if(findReportableBody())
             painter.drawImage(qWidth - 110, qHeight - 110, reportButtonImage);
-        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || isNearCamera() || (isThereAnyVentNear() && (current_vent== NULL_VENT)))
+        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || isNearCamera() || (IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y)) && (current_vent== NULL_VENT)))
             painter.drawImage(qWidth - 110, qHeight - 220, useButtonImage);
         
     }
@@ -889,7 +889,7 @@ void InGameUI::onClickUse() {
         return;
     }
 
-    if((isThereAnyVentNear())&& (current_vent==NULL_VENT)  ){
+    if((IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y)))&& (current_vent==NULL_VENT)  ){
         current_vent = VentNear(QPoint(currPlayer.x,currPlayer.y));
         QPoint new_pos = PosOfVent(current_vent);
         currPlayer.x = new_pos.x();
@@ -1115,7 +1115,7 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                     onClickKill();
                 else if(isBottomRight && findReportableBody())
                     onClickReport();
-                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton() || isThereAnyVentNear()))
+                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton() || IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y))))
                         onClickUse();
             }
             else if(currentInGameGUI == IN_GAME_GUI_MAP)
@@ -1131,15 +1131,13 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                 VentsID new_vent = onMouseEventVent(current_vent ,mouseEvent);
                 if (new_vent!=NULL_VENT){
                     ExitVent();
-                    current_vent = NULL_VENT;
-                    currentInGameGUI = IN_GAME_GUI_NONE;
+                    current_vent = new_vent;
                     delete currHLayout;
                     delete qLabel;
                     qLabel = nullptr;
                     QPoint new_pos = PosOfVent(new_vent);
                     currPlayer.x = new_pos.x();
                     currPlayer.y = new_pos.y();
-                    currentInGameGUI = IN_GAME_GUI_VENT;
                     qLabel = EnterVent(new_vent);
                     currHLayout = new QHBoxLayout;
                     currHLayout->addStretch();

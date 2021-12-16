@@ -1,7 +1,7 @@
 #include "Vents.h"
 
 const int VENT_RANGE_SQUARED = qPow(150,2);
-const int CLICKABLE_RADIUS  = qPow(20,2);
+const int CLICKABLE_RADIUS  = qPow(30,2);
 
 QLabel* VentLabel = nullptr;
 QPixmap* VentPixmap = nullptr;
@@ -64,7 +64,7 @@ QMap<VentsID, QVector<VentsID>> VentsLink{
     };
 
 
-QPoint PosOfVent(VentsID vent) {VentsPositions.value(vent);};
+QPoint PosOfVent(VentsID vent) { return VentsPositions.value(vent);};
 
 enum VentsID VentNear(QPoint pos){
     enum VentsID near_vent = NULL_VENT;
