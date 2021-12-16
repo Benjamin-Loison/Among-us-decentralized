@@ -74,6 +74,7 @@ Pour utiliser le multijoueur il est supposé que chaque joueur ait son port serv
 <!-- Pour utiliser le multijoueur il est supposé qu'au moins un joueur ait son port ouvert ou qu'à l'aide de l'UPnP se soit possible de l'ouvrir. -->
 <!-- avec l'IPv6 les ports sont ouverts par défaut ?! -->
 
+<!-- making tasks not reshape the window would be nice -->
 <!------------
 
 Ideas for protocols and methods 
