@@ -24,6 +24,7 @@ Player::Player(QString nickname):
     isGhost(false),
     showBody(false),
     isReady(false),
+    isInvisible(false),
     numberOfEmergenciesRequested(0)
 {
     quint8 playersNumber = inGameUI->getPlayersNumber();
@@ -41,14 +42,25 @@ Player::Player(QString nickname):
     flippedGhostPixmap = new QPixmap(ghostPixmap->transformed(QTransform().scale(-1,1)));
 }
 
+// shouldn't have to exist in theory no ? because we don't use it...
 Player::Player(): x(0), y(0), nickname(""), playerFacingLeft(false), playerPixmap(getQPixmap("player.png")), deadPixmap(getQPixmap("corpse.png")), ghostPixmap(getQPixmap("ghost.png")) {
     flippedPixmap = new QPixmap(playerPixmap->transformed(QTransform().scale(-1,1)));
     flippedGhostPixmap = new QPixmap(ghostPixmap->transformed(QTransform().scale(-1,1)));
+}
+
+QString Player::getSendPositionMessage()
+{
+    return "Position " + QString::number(x) + " " + QString::number(y);
+}
+
+void Player::sendPosition()
+{
+    sendToAll(getSendPositionMessage());
 }
 
 void Player::moveTo(int x, int y) {
     this->x = x;
     this->y = y;
     if(this == &inGameUI->currPlayer)
-        sendToAll("Position " + QString::number(x) + " " + QString::number(y));
+        sendPosition();
 }

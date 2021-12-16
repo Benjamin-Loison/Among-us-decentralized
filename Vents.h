@@ -47,7 +47,7 @@ enum VentsID{
 VentsID VentNear(QPoint position),
         onMouseEventVent(VentsID vent, QMouseEvent* mouseEvent);
 
-bool isThereAnyVentNear(QPoint point);
+bool isThereAnyVentNear();
 
 QLabel* EnterVent(VentsID vent);
 

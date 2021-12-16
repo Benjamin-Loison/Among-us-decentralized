@@ -102,6 +102,10 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
         if(inGameUI->meetingResultsWidget)
             inGameUI->meetingResultsWidget->onProceed();
     }
+    else if(messagePart.startsWith("Vent "))
+    {
+        player->isInvisible = messagePart.replace("Vent ", "") == "enter";
+    }
     else if(messagePart.startsWith("RandomHashed "))
     {
         if(player->privateRandomHashed == "")
@@ -237,7 +241,7 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
             inGameUI->spawnOtherPlayer(socketToString(socket), otherPlayerNickname); // could almost save players one per client/server and loop through this and not the list stored in InGameUI
             if(inGameUI->currPlayer.x != X_SPAWN || inGameUI->currPlayer.y != Y_SPAWN)
             {
-                res = "Position " + QString::number(inGameUI->currPlayer.x) + " " + QString::number(inGameUI->currPlayer.y);
+                res = inGameUI->currPlayer.getSendPositionMessage();
                 if(inGameUI->currPlayer.playerFacingLeft)
                     res += NETWORK_SEPARATOR"Facing left";
             }

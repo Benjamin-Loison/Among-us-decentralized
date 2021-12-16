@@ -398,7 +398,7 @@ bool InGameUI::killPlayer(Player &p) {
 void InGameUI::displayPlayer(const Player &player, QPainter *painter, bool showGhost, quint16 forceX, quint16 forceY)
 {
     // Only ghosts see ghosts
-    if(showGhost && ((!currPlayer.isGhost && !forceX && !forceY) || !player.isGhost))
+    if(player.isInvisible || (showGhost && ((!currPlayer.isGhost && !forceX && !forceY) || !player.isGhost)))
     {
         //qInfo("stoped");
         return;
@@ -633,7 +633,7 @@ void InGameUI::redraw()
         }
         if(findReportableBody())
             painter.drawImage(qWidth - 110, qHeight - 110, reportButtonImage);
-        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || isNearCamera() || isNearVitals() || (isThereAnyVentNear(QPoint(currPlayer.x, currPlayer.y)) && (current_vent== NULL_VENT)))
+        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || isNearCamera() || isNearVitals() || (isThereAnyVentNear() && (current_vent== NULL_VENT)))
             painter.drawImage(qWidth - 110, qHeight - 220, useButtonImage);
     }
 
@@ -930,7 +930,7 @@ void InGameUI::onClickUse() {
         return;
     }
 
-    if((isThereAnyVentNear(QPoint(currPlayer.x, currPlayer.y)))&& (current_vent==NULL_VENT)){
+    if((isThereAnyVentNear())&& (current_vent==NULL_VENT)){
         current_vent = VentNear(QPoint(currPlayer.x, currPlayer.y));
         QPoint new_pos = PosOfVent(current_vent);
         currPlayer.x = new_pos.x();
@@ -1186,7 +1186,7 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                     onClickKill();
                 else if(isBottomRight && findReportableBody())
                     onClickReport();
-                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton() || isThereAnyVentNear(QPoint(currPlayer.x, currPlayer.y)) || isNearCamera() || isNearVitals()))
+                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton() || isThereAnyVentNear() || isNearCamera() || isNearVitals()))
                     onClickUse();
             }
             else if(currentInGameGUI == IN_GAME_GUI_MAP)

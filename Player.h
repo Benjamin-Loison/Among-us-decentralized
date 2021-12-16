@@ -18,6 +18,7 @@ public:
     bool isGhost;
     bool showBody;
     bool isReady;
+    bool isInvisible; // could make an enum to be cleaner
     quint8 numberOfEmergenciesRequested;
     QColor color1, color2;
 
@@ -30,8 +31,9 @@ public:
     QPixmap* flippedGhostPixmap;
     QPixmap* iconOnMapPixmap;
 
+    QString getSendPositionMessage();
+    void sendPosition();
     void moveTo(int x, int y);
-
 };
 
 #endif

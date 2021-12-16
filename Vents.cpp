@@ -75,8 +75,8 @@ VentsID VentNear(QPoint pos){
     return near_vent;
 }
 
-bool isThereAnyVentNear(QPoint point){
-    return (VentNear(point/*QPoint(inGameUI->currPlayer.x, inGameUI->currPlayer.y)*/) != NULL_VENT);
+bool isThereAnyVentNear(){
+    return (VentNear(QPoint(inGameUI->currPlayer.x, inGameUI->currPlayer.y)) != NULL_VENT) && inGameUI->currPlayer.isImpostor;
 }
 
 qreal GetAngle(VentsID vent1, VentsID vent2 ){
@@ -105,6 +105,8 @@ QPair<QPixmap *, QPainter*> getVentPixmapPainter(){
 }
 
 QLabel* EnterVent(VentsID vent){
+    inGameUI->currPlayer.isInvisible = true;
+    sendToAll("Vent enter");
     playSound("Vent_open.wav");
     QLabel* qLabel = new QLabel;
 
@@ -139,6 +141,9 @@ QLabel* EnterVent(VentsID vent){
 }
 
 void ExitVent(){
+    inGameUI->currPlayer.isInvisible = false;
+    inGameUI->currPlayer.sendPosition();
+    sendToAll("Vent exit");
     playSound("Vent_open.wav");
     if(VentLabel)
         VentLabel = nullptr;
