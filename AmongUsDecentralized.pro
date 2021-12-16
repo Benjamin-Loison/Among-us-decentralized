@@ -27,7 +27,8 @@ SOURCES += \
     AlignEngine.cpp \
     Vents.cpp \
     Door.cpp \
-    Room.cpp
+    Room.cpp \
+    vitals.cpp
 
 HEADERS += \
     InGameUI.h \
@@ -42,7 +43,8 @@ HEADERS += \
     Task.h \
     GameMap.h \
     meetings.h \
-    EnterIDCode.h \ 
+    EnterIDCode.h \  \
+    vitals.h \
     AlignEngine.h \
     Vents.h \
     Door.h \

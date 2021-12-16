@@ -2,6 +2,7 @@
 #include "main.h"
 #include "asteroids.h"
 #include "camera.h"
+#include "vitals.h"
 #include <QPushButton>
 #include <algorithm>
 using namespace std;
@@ -630,7 +631,7 @@ void InGameUI::redraw()
         }
         if(findReportableBody())
             painter.drawImage(qWidth - 110, qHeight - 110, reportButtonImage);
-        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || isNearCamera() || (isThereAnyVentNear(QPoint(currPlayer.x, currPlayer.y)) && (current_vent== NULL_VENT)))
+        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || isNearCamera() || isNearVitals() || (isThereAnyVentNear(QPoint(currPlayer.x, currPlayer.y)) && (current_vent== NULL_VENT)))
             painter.drawImage(qWidth - 110, qHeight - 220, useButtonImage);
     }
 
@@ -985,6 +986,16 @@ void InGameUI::onClickUse() {
         currHLayout->addStretch();
         setLayout(currHLayout);
     }
+    else if(isNearVitals())
+    {
+        currentInGameGUI = IN_GAME_GUI_VITALS;
+        qLabel = getVitals();
+        currHLayout = new QHBoxLayout;
+        currHLayout->addStretch();
+        currHLayout->addWidget(qLabel);
+        currHLayout->addStretch();
+        setLayout(currHLayout);
+    }
 }
 
 void InGameUI::onClickReport() {
@@ -1162,7 +1173,7 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                     onClickKill();
                 else if(isBottomRight && findReportableBody())
                     onClickReport();
-                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton() || isThereAnyVentNear(QPoint(currPlayer.x, currPlayer.y)) || isNearCamera()))
+                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton() || isThereAnyVentNear(QPoint(currPlayer.x, currPlayer.y)) || isNearCamera() || isNearVitals()))
                     onClickUse();
             }
             else if(currentInGameGUI == IN_GAME_GUI_MAP)
