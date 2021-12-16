@@ -95,6 +95,7 @@ class InGameUI : public QLabel
         void onClickKill();
         void openMap();
         void closeMap();
+        void closeVitals();
         void triggerMeeting(Player* reportedPlayer = nullptr); // Called by the client who reports the body
         void openMeetingUI(Player* reportedPlayer = nullptr, Player* reportingPlayer = nullptr); // Also called by other clients upon receipt of the corresponding packet
         void closeMeetingUI();

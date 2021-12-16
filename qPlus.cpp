@@ -11,6 +11,8 @@
 #include "main.h"
 using namespace std;
 
+QColor originalColors[3] = {QColor(0, 255, 0), QColor(255, 0, 0), QColor(0, 0, 255)};
+
 QString assetsFolder = "assets/";
 
 QMap<QString, QSoundEffect*> soundEffectMap;
@@ -53,21 +55,24 @@ QPixmap* getQPixmap(QString filePath)
     return new QPixmap(assetsFolder + filePath);
 }
 
-
-QPixmap* getQPixmap(quint16 width,quint16 height)
+QPixmap* getQPixmap(quint16 width, quint16 height)
 {
-    return new QPixmap(width,height);
+    return new QPixmap(width, height);
 }
 
-QColor originalColors[2] = {QColor(0, 255, 0), QColor(255, 0, 0)};
+QImage getQImage(QString filePath)
+{
+    return QImage(assetsFolder + filePath);
+}
 
-QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2) {
-    QColor colors[2] = {color1, color2};
-    QImage tmp = pixmap.toImage();
+QPixmap colorImage(QImage tmp, QColor color1, QColor color2, QColor color3)
+{
+    QColor colors[3] = {color1, color2, color3};
 
     for(quint16 y = 0; y < tmp.height(); y++)
         for(quint16 x = 0; x < tmp.width(); x++)
-            for(quint8 originalColorsIndex = 0; originalColorsIndex < 2; originalColorsIndex++) {
+            for(quint8 originalColorsIndex = 0; originalColorsIndex < 3; originalColorsIndex++) {
+                // could check if we are iterating to change a color otherwise can pass, reversing loop order would optimize likewise
                 int alpha = tmp.pixelColor(x,y).alpha();
                 QColor newOriginalColor = originalColors[originalColorsIndex];
                 newOriginalColor.setAlpha(alpha);
@@ -78,6 +83,11 @@ QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2) {
                 }
             }
     return QPixmap::fromImage(tmp);
+}
+
+QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2, QColor color3) {
+    QImage tmp = pixmap.toImage();
+    return colorImage(tmp, color1, color2, color3);
 }
 
 QPixmap getDisabledButton(const QPixmap &origButton) {

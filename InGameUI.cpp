@@ -572,6 +572,8 @@ void InGameUI::redraw()
         redrawAsteroids(now);
     else if(currentInGameGUI == IN_GAME_GUI_CAMERA)
         redrawCamera();
+    else if(currentInGameGUI == IN_GAME_GUI_VITALS)
+        redrawVitals();
 
     QPixmap* oldPixmap = windowPixmap;
     windowPixmap = new QPixmap(qSize);
@@ -1028,6 +1030,14 @@ void InGameUI::openMap() {
     currentInGameGUI = IN_GAME_GUI_MAP;
 }
 
+void InGameUI::closeVitals()
+{
+    // might have to clean vitals ui cleanly
+    delete currHLayout;
+    currHLayout = nullptr;
+    currentInGameGUI = IN_GAME_GUI_NONE;
+}
+
 void InGameUI::closeMap() {
     if(!gameMap)
         return;
@@ -1057,6 +1067,9 @@ void InGameUI::openMeetingUI(Player* reportedPlayer, Player* reportingPlayer) {
         closeTask();
     if(currentInGameGUI == IN_GAME_GUI_MAP)
         closeMap();
+    // should do the same for camera when will be implemented
+    if(currentInGameGUI == IN_GAME_GUI_VITALS)
+        closeVitals();
     if(currentInGameGUI == IN_GAME_GUI_VENT){
         ExitVent();
         current_vent = NULL_VENT;
