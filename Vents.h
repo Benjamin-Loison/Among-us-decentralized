@@ -1,7 +1,6 @@
 #ifndef VENTS_H
 #define VENTS_H
 
-
 #include <QPoint>
 #include <QMap>
 #include <QPainter>
@@ -26,8 +25,6 @@
 #define MOUSE_GRID_X 257
 #define MOUSE_GRID_Y 338
 
-
-
 enum VentsID{
     NULL_VENT, 
     WEAPONS,
@@ -47,17 +44,16 @@ enum VentsID{
     FINAL_VENT,
     };
 
+VentsID VentNear(QPoint position),
+        onMouseEventVent(VentsID vent, QMouseEvent* mouseEvent);
 
-enum VentsID VentNear(QPoint position),
-    onMouseEventVent(VentsID vent, QMouseEvent* mouseEvent);
-
-bool IsThereAnyVentNear(QPoint position);
+bool isThereAnyVentNear(QPoint point);
 
 QLabel* EnterVent(VentsID vent);
 
 QPoint PosOfVent(VentsID vent);
 
 void drawArrow(QPainter* painter, QPoint pos, qint16 angle, QImage image),
-    ExitVent();
+     ExitVent();
 
 #endif

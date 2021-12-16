@@ -72,7 +72,7 @@ void InGameUI::initDisplay()
     QPixmap* playAgainButtonPixmap = getQPixmap("playAgainButton.png");
     playAgainButtonImage = playAgainButtonPixmap->toImage();
 
-    if (isCollision(currPlayer.x, currPlayer.y))
+    if (isCollision(currPlayer.x, currPlayer.y)) // why is this here ?
     {
         bool found = false;
         for (currPlayer.x = 0; currPlayer.x < backgroundPixmap->size().width() && !found; currPlayer.x++)
@@ -145,31 +145,59 @@ void InGameUI::displayAt(QPixmap* pixmap, int centerx, int centery, QPainter* pa
  * @param painter A QPainter that will be used for painting the background.
  * If nullptr is passed, a new QPainter will be used instead.
  */
-void InGameUI::setCenterBorderLimit(int x, int y, QPainter *painter = nullptr)
+void InGameUI::setCenterBorderLimit(int x, int y, QPainter* painter, QSize s, quint16 offsetX, quint16 offsetY, quint16 sx, quint16 sy)
 {
-    int winWidth = size().width(), winHeight = size().height();
+    // should make sure that even if big screen each user see the same map range etc
+    if(s == QSize())
+    {
+        //qInfo() << "s" << s;
+        s = size();
+    }
+    int winWidth = s.width(), winHeight = s.height();
     int backWidth = backgroundPixmap->size().width(), backHeight = backgroundPixmap->size().height();
+    if(sx == 0) // a bit overkill to draw everything if most of it is out of the screen
+    {
+        sx = backWidth;
+        sy = backHeight;
+    }
+    int leftBackgroundTmp, topBackgroundTmp;
     if (backWidth <= winWidth) // Center horizontally
-        leftBackground = (winWidth - backWidth) / 2;
+        leftBackgroundTmp = (winWidth - backWidth) / 2;
     else
     {
-        leftBackground = winWidth / 2 - x;
-        leftBackground = max(leftBackground, winWidth - backWidth); // clip at right border
-        leftBackground = min(leftBackground, 0);                    // clip at left border
+        //qInfo() << "d" << winWidth << x << backWidth;
+        leftBackgroundTmp = winWidth / 2 - x;
+        leftBackgroundTmp = max(leftBackgroundTmp, winWidth - backWidth); // clip at right border
+        leftBackgroundTmp = min(leftBackgroundTmp, 0);                    // clip at left border
     }
     if (backHeight <= winHeight)
-        topBackground = (winHeight - backHeight) / 2;
+        topBackgroundTmp = (winHeight - backHeight) / 2;
     else
     {
-        topBackground = winHeight / 2 - y;
-        topBackground = max(topBackground, winHeight - backHeight); // clip at bottom border
-        topBackground = min(topBackground, 0);                      // clip at top border
+        topBackgroundTmp = winHeight / 2 - y;
+        topBackgroundTmp = max(topBackgroundTmp, winHeight - backHeight); // clip at bottom border
+        topBackgroundTmp = min(topBackgroundTmp, 0);                      // clip at top border
     }
-    if(painter)
-        painter->drawPixmap(leftBackground, topBackground, *backgroundPixmap);
+    //topBackgroundTmp += offsetX;
+    //leftBackgroundTmp += offsetY;
+    if(sx != backWidth)
+    {
+        //qInfo() << "b" << offsetX << offsetY << sx << sy;
+        //qInfo() << "c" << leftBackgroundTmp << topBackgroundTmp;
+        QRectF target(offsetX, offsetY, sx, sy);
+        QRectF source(-leftBackgroundTmp, -topBackgroundTmp, /*sx*/winWidth, /*sy*/winHeight);
+        painter->drawPixmap(target, *backgroundPixmap, source);
+    }
+    else if(painter)
+        painter->drawPixmap(leftBackgroundTmp, topBackgroundTmp, /*sx, sy,*/ *backgroundPixmap);
     else {
         QPainter locPainter(windowPixmap);
-        locPainter.drawPixmap(leftBackground, topBackground, *backgroundPixmap);
+        locPainter.drawPixmap(leftBackgroundTmp, topBackgroundTmp, /*sx, sy,*/ *backgroundPixmap);
+    }
+    if(sx == backWidth)
+    {
+        leftBackground = leftBackgroundTmp;
+        topBackground = topBackgroundTmp;
     }
 }
 
@@ -417,6 +445,46 @@ bool InGameUI::isWinScreen()
     return currentInGameGUI == IN_GAME_GUI_WIN_CREWMATES || currentInGameGUI == IN_GAME_GUI_WIN_IMPOSTORS;
 }
 
+void InGameUI::displayDoors(QPainter* painter)
+{
+    for(Door& door : doors)
+        door.draw(painter, leftBackground, topBackground);
+}
+
+void InGameUI::displayPlayers(QPainter* painter)
+{
+    // Display players with ascending y, then ascending x.
+    // Display ghosts above alive players and dead bodies.
+    QVector<Player*> players;
+    players.push_back(&currPlayer);
+    for (Player &player : otherPlayers)
+        players.push_back(&player);
+    sort(players.begin(), players.end(), [](const Player *a, const Player *b)
+          {
+              int aY = a->isGhost ? a->bodyY : a->y,
+                  aX = a->isGhost ? a->bodyX : a->x,
+                  bY = b->isGhost ? b->bodyY : b->y,
+                  bX = b->isGhost ? b->bodyX : b->x;
+              if(aY != bY)
+                  return aY < bY;
+              else if(aX != bX)
+                  return aX < bX;
+              return a->nickname.compare(b->nickname) < 0;
+          });
+    for (Player* player : players)
+        displayPlayer(*player, painter, false);
+    sort(players.begin(), players.end(), [](const Player *a, const Player *b)
+          {
+              if (a->y != b->y)
+                  return a->y < b->y;
+              else if(a->x != b->x)
+                  return a->x < b->x;
+              return a->nickname.compare(b->nickname) < 0;
+          });
+    for (Player* player : players)
+        displayPlayer(*player, painter, true);
+}
+
 /**
  * Performs player movement, then redraws the in-game UI. Meant to be called at each frame.
  * @brief InGameUI::redraw
@@ -501,47 +569,18 @@ void InGameUI::redraw()
     // Asteroids
     if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS)
         redrawAsteroids(now);
+    else if(currentInGameGUI == IN_GAME_GUI_CAMERA)
+        redrawCamera();
 
-    QPixmap *oldPixmap = windowPixmap;
+    QPixmap* oldPixmap = windowPixmap;
     windowPixmap = new QPixmap(qSize);
     QPainter painter(windowPixmap);
     setCenterBorderLimit(currPlayer.x, currPlayer.y - currPlayer.playerPixmap->size().height() / 2, &painter);
-    // doors loop used to be reversed with players, but likewise doors look like map background there isn't misorder with map/door/player
-    for(Door& door : doors)
-        door.draw(&painter, leftBackground, topBackground);
+    // there is a misorder with door/player that can't be solved by just moving this for loop
+    // Display doors above players (could largely be improved!)
+    displayDoors(&painter);
 
-    // Display players with ascending y, then ascending x.
-    // Display ghosts above alive players and dead bodies.
-    QVector<Player *> players;
-    players.push_back(&currPlayer);
-    for (Player &player : otherPlayers)
-        players.push_back(&player);
-    sort(players.begin(), players.end(), [](const Player *a, const Player *b)
-          {
-              int aY = a->isGhost ? a->bodyY : a->y,
-                  aX = a->isGhost ? a->bodyX : a->x,
-                  bY = b->isGhost ? b->bodyY : b->y,
-                  bX = b->isGhost ? b->bodyX : b->x;
-              if(aY != bY)
-                  return aY < bY;
-              else if(aX != bX)
-                  return aX < bX;
-              return a->nickname.compare(b->nickname) < 0;
-          });
-    for (Player *player : players)
-        displayPlayer(*player, &painter, false);
-    sort(players.begin(), players.end(), [](const Player *a, const Player *b)
-          {
-              if (a->y != b->y)
-                  return a->y < b->y;
-              else if(a->x != b->x)
-                  return a->x < b->x;
-              return a->nickname.compare(b->nickname) < 0;
-          });
-    for (Player *player : players)
-        displayPlayer(*player, &painter, true);
-
-    // Display doors above players (could largely be improved!).
+    displayPlayers(&painter);
 
     int fontSizePt = 23;
     // Impostor message
@@ -591,9 +630,8 @@ void InGameUI::redraw()
         }
         if(findReportableBody())
             painter.drawImage(qWidth - 110, qHeight - 110, reportButtonImage);
-        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || isNearCamera() || (IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y)) && (current_vent== NULL_VENT)))
+        if(isThereAnyUsableTaskNear() || isNearEmergencyButton() || isNearCamera() || (isThereAnyVentNear(QPoint(currPlayer.x, currPlayer.y)) && (current_vent== NULL_VENT)))
             painter.drawImage(qWidth - 110, qHeight - 220, useButtonImage);
-        
     }
 
     // Ready button
@@ -889,8 +927,8 @@ void InGameUI::onClickUse() {
         return;
     }
 
-    if((IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y)))&& (current_vent==NULL_VENT)  ){
-        current_vent = VentNear(QPoint(currPlayer.x,currPlayer.y));
+    if((isThereAnyVentNear(QPoint(currPlayer.x, currPlayer.y)))&& (current_vent==NULL_VENT)){
+        current_vent = VentNear(QPoint(currPlayer.x, currPlayer.y));
         QPoint new_pos = PosOfVent(current_vent);
         currPlayer.x = new_pos.x();
         currPlayer.y = new_pos.y();
@@ -937,7 +975,16 @@ void InGameUI::onClickUse() {
         currHLayout->addStretch();
         setLayout(currHLayout);
     }
-
+    else if(isNearCamera()) // could check what minimal distance in order to know whether the player want task or camera, but it should be another icon btw
+    {
+        currentInGameGUI = IN_GAME_GUI_CAMERA;
+        qLabel = getCamera();
+        currHLayout = new QHBoxLayout;
+        currHLayout->addStretch();
+        currHLayout->addWidget(qLabel);
+        currHLayout->addStretch();
+        setLayout(currHLayout);
+    }
 }
 
 void InGameUI::onClickReport() {
@@ -1115,8 +1162,8 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                     onClickKill();
                 else if(isBottomRight && findReportableBody())
                     onClickReport();
-                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton() || IsThereAnyVentNear(QPoint(currPlayer.x,currPlayer.y))))
-                        onClickUse();
+                else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton() || isThereAnyVentNear(QPoint(currPlayer.x, currPlayer.y)) || isNearCamera()))
+                    onClickUse();
             }
             else if(currentInGameGUI == IN_GAME_GUI_MAP)
                 gameMap->onLeftOrDoubleClick(mouseEvent);
@@ -1132,12 +1179,14 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                 if (new_vent!=NULL_VENT){
                     ExitVent();
                     current_vent = new_vent;
+                    currentInGameGUI = IN_GAME_GUI_NONE;
                     delete currHLayout;
                     delete qLabel;
                     qLabel = nullptr;
                     QPoint new_pos = PosOfVent(new_vent);
                     currPlayer.x = new_pos.x();
                     currPlayer.y = new_pos.y();
+                    currentInGameGUI = IN_GAME_GUI_VENT;
                     qLabel = EnterVent(new_vent);
                     currHLayout = new QHBoxLayout;
                     currHLayout->addStretch();

@@ -1,14 +1,12 @@
 #include "Vents.h"
+#include "main.h"
 
 const int VENT_RANGE_SQUARED = qPow(150,2);
 const int CLICKABLE_RADIUS  = qPow(30,2);
 
 QLabel* VentLabel = nullptr;
 QPixmap* VentPixmap = nullptr;
-
-
 QPixmap* VentArrow = nullptr;
-
 
 QVector<VentsID> VentsNames{
     NULL_VENT, 
@@ -63,13 +61,11 @@ QMap<VentsID, QVector<VentsID>> VentsLink{
     {UPPER_ENGINE, {REACTOR_TOP}},
     };
 
-
 QPoint PosOfVent(VentsID vent) { return VentsPositions.value(vent);};
 
-enum VentsID VentNear(QPoint pos){
-    enum VentsID near_vent = NULL_VENT;
-    for (int i = 0; i< VentsNames.size(); i++){
-        enum VentsID vent = VentsNames.at(i);
+VentsID VentNear(QPoint pos){
+    VentsID near_vent = NULL_VENT;
+    for (VentsID vent : VentsNames){
         QPoint vent_pos = VentsPositions.value(vent);
         int dist = qPow(pos.y()-vent_pos.y(),2) +  qPow(pos.x()-vent_pos.x(),2);
         if (dist < VENT_RANGE_SQUARED){
@@ -79,11 +75,9 @@ enum VentsID VentNear(QPoint pos){
     return near_vent;
 }
 
-bool IsThereAnyVentNear(QPoint position){
-    return (VentNear(position) != NULL_VENT);
+bool isThereAnyVentNear(QPoint point){
+    return (VentNear(point/*QPoint(inGameUI->currPlayer.x, inGameUI->currPlayer.y)*/) != NULL_VENT);
 }
-
-
 
 qreal GetAngle(VentsID vent1, VentsID vent2 ){
     QPoint pos1 = VentsPositions.value(vent1);
@@ -118,11 +112,11 @@ QLabel* EnterVent(VentsID vent){
     QPixmap* pixmap = pixmapPainter.first;
     QPainter* painter = pixmapPainter.second;
     
-    if(!VentArrow) {VentArrow = getQPixmap("Arrow.png");};
+    if(!VentArrow) VentArrow = getQPixmap("Arrow.png");
 
-    QVector<VentsID> linkedvents = VentsLink.value(vent); 
-    for (int i = 0; i< linkedvents.size(); i++){
-        qreal angle = GetAngle(vent, linkedvents.at(i));
+    QVector<VentsID> linkedvents = VentsLink.value(vent);
+    for (VentsID linkedvent : linkedvents){
+        qreal angle = GetAngle(vent, linkedvent);
         drawArrow(painter, VentsPositions.value(vent), angle, VentArrow->toImage());
     }
 
@@ -144,7 +138,6 @@ QLabel* EnterVent(VentsID vent){
     return qLabel;
 }
 
-
 void ExitVent(){
     playSound("Vent_open.wav");
     if(VentLabel)
@@ -153,7 +146,6 @@ void ExitVent(){
         VentPixmap = nullptr;
 }
 
-
 //very lazy way to check if the arrow is clicked,we just make sure its in a circle with same center as the arrow
 bool ArrowClicked(QPoint pos, QPoint mouse, qreal angle){
     qreal theta = angle * qAtan(1) / 45;
@@ -161,8 +153,7 @@ bool ArrowClicked(QPoint pos, QPoint mouse, qreal angle){
     return ((qPow(mouse.x() - arrow_center.x(),2)  + qPow(mouse.y() - arrow_center.y(),2))< CLICKABLE_RADIUS);
 }
 
-
-enum VentsID onMouseEventVent(VentsID vent, QMouseEvent* mouseEvent){
+VentsID onMouseEventVent(VentsID vent, QMouseEvent* mouseEvent){
     QPair<QPixmap*, QPainter*> pixmapPainter = getVentPixmapPainter() ;
     QPixmap* qBackgroundPixmap = pixmapPainter.first;
     QSize pixmapSize = qBackgroundPixmap->size(),
@@ -175,11 +166,10 @@ enum VentsID onMouseEventVent(VentsID vent, QMouseEvent* mouseEvent){
 
     VentsID new_vent = NULL_VENT;
     QVector<VentsID> linkedvents = VentsLink.value(vent);
-    for (int i = 0; i< linkedvents.size(); i++){
-        qreal angle = GetAngle(vent, linkedvents.at(i));
-        if (ArrowClicked(QPoint(MOUSE_GRID_X,MOUSE_GRID_Y),mouse,angle)){
-            new_vent = linkedvents.at(i);
-        };
+    for (VentsID linkedvent : linkedvents){
+        qreal angle = GetAngle(vent, linkedvent);
+        if (ArrowClicked(QPoint(MOUSE_GRID_X,MOUSE_GRID_Y),mouse,angle))
+            new_vent = linkedvent;
     }
     return new_vent;
 }

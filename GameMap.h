@@ -1,5 +1,6 @@
 #ifndef GAME_MAP_H
 #define GAME_MAP_H
+
 #include <QLabel>
 #include <QPixmap>
 #include "Task.h"

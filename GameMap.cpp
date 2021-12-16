@@ -66,21 +66,13 @@ void GameMap::redraw() {
     const int fontSizePx = (int)ptToPx(fontSizePt);
     painter->setFont(QFont("Liberation Sans", fontSizePt));
     for(Room& room : ui->rooms) {
-        int labelTop;
         QPoint roomCenterMinimap = toMinimapPoint(room.roomCenter);
         bool showSabotageButton = ui->currPlayer.isImpostor && !ui->currPlayer.isGhost && !room.doors.isEmpty();
-        if(!showSabotageButton)
-            labelTop = roomCenterMinimap.y() - fontSizePx/2;
-        else
-            labelTop = roomCenterMinimap.y() - sabotageDoorsPixmap->size().height()/2 - fontSizePx/2;
+        int labelTop = roomCenterMinimap.y() - (showSabotageButton ? sabotageDoorsPixmap->size().height()/2 : 0) - fontSizePx/2;
         QRect textRect(roomCenterMinimap.x(), labelTop, 1, fontSizePt);
         painter->drawText(textRect, Qt::TextDontClip | Qt::AlignCenter, room.roomName);
-        if(showSabotageButton) {
-            if(room.isCoolingDown())
-                drawPixmapCentered(painter, roomCenterMinimap, *disabledSabotageDoorsPixmap);
-            else
-                drawPixmapCentered(painter, roomCenterMinimap, *sabotageDoorsPixmap);
-        }
+        if(showSabotageButton)
+            drawPixmapCentered(painter, roomCenterMinimap, *(room.isCoolingDown() ? disabledSabotageDoorsPixmap : sabotageDoorsPixmap));
     }
 
     // Debugging cross
@@ -100,13 +92,11 @@ void GameMap::redraw() {
 void GameMap::onLeftOrDoubleClick(QMouseEvent *event) {
     //qInfo() << "Parent position:" << event->pos() << "- Minimap position:" << mapFromParent(event->pos());
     //lastClick = mapFromParent(event->pos());
-    if(ui->currPlayer.isImpostor && !ui->currPlayer.isGhost) {
-        for(Room &room : ui->rooms) {
+    if(ui->currPlayer.isImpostor && !ui->currPlayer.isGhost)
+        for(Room &room : ui->rooms)
             if(!room.isCoolingDown() && getSabotageIconRect(toMinimapPoint(room.roomCenter)).contains(mapFromParent(event->pos()))) {
                 room.sabotage();
                 sendToAll(QString("Sabotage_doors %1").arg(room.id));
                 return;
             }
-        }
-    }
 }

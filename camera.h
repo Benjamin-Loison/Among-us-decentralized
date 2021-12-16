@@ -5,5 +5,6 @@
 
 bool isNearCamera();
 QLabel* getCamera();
+void redrawCamera();
 
 #endif
