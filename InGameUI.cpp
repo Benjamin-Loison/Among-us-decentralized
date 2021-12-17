@@ -1198,7 +1198,7 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                 onMouseEventEnterIDCode(mouseEvent);
             else if (currentInGameGUI == IN_GAME_GUI_ALIGN_ENGINE)
                 onMouseEventAlignEngine(mouseEvent);
-            else if (currentInGameGUI = IN_GAME_GUI_VENT){
+            else if (currentInGameGUI == IN_GAME_GUI_VENT){
                 VentsID new_vent = onMouseEventVent(current_vent ,mouseEvent);
                 if (new_vent!=NULL_VENT){
                     ExitVent();
