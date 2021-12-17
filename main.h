@@ -13,5 +13,6 @@ extern QList<Client*> clients;
 extern Server* server;
 extern QString myAddress;
 extern bool isFirstToRun;
+QString toString(InGameGUI inGameGUI);
 
 #endif
