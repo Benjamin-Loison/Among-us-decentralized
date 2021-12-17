@@ -144,3 +144,34 @@ int main(int argc, char *argv[])
 
     return app.exec();
 }
+
+QString toString(InGameGUI inGameGUI)
+{
+    switch(inGameGUI)
+    {
+        case IN_GAME_GUI_NONE:
+            return "IN_GAME_GUI_NONE";
+        case IN_GAME_GUI_FIX_WIRING:
+            return "IN_GAME_GUI_FIX_WIRING";
+        case IN_GAME_GUI_ASTEROIDS:
+            return "IN_GAME_GUI_ASTEROIDS";
+        case IN_GAME_GUI_ENTER_ID_CODE:
+            return "IN_GAME_GUI_ENTER_ID_CODE";
+        case IN_GAME_GUI_ALIGN_ENGINE:
+            return "IN_GAME_GUI_ALIGN_ENGINE";
+        case IN_GAME_GUI_MAP:
+            return "IN_GAME_GUI_MAP";
+        case IN_GAME_GUI_CAMERA:
+            return "IN_GAME_GUI_CAMERA";
+        case IN_GAME_GUI_VITALS:
+            return "IN_GAME_GUI_VITALS";
+        case IN_GAME_GUI_MEETING:
+            return "IN_GAME_GUI_MEETING";
+        case IN_GAME_GUI_WIN_CREWMATES:
+            return "IN_GAME_GUI_WIN_CREWMATES";
+        case IN_GAME_GUI_WIN_IMPOSTORS:
+            return "IN_GAME_GUI_WIN_IMPOSTORS";
+        case IN_GAME_GUI_VENT:
+            return "IN_GAME_GUI_VENT";
+    }
+}
