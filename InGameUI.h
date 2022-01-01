@@ -132,6 +132,7 @@ class InGameUI : public QLabel
         void teleportAllPlayers();
         void displayPlayers(QPainter* painter);
         void displayDoors(QPainter* painter);
+        void setLayoutQLabel();
         InGameUI(QLabel* parent = 0);
 
     public slots:
