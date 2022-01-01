@@ -131,7 +131,7 @@ void drawAnswer(QPainter* painter){
     QFont font = painter->font();
     font.setPixelSize(56);
     painter->setFont(font);
-    painter-> drawText(WRITE_X,WRITE_Y,s);
+    painter-> drawText(WRITE_X,WRITE_Y,s); /// using bold font may be a good idea
 }
 
 void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
