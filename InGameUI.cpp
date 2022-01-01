@@ -19,7 +19,7 @@ const int MAX_EMERGENCY_PER_PLAYER = 1;
 enum VentsID current_vent = NULL_VENT;
 
 // should make a function to get new player
-InGameUI::InGameUI(QLabel* parent) : QLabel(parent), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr), lastKillTime(0)
+InGameUI::InGameUI(QLabel* parent) : QLabel(parent), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr), lastKillTime(0), initialized(false)
 {
     // doing this at the very first window would be nice (when asking nickname etc)
     setWindowIcon(QIcon(assetsFolder + "logo.png"));
@@ -42,6 +42,7 @@ void InGameUI::initialize(QString nickname)
     isPressed[Qt::Key_Right] = false;
     initDisplay();
     initDoorsAndRooms();
+    initialized = true;
 }
 
 qint64 InGameUI::currTimer() {
@@ -658,7 +659,8 @@ void InGameUI::redraw()
 
 void InGameUI::resizeEvent(QResizeEvent *ev)
 {
-    redraw();
+    if(initialized) // otherwise resize is oftenly called before initialize on Windows so it crashes
+        redraw();
     QLabel::resizeEvent(ev);
 }
 
@@ -922,15 +924,6 @@ void InGameUI::closeTask() {
     qLabel = nullptr;
 }
 
-void InGameUI::setLayoutQLabel()
-{
-    currHLayout = new QHBoxLayout;
-    currHLayout->addStretch();
-    currHLayout->addWidget(qLabel);
-    currHLayout->addStretch();
-    setLayout(currHLayout);
-}
-
 void InGameUI::onClickUse() {
     if(isNearEmergencyButton())
     {
@@ -946,8 +939,11 @@ void InGameUI::onClickUse() {
         currPlayer.y = new_pos.y();
         currentInGameGUI = IN_GAME_GUI_VENT;
         qLabel = EnterVent(current_vent);
-
-        setLayoutQLabel();
+        currHLayout = new QHBoxLayout;
+        currHLayout->addStretch();
+        currHLayout->addWidget(qLabel);
+        currHLayout->addStretch();
+        setLayout(currHLayout);
         return;
     }
 
@@ -978,29 +974,38 @@ void InGameUI::onClickUse() {
         default:
             return;
         }
-
-        setLayoutQLabel();
+        currHLayout = new QHBoxLayout;
+        currHLayout->addStretch();
+        currHLayout->addWidget(qLabel);
+        currHLayout->addStretch();
+        setLayout(currHLayout);
     }
     else if(isNearCamera()) // could check what minimal distance in order to know whether the player want task or camera, but it should be another icon btw
     {
         currentInGameGUI = IN_GAME_GUI_CAMERA;
         qLabel = getCamera();
-
-        setLayoutQLabel();
+        currHLayout = new QHBoxLayout;
+        currHLayout->addStretch();
+        currHLayout->addWidget(qLabel);
+        currHLayout->addStretch();
+        setLayout(currHLayout);
     }
     else if(isNearVitals())
     {
         currentInGameGUI = IN_GAME_GUI_VITALS;
         qLabel = getVitals();
-
-        setLayoutQLabel();
+        currHLayout = new QHBoxLayout;
+        currHLayout->addStretch();
+        currHLayout->addWidget(qLabel);
+        currHLayout->addStretch();
+        setLayout(currHLayout);
     }
 }
 
 void InGameUI::onClickReport() {
     Player* reportable = findReportableBody();
     if(reportable)
-        reportBody(*reportable); // why not giving pointer directly ?
+        reportBody(*reportable);
 }
 
 void InGameUI::onClickKill() {
@@ -1030,15 +1035,9 @@ void InGameUI::openMap() {
 void InGameUI::closeVitals()
 {
     // might have to clean vitals ui cleanly
-    // could also use closeTask()
     delete currHLayout;
     currHLayout = nullptr;
     currentInGameGUI = IN_GAME_GUI_NONE;
-
-    //onCloseVitals();
-
-    delete qLabel;
-    qLabel = nullptr;
 }
 
 void InGameUI::closeMap() {
@@ -1066,7 +1065,8 @@ void InGameUI::triggerMeeting(Player* reportedPlayer) {
  * body is made invisible.
  */
 void InGameUI::openMeetingUI(Player* reportedPlayer, Player* reportingPlayer) {
-    closeTask();
+    if(currentTask)
+        closeTask();
     if(currentInGameGUI == IN_GAME_GUI_MAP)
         closeMap();
     // should do the same for camera when will be implemented
@@ -1109,12 +1109,6 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
     case Qt::Key_Right:
         isPressed[keycode] = true;
         break;
-    case Qt::Key_F11:
-        if(inGameUI->isFullScreen())
-            inGameUI->showMaximized(); // doesn't resume on whole screen :'(
-        else
-            inGameUI->showFullScreen();
-        break;
     // https://nerdschalk.com/among-us-keyboard-controls/
     case Qt::Key_E:
         if(everyoneReady) {
@@ -1129,12 +1123,8 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
                 delete qLabel;
                 qLabel = nullptr;
                 }
-                if(currentInGameGUI == IN_GAME_GUI_VITALS)
-                {
-                    closeVitals();
-                }
 
-                else closeTask();
+                else {closeTask();};
             }
                 
         }
@@ -1224,7 +1214,11 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                     currPlayer.y = new_pos.y();
                     currentInGameGUI = IN_GAME_GUI_VENT;
                     qLabel = EnterVent(new_vent);
-                    setLayoutQLabel();
+                    currHLayout = new QHBoxLayout;
+                    currHLayout->addStretch();
+                    currHLayout->addWidget(qLabel);
+                    currHLayout->addStretch();
+                    setLayout(currHLayout);
 
                 }
             }
