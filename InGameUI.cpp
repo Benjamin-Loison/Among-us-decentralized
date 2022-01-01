@@ -922,6 +922,15 @@ void InGameUI::closeTask() {
     qLabel = nullptr;
 }
 
+void InGameUI::setLayoutQLabel()
+{
+    currHLayout = new QHBoxLayout;
+    currHLayout->addStretch();
+    currHLayout->addWidget(qLabel);
+    currHLayout->addStretch();
+    setLayout(currHLayout);
+}
+
 void InGameUI::onClickUse() {
     if(isNearEmergencyButton())
     {
@@ -937,11 +946,8 @@ void InGameUI::onClickUse() {
         currPlayer.y = new_pos.y();
         currentInGameGUI = IN_GAME_GUI_VENT;
         qLabel = EnterVent(current_vent);
-        currHLayout = new QHBoxLayout;
-        currHLayout->addStretch();
-        currHLayout->addWidget(qLabel);
-        currHLayout->addStretch();
-        setLayout(currHLayout);
+
+        setLayoutQLabel();
         return;
     }
 
@@ -972,38 +978,29 @@ void InGameUI::onClickUse() {
         default:
             return;
         }
-        currHLayout = new QHBoxLayout;
-        currHLayout->addStretch();
-        currHLayout->addWidget(qLabel);
-        currHLayout->addStretch();
-        setLayout(currHLayout);
+
+        setLayoutQLabel();
     }
     else if(isNearCamera()) // could check what minimal distance in order to know whether the player want task or camera, but it should be another icon btw
     {
         currentInGameGUI = IN_GAME_GUI_CAMERA;
         qLabel = getCamera();
-        currHLayout = new QHBoxLayout;
-        currHLayout->addStretch();
-        currHLayout->addWidget(qLabel);
-        currHLayout->addStretch();
-        setLayout(currHLayout);
+
+        setLayoutQLabel();
     }
     else if(isNearVitals())
     {
         currentInGameGUI = IN_GAME_GUI_VITALS;
         qLabel = getVitals();
-        currHLayout = new QHBoxLayout;
-        currHLayout->addStretch();
-        currHLayout->addWidget(qLabel);
-        currHLayout->addStretch();
-        setLayout(currHLayout);
+
+        setLayoutQLabel();
     }
 }
 
 void InGameUI::onClickReport() {
     Player* reportable = findReportableBody();
     if(reportable)
-        reportBody(*reportable);
+        reportBody(*reportable); // why not giving pointer directly ?
 }
 
 void InGameUI::onClickKill() {
@@ -1033,9 +1030,15 @@ void InGameUI::openMap() {
 void InGameUI::closeVitals()
 {
     // might have to clean vitals ui cleanly
+    // could also use closeTask()
     delete currHLayout;
     currHLayout = nullptr;
     currentInGameGUI = IN_GAME_GUI_NONE;
+
+    //onCloseVitals();
+
+    delete qLabel;
+    qLabel = nullptr;
 }
 
 void InGameUI::closeMap() {
@@ -1063,8 +1066,7 @@ void InGameUI::triggerMeeting(Player* reportedPlayer) {
  * body is made invisible.
  */
 void InGameUI::openMeetingUI(Player* reportedPlayer, Player* reportingPlayer) {
-    if(currentTask)
-        closeTask();
+    closeTask();
     if(currentInGameGUI == IN_GAME_GUI_MAP)
         closeMap();
     // should do the same for camera when will be implemented
@@ -1127,8 +1129,12 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
                 delete qLabel;
                 qLabel = nullptr;
                 }
+                if(currentInGameGUI == IN_GAME_GUI_VITALS)
+                {
+                    closeVitals();
+                }
 
-                else {closeTask();};
+                else closeTask();
             }
                 
         }
@@ -1218,11 +1224,7 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                     currPlayer.y = new_pos.y();
                     currentInGameGUI = IN_GAME_GUI_VENT;
                     qLabel = EnterVent(new_vent);
-                    currHLayout = new QHBoxLayout;
-                    currHLayout->addStretch();
-                    currHLayout->addWidget(qLabel);
-                    currHLayout->addStretch();
-                    setLayout(currHLayout);
+                    setLayoutQLabel();
 
                 }
             }

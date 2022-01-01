@@ -130,6 +130,8 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
     {
         const int prefixSize = QString("Kill ").size();
         QString nickname = messagePart.mid(prefixSize);
+        if(nickname == inGameUI->currPlayer.nickname)
+            inGameUI->closeTask();
         Player* player = inGameUI->getPlayer(nickname);
         inGameUI->killPlayer(*player);
         inGameUI->checkEndOfTheGame();
