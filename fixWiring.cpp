@@ -58,7 +58,7 @@ void randomWires(WiringColor* nodes)
         {
             randomColorIndex = QRandomGenerator::global()->bounded(COLORS_NUMBER);
             bool alreadyIn = false;
-            for(quint8 subNodesIndex = 0; subNodesIndex < nodesIndex; subNodesIndex++)
+            for(quint8 subNodesIndex = 0; subNodesIndex < nodesIndex; subNodesIndex++) // any_of etc on pointer array would be nice
             {
                 if(getIndex(nodes[subNodesIndex]) == randomColorIndex)
                 {
@@ -209,17 +209,26 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
 
     for(qint8 nodesIndex = 0; nodesIndex < COLORS_NUMBER; nodesIndex++)
     {
+        quint16 middleX = FIX_WIRING_LEFT_X + FIX_WIRING_WIDTH / 2,
+                middleY = getYForWiring(nodesIndex);
+        double d = distance(middleX, middleY, mouseX, mouseY);
+        bool isNearNode = d <= range;
         quint8 link = links[nodesIndex];
         if(link < COLOR_UNDEFINED)
-            fillWire(painter, nodesIndex);
+        {
+            if(isNearNode)
+            {
+                links[nodesIndex] = COLOR_FIXING;
+                nodesIndex--;
+            }
+            else
+                fillWire(painter, nodesIndex);
+        }
         else if(link == COLOR_FIXING)
             fillFixWire(painter, nodesIndex, mouseY, mouseX);
         else if(!isFixing)
         {
-            quint16 middleX = FIX_WIRING_LEFT_X + FIX_WIRING_WIDTH / 2,
-                    middleY = getYForWiring(nodesIndex);
-            double d = distance(middleX, middleY, mouseX, mouseY);
-            if(d <= range)
+            if(isNearNode)
             {
                 links[nodesIndex] = COLOR_FIXING;
                 nodesIndex--;

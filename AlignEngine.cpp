@@ -13,9 +13,6 @@
 #include "main.h"
 #include "qPlus.h"
 
-
-
-
 QPixmap* AlignEngineBackgroundPixmap = nullptr;
 QPixmap* currAlignEnginePixmap = nullptr;
 QLabel* currAlignEngineLabel = nullptr;
@@ -23,13 +20,10 @@ QLabel* currAlignEngineLabel = nullptr;
 QPixmap* pattern = nullptr;
 QPixmap* arrow = nullptr;
 
-qreal theta ;
+qreal theta;
 
 QElapsedTimer timer;
-
 int elapsedtime = 0;
-
-
 
 QPair<QPixmap*, QPainter*> getAlignEnginePixmapPainter()
 {
@@ -38,10 +32,6 @@ QPair<QPixmap*, QPainter*> getAlignEnginePixmapPainter()
     painter->drawImage(0, 0, AlignEngineBackgroundPixmap->toImage());
     return qMakePair(pixmap,painter);
 }
-
-
-
-
 
 void drawAssets(QPainter* painter, qreal angle){
     painter->save();
@@ -54,9 +44,7 @@ void drawAssets(QPainter* painter, qreal angle){
     painter->rotate(angle);
     painter->drawImage(-ARROW_ANCHOR_X,-ARROW_ANCHOR_Y,arrow->toImage());
     painter->restore();
-
 }
-
 
 QLabel* getAlignEngine(){
     if(!AlignEngineBackgroundPixmap) AlignEngineBackgroundPixmap = getQPixmap("Align_Engine_Output_clean.png");
@@ -64,7 +52,6 @@ QLabel* getAlignEngine(){
     playSound("fix_wiring_task_open");
     QLabel* qLabel = new QLabel;
 
-    
     QPair<QPixmap*, QPainter*> pixmapPainter = getAlignEnginePixmapPainter();
     QPixmap* pixmap = pixmapPainter.first;
     QPainter* painter = pixmapPainter.second;
@@ -101,7 +88,6 @@ void drawGreenLines(QPainter* painter){
     painter->restore();
 }
 
-
 void onMouseEventAlignEngine(QMouseEvent* mouseEvent)
 {   
     QPair<QPixmap*, QPainter*> pixmapPainter = getAlignEnginePixmapPainter();
@@ -126,16 +112,13 @@ void onMouseEventAlignEngine(QMouseEvent* mouseEvent)
         qInfo()<< theta;
         drawAssets(painter,theta);
 
-        if ((theta>3)||(theta<-3)){
+        if ((theta>3)||(theta<-3))
             elapsedtime = timer.elapsed();
-        }
-        else{
+        else
             drawGreenLines(painter);
-        }
 
-        if (timer.elapsed() - elapsedtime > 3000 ) {
+        if (timer.elapsed() - elapsedtime > 0/*3000*/ )
             correct = true;
-        }
     }
     else drawAssets(painter,theta);
     painter->end();
@@ -146,7 +129,6 @@ void onMouseEventAlignEngine(QMouseEvent* mouseEvent)
         delete currAlignEnginePixmap;
     currAlignEnginePixmap = qBackgroundPixmap;
 
-    
     if(correct)
     {
         playSound("task_completed");
@@ -154,11 +136,7 @@ void onMouseEventAlignEngine(QMouseEvent* mouseEvent)
         inGameUI->closeTask();
         inGameUI->checkEndOfTheGame();
     }
-
-
 }
-
-
 
 void onCloseAlignEngine() {
     playSound("fix_wiring_task_close");
