@@ -1040,7 +1040,7 @@ void InGameUI::closeVitals()
 }
 
 void InGameUI::closeMap() {
-    if(!gameMap)
+    if(!gameMap) // currentInGameGUI isn't good enough ?
         return;
     delete gameMap;
     delete currHLayout;
@@ -1116,6 +1116,8 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
     // https://nerdschalk.com/among-us-keyboard-controls/
     case Qt::Key_E:
         if(everyoneReady) {
+            //if(currentInGameGUI == IN_GAME_GUI_MAP)
+                closeMap();
             if (qLabel == nullptr && currentInGameGUI == IN_GAME_GUI_NONE)
                 onClickUse();
             else if(qLabel){
@@ -1187,13 +1189,22 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
         int width = size().width(), height = size().height();
         bool isBottomRight = mouseX >= width-110 && mouseX < width && mouseY >= height-110 && mouseY < height;
         if(everyoneReady) {
-            if(currentInGameGUI == IN_GAME_GUI_NONE) {
+            if(currentInGameGUI == IN_GAME_GUI_NONE || currentInGameGUI == IN_GAME_GUI_MAP) {
                 if(mouseX >= width-220 && mouseX < width-110 && mouseY >= height-110 && mouseY < height && findKillablePlayer())
+                {
+                    closeMap();
                     onClickKill();
+                }
                 else if(isBottomRight && findReportableBody())
+                {
+                    closeMap();
                     onClickReport();
+                }
                 else if(mouseX >= width-110 && mouseX < width && mouseY >= height-220 && mouseY < height-110 && (isThereAnyUsableTaskNear() || isNearEmergencyButton() || isThereAnyVentNear() || isNearCamera() || isNearVitals()))
+                {
+                    closeMap();
                     onClickUse();
+                }
             }
             else if(currentInGameGUI == IN_GAME_GUI_MAP)
                 gameMap->onLeftOrDoubleClick(mouseEvent);
