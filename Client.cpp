@@ -115,7 +115,7 @@ void Client::processMessageClient(QString message)
             QString connected = messagePart.replace("peers ", "");
             QStringList connectedParts = connected.split(" ");
             for(QString connectedPart : connectedParts)
-                if(!any_of(clients.begin(), clients.end(), [&](const Client* client) { return socketToString(client->socket) == connectedPart; }))
+                if(all_of(clients.begin(), clients.end(), [&](const Client* client) { return socketToString(client->socket) != connectedPart; }))
                     discoverClient(connectedPart);
         }
         else
