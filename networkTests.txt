@@ -1,0 +1,80 @@
+Assume all peers connecting to others using IPs that every peer can use to access to all other peers
+Prefer local networks to global one so: localhost > LAN > WAN
+These tests checked that all users see all users with the right colors and when one move all others see this one move
+No test on the long run only "initialization" here
+Pay attention to precise IPs because implictly it's localhost and don't forget to open ports or accept software network in firewall
+Could a bit assume that if works with all network combinaisons with 3 peers it works in general because all connection method would be tested
+Having better than Anydesk to enable playing in LAN while in WAN would be nice
+All tests were performed twice
+
+Localhost:
+
+A start
+B -> A
+C -> A
+
+Works
+
+Localhost:
+
+A start
+B -> A
+C -> B
+
+Works
+
+---------
+
+LAN:
+
+Indexes are used to distinguish computers
+In my case:
+0: My laptop (Mint)
+1: My server (Debian)
+2: Family's laptop (Windows)
+
+A0 start
+B0 -> A0
+C1 -> A0
+
+Works
+
+LAN:
+
+A0 start
+B1 -> A0
+C1 -> A0
+
+Works
+
+LAN:
+
+A0 start
+B1 -> A0
+C1 -> B1
+
+Works
+
+LAN:
+
+A0 start
+B1 -> A0
+C2 -> A0
+
+2 not able to connect to 0 (time out) while having the correct IP and port - restarting 0 and 2 solved the problem (only 0 is the problem ?)
+Works
+
+LAN:
+
+A0 start
+B1 -> A0
+C2 -> B1
+
+Works
+
+---------
+
+No WAN test could be performed because Orange Livebox 4 port forwarding isn't working correctly anymore even if no conflict with workaround with DMZ
+
+WAN:
+
