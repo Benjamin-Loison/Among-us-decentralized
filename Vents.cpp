@@ -107,7 +107,7 @@ QPair<QPixmap *, QPainter*> getVentPixmapPainter(){
 QLabel* EnterVent(VentsID vent){
     inGameUI->currPlayer.isInvisible = true;
     sendToAll("Vent enter");
-    playSound("Vent_open.wav");
+    playSound("Vent_open");
     QLabel* qLabel = new QLabel;
 
     QPair<QPixmap*, QPainter*> pixmapPainter = getVentPixmapPainter();
@@ -144,7 +144,7 @@ void ExitVent(){
     inGameUI->currPlayer.isInvisible = false;
     inGameUI->currPlayer.sendPosition();
     sendToAll("Vent exit");
-    playSound("Vent_open.wav");
+    playSound("Vent_open");
     if(VentLabel)
         VentLabel = nullptr;
     if(VentPixmap)

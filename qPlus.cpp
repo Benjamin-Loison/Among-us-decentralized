@@ -102,11 +102,11 @@ QPixmap getDisabledButton(const QPixmap &origButton) {
     return QPixmap::fromImage(tmp);
 }
 
-void playSound(QString soundFile) // could assume all sounds are .wav so can append it here
+void playSound(QString soundFile)
 {
     if(!soundEffectMap.count(soundFile)) {
         QSoundEffect* effect = new QSoundEffect;
-        QUrl qUrl = QUrl::fromLocalFile(QFileInfo(assetsFolder + soundFile).absoluteFilePath());
+        QUrl qUrl = QUrl::fromLocalFile(QFileInfo(assetsFolder + soundFile + ".wav").absoluteFilePath());
         effect->setSource(qUrl);
         soundEffectMap[soundFile] = effect;
     }

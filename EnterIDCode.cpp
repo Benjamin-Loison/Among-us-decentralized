@@ -57,7 +57,7 @@ QPair<QPixmap*, QPainter*> getEnterIDCodePixmapPainter()
 QLabel* getEnterIDCode(){
     if(!EnterIDCodeBackgroundPixmap) {EnterIDCodeBackgroundPixmap = getQPixmap("EnterIdCode_resized.png");};
 
-    playSound("fix_wiring_task_open.wav");
+    playSound("fix_wiring_task_open");
     QLabel* qLabel = new QLabel;
 
     randomCode();
@@ -155,7 +155,7 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
     quint8 digit = DigitClicked(mouseX,mouseY);
 
     if (digit<DIGIT_UNDEFINED){
-        playSound("Enter_Id_Code_entering_number.wav");
+        playSound("Enter_Id_Code_entering_number");
         answer[current_digit]=digit;
         current_digit++;
     }
@@ -172,11 +172,11 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
         };
         if (correct){
             qInfo()<< "correct";
-            playSound("Enter_Id_Code_accepted.wav");
+            playSound("Enter_Id_Code_accepted");
         }
         else {
             qInfo()<< "failed";
-            playSound("Enter_Id_Code_failed.wav");
+            playSound("Enter_Id_Code_failed");
         }
     }
 
@@ -190,14 +190,14 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
         delete currEnterIDCodePixmap;
     currEnterIDCodePixmap = qBackgroundPixmap;
     if (correct){
-        playSound("task_completed.wav");
+        playSound("task_completed");
         inGameUI->finishTask();
         inGameUI->closeTask();
     };
 }
 
 void onCloseEnterIDCode() {
-    playSound("fix_wiring_task_close.wav");
+    playSound("fix_wiring_task_close");
     resetCode();
     if(currEnterIDCodeLabel)
         currEnterIDCodeLabel = nullptr;

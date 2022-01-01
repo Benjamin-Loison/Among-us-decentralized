@@ -61,7 +61,7 @@ void drawAssets(QPainter* painter, qreal angle){
 QLabel* getAlignEngine(){
     if(!AlignEngineBackgroundPixmap) AlignEngineBackgroundPixmap = getQPixmap("Align_Engine_Output_clean.png");
 
-    playSound("fix_wiring_task_open.wav");
+    playSound("fix_wiring_task_open");
     QLabel* qLabel = new QLabel;
 
     
@@ -149,7 +149,7 @@ void onMouseEventAlignEngine(QMouseEvent* mouseEvent)
     
     if(correct)
     {
-        playSound("task_completed.wav"); 
+        playSound("task_completed");
         inGameUI->finishTask();
         inGameUI->closeTask();
         inGameUI->checkEndOfTheGame();
@@ -161,7 +161,7 @@ void onMouseEventAlignEngine(QMouseEvent* mouseEvent)
 
 
 void onCloseAlignEngine() {
-    playSound("fix_wiring_task_close.wav");
+    playSound("fix_wiring_task_close");
     if(currAlignEngineLabel)
         currAlignEngineLabel = nullptr;
     if(currAlignEnginePixmap)
