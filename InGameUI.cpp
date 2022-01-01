@@ -659,7 +659,7 @@ void InGameUI::redraw()
 
 void InGameUI::resizeEvent(QResizeEvent *ev)
 {
-    if(initialized) // otherwise resize is oftenly called before initialize on Windows so it crashes
+    if(initialized) // otherwise resize is often called before initialize on Windows so it crashes
         redraw();
     QLabel::resizeEvent(ev);
 }
