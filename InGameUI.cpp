@@ -1107,6 +1107,12 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
     case Qt::Key_Right:
         isPressed[keycode] = true;
         break;
+    case Qt::Key_F11:
+        if(inGameUI->isFullScreen())
+            inGameUI->showMaximized(); // doesn't resume on whole screen :'(
+        else
+            inGameUI->showFullScreen();
+        break;
     // https://nerdschalk.com/among-us-keyboard-controls/
     case Qt::Key_E:
         if(everyoneReady) {
