@@ -844,6 +844,7 @@ quint8 InGameUI::getAliveImpostorsNumber()
 }
 
 void InGameUI::unreadyTeleportEveryone() {
+    closeMap();
     for(Player* player : getAllPlayers())
         player->isReady = false;
     teleportAllPlayers();
@@ -1146,7 +1147,7 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
     case Qt::Key_M:
         if(currentInGameGUI == IN_GAME_GUI_NONE)
             openMap();
-        else if(gameMap)
+        else// if(gameMap)
             closeMap();
         break;
     default:;
@@ -1190,6 +1191,8 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
         bool isBottomRight = mouseX >= width-110 && mouseX < width && mouseY >= height-110 && mouseY < height;
         if(everyoneReady) {
             if(currentInGameGUI == IN_GAME_GUI_NONE || currentInGameGUI == IN_GAME_GUI_MAP) {
+                if(currentInGameGUI == IN_GAME_GUI_MAP)
+                    gameMap->onLeftOrDoubleClick(mouseEvent);
                 if(mouseX >= width-220 && mouseX < width-110 && mouseY >= height-110 && mouseY < height && findKillablePlayer())
                 {
                     closeMap();
@@ -1206,8 +1209,6 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                     onClickUse();
                 }
             }
-            else if(currentInGameGUI == IN_GAME_GUI_MAP)
-                gameMap->onLeftOrDoubleClick(mouseEvent);
             else if(currentInGameGUI == IN_GAME_GUI_ASTEROIDS) {
                 onMouseEventAsteroids(mouseEvent);
             }

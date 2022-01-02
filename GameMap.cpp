@@ -90,7 +90,7 @@ void GameMap::redraw() {
 }
 
 void GameMap::onLeftOrDoubleClick(QMouseEvent *event) {
-    //qInfo() << "Parent position:" << event->pos() << "- Minimap position:" << mapFromParent(event->pos());
+    qInfo() << "Parent position:" << event->pos() << "- Minimap position:" << mapFromParent(event->pos());
     //lastClick = mapFromParent(event->pos());
     if(ui->currPlayer.isImpostor && !ui->currPlayer.isGhost)
         for(Room &room : ui->rooms)

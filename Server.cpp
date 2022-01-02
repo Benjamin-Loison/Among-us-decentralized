@@ -133,7 +133,6 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
         if(nickname == inGameUI->currPlayer.nickname)
         {
             inGameUI->closeTask();
-            inGameUI->closeMap();
         }
         Player* player = inGameUI->getPlayer(nickname);
         inGameUI->killPlayer(*player);
