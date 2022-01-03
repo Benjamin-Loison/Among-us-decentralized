@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
             serverPort++;
         qInfo("serverPort: %hu", serverPort);
     }
-    QString peerAddress;
+    QString peerAddress; // for normal users saving the peerAddress may be interesting
     if(runClient)
     {
         peerAddress = getText(QObject::tr("Peer address"), QObject::tr("A peer address"), isDefaultServerPortInUse ? QString::number(DEFAULT_SERVER_PORT) : "");
