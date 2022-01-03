@@ -68,9 +68,8 @@ VentsID VentNear(QPoint pos){
     for (VentsID vent : VentsNames){
         QPoint vent_pos = VentsPositions.value(vent);
         int dist = qPow(pos.y()-vent_pos.y(),2) +  qPow(pos.x()-vent_pos.x(),2);
-        if (dist < VENT_RANGE_SQUARED){
+        if (dist < VENT_RANGE_SQUARED)
             near_vent = vent;
-        };
     }
     return near_vent;
 }
@@ -163,7 +162,6 @@ VentsID onMouseEventVent(VentsID vent, QMouseEvent* mouseEvent){
     QPixmap* qBackgroundPixmap = pixmapPainter.first;
     QSize pixmapSize = qBackgroundPixmap->size(),
           windowSize = inGameUI->size();
-    QPainter* painter = pixmapPainter.second;
     QPoint position = mouseEvent->pos();
     qint16 mouseY = position.y() - (windowSize.height() - pixmapSize.height()) / 2,
            mouseX = position.x() - (windowSize.width() - pixmapSize.width()) / 2;

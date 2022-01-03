@@ -114,9 +114,7 @@ QVector<Task> getRandomTasks(QString privateSaltedWithCommonRandom) // can't onl
         TaskTime taskTimeNeeded = getTaskTimeNeeded(tasks);
         const Task randomTask = pickRandomTask(&qRandomGenerator, taskTimeNeeded);
         if(!tasks.contains(randomTask))
-        {
             tasks.push_back(randomTask);
-        }
     }
     return tasks;
 }

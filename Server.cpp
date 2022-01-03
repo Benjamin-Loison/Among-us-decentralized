@@ -235,7 +235,7 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
                 address = addressParts.join(':'); // could make a function for this purpose - is the same thing used elsewhere ?
                 parts.append(address + " " + nickname);
             }
-            /// order matters ! should do alphabetical one for instance
+            parts.sort(); /// order matters
             res += messagePart + "|" + parts.join(',');
         }
         else if(messagePart.startsWith("nickname "))

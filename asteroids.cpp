@@ -59,9 +59,8 @@ QLabel* getAsteroids(qint64 now)
     if(currAsteroidsLabel)
         delete currAsteroidsLabel;
     currAsteroidsLabel = qLabel;
-    if(asteroidPixmaps.size() == 0) {
+    if(asteroidPixmaps.empty())
         asteroidPixmaps.push_back(getQPixmap("Asteroid.png"));
-    }
     asteroidsLastUpdate = now;
     return qLabel;
 }

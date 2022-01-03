@@ -17,12 +17,8 @@ Door::Door(int x, int y, bool isVertical) :
     hitbox(QPoint(x+DOOR_HITBOX[isVertical].x(), y+DOOR_HITBOX[isVertical].y()), DOOR_HITBOX[isVertical].size()),
     drawPoint(x, y),
     isVertical(isVertical), lastClosed(0) {
-    if(!doorPixmap[isVertical]) {
-        if(isVertical)
-            doorPixmap[isVertical] = getQPixmap("doorSideClosed.png");
-        else
-            doorPixmap[isVertical] = getQPixmap("doorFrontClosed.png");
-    }
+    if(!doorPixmap[isVertical])
+        doorPixmap[isVertical] = getQPixmap(isVertical ? "doorSideClosed.png" : "doorFrontClosed.png");
     lastClosed = -(DOOR_CLOSURE_DURATION_SECS+1)*(qint64)1000;
 }
 
