@@ -57,20 +57,27 @@ int main(int argc, char *argv[])
          runClient = !isFirstToRun;
     QString isFirstToRunStr = isFirstToRun ? "true" : "false";
     qInfo() << "isFirstToRun:" << isFirstToRunStr; // clicking on exit button is like choosing no...
-    quint16 serverPort = DEFAULT_SERVER_PORT + (isDefaultServerPortInUse ? 1 : 0);
+    quint16 serverPort = DEFAULT_SERVER_PORT + (isDefaultServerPortInUse ? 1 : 0); // guess not running strictly more than two servers
     if(!isFirstToRun)
     {
         while(isTCPPortInUse(serverPort))
             serverPort++;
         qInfo("serverPort: %hu", serverPort);
     }
-    QString peerAddress; // for normal users saving the peerAddress may be interesting
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    QString peerAddress = settings.value("peerAddress").toString();
     if(runClient)
     {
-        peerAddress = getText(QObject::tr("Peer address"), QObject::tr("A peer address"), isDefaultServerPortInUse ? QString::number(DEFAULT_SERVER_PORT) : "");
-        if(isAPositiveInteger(peerAddress))
-            peerAddress = "127.0.0.1:" + peerAddress; // localhost binds to ::1
-        qInfo() << "peerAddress:" << peerAddress;
+        QString newPeerAddress = getText(QObject::tr("Peer address"), QObject::tr("A peer address"), isDefaultServerPortInUse ? QString::number(DEFAULT_SERVER_PORT) : peerAddress);
+        if(isAPositiveInteger(newPeerAddress))
+            newPeerAddress = "127.0.0.1:" + newPeerAddress; // localhost binds to ::1
+        qInfo() << "peerAddress:" << newPeerAddress;
+        if(peerAddress != newPeerAddress)
+        {
+            settings.setValue("peerAddress", QVariant(newPeerAddress));
+            settings.sync();
+        }
+        peerAddress = newPeerAddress;
     }
 
     // les nouveaux se connectent aux anciens
@@ -96,7 +103,6 @@ int main(int argc, char *argv[])
 
     QStringList nicknames;
     // likewise if using multiple client for developing for instance we don't have problems
-    QSettings settings("settings.ini", QSettings::IniFormat);
     QString nickname,
             oldNickname = isDefaultServerPortInUse ? "" : settings.value("nickname").toString();
     while(true)

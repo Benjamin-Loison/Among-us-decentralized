@@ -3,7 +3,7 @@
 #include "main.h"
 using namespace std;
 
-Client::Client(QString peerAddress) : socket(new QTcpSocket(this)), messageSize(0), isConnected(false)
+Client::Client(QString peerAddress) : socket(new QTcpSocket(this)), isConnected(false), messageSize(0)
 {
     connect(socket, SIGNAL(readyRead()), this, SLOT(dataReceived()));
     connect(socket, SIGNAL(connected()), this, SLOT(connecte()));
