@@ -29,13 +29,11 @@ void randomCode(){
     }
 }
 
-QString getStringofcode(quint8* c){
+QString getStringOfCode(quint8* c){
     QString string_code ;
-    for (quint8 i = 0; i< DIGIT_NUMBER; i++){
-        if (c[i]<DIGIT_UNDEFINED){
+    for (quint8 i = 0; i< DIGIT_NUMBER; i++)
+        if (c[i]<DIGIT_UNDEFINED)
             QTextStream(& string_code) << c[i] ;
-        }
-    }
     return string_code;
 }
 
@@ -46,7 +44,7 @@ QPair<QPixmap*, QPainter*> getEnterIDCodePixmapPainter()
     QPainter* painter = new QPainter(pixmap);
     painter->drawImage(0, 0, EnterIDCodeBackgroundPixmap->toImage());
     
-    QString s_code = getStringofcode(code); 
+    QString s_code = getStringOfCode(code);
     QFont font = painter->font();
     font.setPixelSize(28);
     painter->setFont(font);
@@ -83,51 +81,34 @@ QLabel* getEnterIDCode(){
     return qLabel;
 } 
 
-//return the digit clicked on the panel, can return 10 an 11 for the cancel and validate buttons 
-quint8 DigitClicked(quint16 x, quint16 y)
+//return the digit clicked on the panel, can return CANCEL an VALIDATE for the cancel and validate buttons
+quint8 digitClicked(quint16 x, quint16 y)
 {
-    if (x>X_TOP_LEFT_1 && x < X_TOP_LEFT_1 + X_LENGTH && y > Y_TOP_LEFT_1 && y <Y_TOP_LEFT_1 + Y_LENGTH){
-        return 1;
+    for(quint8 yIndex = 0; yIndex < 4; yIndex++) // reversing the loop order would improve complexity ^^
+    {
+        quint16 topY = Y_TOP_LEFT_1 + yIndex * (Y_SPACE + Y_LENGTH),
+                bottomY = topY + Y_LENGTH;
+        if(topY < y && y < bottomY)
+            for(quint8 xIndex = 0; xIndex < 3; xIndex++)
+            {
+                quint16 leftX = X_TOP_LEFT_1 + xIndex * (X_LENGTH + X_SPACE),
+                        rightX = leftX + X_LENGTH;
+                if(leftX < x && x < rightX)
+                {
+                    quint8 toReturn = yIndex * 3 + xIndex + 1;
+                    if(toReturn >= 11)
+                        if(toReturn-- == 11)
+                            toReturn = 0;
+                    return toReturn;
+                }
+            }
     }
-    else if(x>X_TOP_LEFT_1+ X_LENGTH +X_SPACE && x<X_TOP_LEFT_1+ 2*X_LENGTH +X_SPACE && y > Y_TOP_LEFT_1 && y <Y_TOP_LEFT_1 + Y_LENGTH){
-        return 2;
-    }
-    else if(x>X_TOP_LEFT_1+ 2*X_LENGTH +2*X_SPACE && x<X_TOP_LEFT_1+ 3*X_LENGTH +2*X_SPACE && y > Y_TOP_LEFT_1 && y <Y_TOP_LEFT_1 + Y_LENGTH){
-        return 3;
-    }
-    else if(x>X_TOP_LEFT_1 && x < X_TOP_LEFT_1 + X_LENGTH&& y > Y_TOP_LEFT_1+Y_SPACE+Y_LENGTH && y <Y_TOP_LEFT_1 + Y_SPACE + 2*Y_LENGTH){
-        return 4;
-    }
-    else if(x>X_TOP_LEFT_1+ X_LENGTH +X_SPACE && x<X_TOP_LEFT_1+ 2*X_LENGTH +X_SPACE && y > Y_TOP_LEFT_1+Y_SPACE+Y_LENGTH && y <Y_TOP_LEFT_1 + Y_SPACE + 2*Y_LENGTH){
-        return 5;
-    }
-    else if(x>X_TOP_LEFT_1+ 2*X_LENGTH +2*X_SPACE && x<X_TOP_LEFT_1+ 3*X_LENGTH +2*X_SPACE && y > Y_TOP_LEFT_1+Y_SPACE+Y_LENGTH && y <Y_TOP_LEFT_1 + Y_SPACE + 2*Y_LENGTH){
-        return 6;
-    }
-    else if(x>X_TOP_LEFT_1 && x < X_TOP_LEFT_1 + X_LENGTH && y > Y_TOP_LEFT_1+2*Y_SPACE+2*Y_LENGTH && y <Y_TOP_LEFT_1 + 2*Y_SPACE + 3*Y_LENGTH){
-        return 7;
-    }
-    else if(x>X_TOP_LEFT_1+ X_LENGTH +X_SPACE && x<X_TOP_LEFT_1+ 2*X_LENGTH +X_SPACE && y > Y_TOP_LEFT_1+2*Y_SPACE+2*Y_LENGTH && y <Y_TOP_LEFT_1 + 2*Y_SPACE + 3*Y_LENGTH){
-        return 8;
-    }
-    else if(x>X_TOP_LEFT_1+ 2*X_LENGTH +2*X_SPACE && x<X_TOP_LEFT_1+ 3*X_LENGTH +2*X_SPACE && y > Y_TOP_LEFT_1+2*Y_SPACE+2*Y_LENGTH && y <Y_TOP_LEFT_1 + 2*Y_SPACE + 3*Y_LENGTH){
-        return 9;
-    }
-    else if(x>X_TOP_LEFT_1 && x < X_TOP_LEFT_1 + X_LENGTH && y > Y_TOP_LEFT_1+3*Y_SPACE+3*Y_LENGTH && y <Y_TOP_LEFT_1 + 3*Y_SPACE + 4*Y_LENGTH){
-        return 10;
-    }
-    else if(x>X_TOP_LEFT_1+ X_LENGTH +X_SPACE && x<X_TOP_LEFT_1+ 2*X_LENGTH +X_SPACE && y > Y_TOP_LEFT_1+3*Y_SPACE+3*Y_LENGTH && y <Y_TOP_LEFT_1 + 3*Y_SPACE + 4*Y_LENGTH){
-        return 0;
-    }
-    else if(x>X_TOP_LEFT_1+ 2*X_LENGTH +2*X_SPACE && x<X_TOP_LEFT_1+ 3*X_LENGTH +2*X_SPACE && y > Y_TOP_LEFT_1+3*Y_SPACE+3*Y_LENGTH && y <Y_TOP_LEFT_1 + 3*Y_SPACE + 4*Y_LENGTH){
-        return 11 ;
-    }
-    else return 12;
+    return DIGIT_UNDEFINED/*12*/;
 }
 
 //draw the code answer
 void drawAnswer(QPainter* painter){
-    QString s = getStringofcode(answer);
+    QString s = getStringOfCode(answer);
     QFont font = painter->font();
     font.setPixelSize(56);
     painter->setFont(font);
@@ -152,32 +133,28 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
     
     bool correct = false;
 
-    quint8 digit = DigitClicked(mouseX,mouseY);
+    quint8 digit = digitClicked(mouseX,mouseY);
 
     if (digit<DIGIT_UNDEFINED){
         playSound("Enter_Id_Code_entering_number");
         answer[current_digit]=digit;
         current_digit++;
     }
-    else if (digit==DIGIT_UNDEFINED){
-        for (quint8 i = 0;i<DIGIT_NUMBER;i++){
+    else if (digit==CANCEL){
+        for (quint8 i = 0;i<DIGIT_NUMBER;i++)
             answer[i]=DIGIT_UNDEFINED;
-        }
         current_digit=0;
     }
-    else if (digit == DIGIT_UNDEFINED +1 ){
+    else if (digit == VALIDATE){
         correct = true;
-        for (quint8 i =0;i<DIGIT_NUMBER;i++){
-            correct = (code[i]==answer[i])&&(answer[i]<DIGIT_UNDEFINED)&&correct;
-        };
-        if (correct){
-            qInfo()<< "correct";
-            playSound("Enter_Id_Code_accepted");
-        }
-        else {
-            qInfo()<< "failed";
-            playSound("Enter_Id_Code_failed");
-        }
+        for (quint8 i =0;i<DIGIT_NUMBER;i++)
+            if(!((code[i]==answer[i])&&(answer[i]<DIGIT_UNDEFINED)))
+            {
+                correct = false;
+                break;
+            }
+        qInfo()<< (correct ? "correct" : "failed");
+        playSound(correct ? "Enter_Id_Code_accepted" : "Enter_Id_Code_failed");
     }
 
     drawAnswer(painter);
@@ -193,7 +170,7 @@ void onMouseEventEnterIDCode(QMouseEvent* mouseEvent)
         playSound("task_completed");
         inGameUI->finishTask();
         inGameUI->closeTask();
-    };
+    }
 }
 
 void onCloseEnterIDCode() {
@@ -206,8 +183,6 @@ void onCloseEnterIDCode() {
 }
 
 void resetCode() {
-    for(quint8 i = 0; i< DIGIT_NUMBER; i++){
+    for(quint8 i = 0; i< DIGIT_NUMBER; i++)
         code[i] = DIGIT_UNDEFINED;
-    }
 }
-

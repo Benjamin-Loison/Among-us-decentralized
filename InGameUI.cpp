@@ -1119,7 +1119,9 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
         if(everyoneReady) {
             //if(currentInGameGUI == IN_GAME_GUI_MAP)
                 closeMap();
-            if (qLabel == nullptr && currentInGameGUI == IN_GAME_GUI_NONE)
+            if(currentInGameGUI == IN_GAME_GUI_VITALS)
+                closeVitals();
+            else if (qLabel == nullptr && currentInGameGUI == IN_GAME_GUI_NONE)
                 onClickUse();
             else if(qLabel){
                 if (currentInGameGUI == IN_GAME_GUI_VENT){    
