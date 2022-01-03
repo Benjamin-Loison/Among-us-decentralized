@@ -32,6 +32,8 @@ In my case:
 0: My laptop (Mint)
 1: My server (Debian)
 2: Family's laptop (Windows)
+3: My computer (Windows)
+4: Mum's laptop (Mint)
 
 A0 start
 B0 -> A0
@@ -61,7 +63,7 @@ A0 start
 B1 -> A0
 C2 -> A0
 
-2 not able to connect to 0 (time out) while having the correct IP and port - restarting 0 and 2 solved the problem (only 0 is the problem ?)
+2 not able to connect to 0 (time out) while having the correct IP and port - restarting 0 and 2 solved the problem (only the received (0 here) is the problem ?)
 Works
 
 LAN:
@@ -71,6 +73,15 @@ B1 -> A0
 C2 -> B1
 
 Works
+
+LAN:
+
+E4 start
+D3 -> E4
+B1 -> E4
+C2 -> E4
+
+Works perfectly
 
 ---------
 
