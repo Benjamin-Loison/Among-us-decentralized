@@ -9,7 +9,7 @@ All tests were performed twice
 
 Localhost:
 
-A start
+A starts
 B -> A
 C -> A
 
@@ -17,7 +17,7 @@ Works
 
 Localhost:
 
-A start
+A starts
 B -> A
 C -> B
 
@@ -35,7 +35,7 @@ In my case:
 3: My computer (Windows)
 4: Mum's laptop (Mint)
 
-A0 start
+A0 starts
 B0 -> A0
 C1 -> A0
 
@@ -43,7 +43,7 @@ Works
 
 LAN:
 
-A0 start
+A0 starts
 B1 -> A0
 C1 -> A0
 
@@ -51,7 +51,7 @@ Works
 
 LAN:
 
-A0 start
+A0 starts
 B1 -> A0
 C1 -> B1
 
@@ -59,7 +59,7 @@ Works
 
 LAN:
 
-A0 start
+A0 starts
 B1 -> A0
 C2 -> A0
 
@@ -68,7 +68,7 @@ Works
 
 LAN:
 
-A0 start
+A0 starts
 B1 -> A0
 C2 -> B1
 
@@ -76,7 +76,7 @@ Works
 
 LAN:
 
-E4 start
+E4 starts
 D3 -> E4
 B1 -> E4
 C2 -> E4
@@ -85,7 +85,18 @@ Works perfectly
 
 ---------
 
-No WAN test could be performed because Orange Livebox 4 port forwarding isn't working correctly anymore even if no conflict with workaround with DMZ
-
 WAN:
+
+Assume port 10821 from external IPv4 from common network of A0 and B1 redirects to B1 on port 10821
+
+B1 starts
+A0 -> B1
+
+WAN with port forwarding:
+
+Assume B1 has access to a remote computer which has his port 10821 being opened
+
+B1 starts
+B1 runs: ssh -R 10821:localhost:10821 lemnoslife.com
+A0 -> B1 (using lemnoslife.com)
 
