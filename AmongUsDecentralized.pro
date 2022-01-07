@@ -11,12 +11,14 @@ TRANSLATIONS = AmongUsDecentralizedFR.ts
 RC_ICONS += assets/logo.ico
 
 QMAKE_CXXFLAGS += -I./sources/includes/ui -I./sources/includes/tasks -I./sources/includes
-unix:OBJECTS_DIR = ./objects
+unix:OBJECTS_DIR = build/objects
+MOC_DIR = build/moc
+
 
 SOURCES += \
-    sources/src/tasks/*.cpp \
-    sources/src/ui/*.cpp \
-    sources/src/*.cpp
+    sources/cpp/tasks/*.cpp \
+    sources/cpp/ui/*.cpp \
+    sources/cpp/*.cpp
 
 HEADERS += \
     sources/includes/tasks/*.h \
