@@ -10,6 +10,8 @@ CONFIG(debug, debug|release) {
 TRANSLATIONS = AmongUsDecentralizedFR.ts
 RC_ICONS += assets/logo.ico
 
+QMAKE_CXXFLAGS += -I./ui -I./tasks
+
 SOURCES += \
     tasks/asteroids.cpp \
     tasks/fixWiring.cpp \
