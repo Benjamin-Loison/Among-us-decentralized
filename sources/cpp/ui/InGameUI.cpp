@@ -22,7 +22,7 @@ enum VentsID current_vent = NULL_VENT;
 InGameUI::InGameUI(QLabel* parent) : QLabel(parent), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr), lastKillTime(0), initialized(false)
 {
     // doing this at the very first window would be nice (when asking nickname etc)
-    setWindowIcon(QIcon(assetsFolder + "logo.png"));
+    setWindowIcon(QIcon(assetsFolderImages + "logo.png"));
     setWindowTitle(tr("Among Us decentralized"));
     // couldn't put all not necessary stuff in initialize not to delay user input ?
 }

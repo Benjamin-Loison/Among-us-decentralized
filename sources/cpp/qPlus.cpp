@@ -13,7 +13,8 @@ using namespace std;
 
 QColor originalColors[3] = {QColor(0, 255, 0), QColor(255, 0, 0), QColor(0, 0, 255)};
 
-QString assetsFolder = "assets/";
+QString assetsFolderImages = "assets/images/";
+QString assetsFolderAudio = "assets/audio/";
 
 QMap<QString, QSoundEffect*> soundEffectMap;
 QChar hexs[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
@@ -52,7 +53,7 @@ double distance(quint16 x0, quint16 y0, quint16 x1, quint16 y1)
 
 QPixmap* getQPixmap(QString filePath)
 {
-    return new QPixmap(assetsFolder + filePath);
+    return new QPixmap(assetsFolderImages + filePath);
 }
 
 QPixmap* getQPixmap(quint16 width, quint16 height)
@@ -62,7 +63,7 @@ QPixmap* getQPixmap(quint16 width, quint16 height)
 
 QImage getQImage(QString filePath)
 {
-    return QImage(assetsFolder + filePath);
+    return QImage(assetsFolderImages + filePath);
 }
 
 QPixmap colorImage(QImage tmp, QColor color1, QColor color2, QColor color3)
