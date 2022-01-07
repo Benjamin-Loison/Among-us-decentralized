@@ -107,7 +107,7 @@ void playSound(QString soundFile)
 {
     if(!soundEffectMap.count(soundFile)) {
         QSoundEffect* effect = new QSoundEffect;
-        QUrl qUrl = QUrl::fromLocalFile(QFileInfo(assetsFolder + soundFile + ".wav").absoluteFilePath());
+        QUrl qUrl = QUrl::fromLocalFile(QFileInfo(assetsFolderAudio + soundFile + ".wav").absoluteFilePath());
         effect->setSource(qUrl);
         soundEffectMap[soundFile] = effect;
     }
