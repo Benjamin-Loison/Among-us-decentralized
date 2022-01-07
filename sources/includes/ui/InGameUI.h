@@ -103,10 +103,10 @@ class InGameUI : public QLabel
         void spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname);
         void movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp = false);
         void setFacingLeftPlayer(QString peerAddress);
-        void onEverybodyReady(bool threadSafe);
-        void onEverybodyReadySub(bool threadSafe);
-        void checkEverybodyReady(bool threadSafe = false);
-        void setPlayerReady(QString peerAddress, bool threadSafe = false);
+        void onEverybodyReady(/*bool threadSafe*/);
+        void onEverybodyReadySub(/*bool threadSafe*/);
+        void checkEverybodyReady(/*bool threadSafe = false*/);
+        void setPlayerReady(QString peerAddress/*, bool threadSafe = false*/);
         void unreadyTeleportEveryone();
         void checkEndOfTheGame();
         void taskFinished(TaskTime taskTime);

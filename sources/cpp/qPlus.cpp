@@ -115,7 +115,7 @@ void playSound(QString soundFile)
     soundEffectMap[soundFile]->play(); // run in a separate thread
 }
 
-void MessageBoxCross::closeEvent(QCloseEvent* closeEvent) {
+void MessageBoxCross::closeEvent(/*QCloseEvent* closeEvent*/) {
     exit(0);
 }
 
