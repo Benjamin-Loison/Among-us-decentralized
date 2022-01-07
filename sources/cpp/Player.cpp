@@ -40,6 +40,13 @@ Player::Player(QString nickname):
     *iconOnMapPixmap = colorPixmap(*iconOnMapPixmap, color1, color2);
     flippedPixmap = new QPixmap(playerPixmap->transformed(QTransform().scale(-1,1)));
     flippedGhostPixmap = new QPixmap(ghostPixmap->transformed(QTransform().scale(-1,1)));
+	bool isMoving = false;
+	quint64 startMoveAt = 0;
+	walkAnimation[ANIMATION_SIZE*2];
+	for (int i = 0; i < ANIMATION_SIZE; i++) {
+		walkAnimation[i] = getQPixmap(sprintf("Walk%04d.png", i));
+		walkAnimation[ANIMATION_SIZE+i] = new QPixmap(playerPixmap->transformed(QTransform().scale(-1, 1)));
+	}
 }
 
 // shouldn't have to exist in theory no ? because we don't use it...
@@ -61,6 +68,17 @@ void Player::sendPosition()
 void Player::moveTo(int x, int y) {
     this->x = x;
     this->y = y;
+	this->isMoving = true;
     if(this == &inGameUI->currPlayer)
         sendPosition();
+}
+
+void Player::getAnimationFrame(bool flipped, quint64 time) {
+	int offset = flipped ? 1 : 0;
+	if (!this->isMoving) {
+		return this->walkAnimation[offset*ANIMATION_SIZE];
+	} else {
+		int frameNumber = 1;  // TODO find a good frame number	
+		return this->walkAnimation[frameNumber + offset*ANIMATION_SIZE];
+	}
 }

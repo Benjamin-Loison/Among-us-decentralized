@@ -7,6 +7,7 @@
 
 #define X_SPAWN 5500
 #define Y_SPAWN 1100
+#define ANIMATION_SIZE 13
 
 class Player {
 public:

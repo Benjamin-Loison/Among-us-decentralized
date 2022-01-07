@@ -396,8 +396,14 @@ bool InGameUI::killPlayer(Player &p) {
  * @param player
  * @param painter A QPainter that will be used for painting. A fresh one will be used if this is nullptr.
  */
-void InGameUI::displayPlayer(const Player &player, QPainter *painter, bool showGhost, quint16 forceX, quint16 forceY)
+void InGameUI::displayPlayer(const Player &player, QPainter *painter, bool showGhost, quint16 forceX, quint16 forceY, quint64 time)
 {
+
+	if (player.isMoving && player.startMoveAt == 0) {
+		player.startMoveAt = time;
+	}
+
+
     // Only ghosts see ghosts
     if(player.isInvisible || (showGhost && ((!currPlayer.isGhost && !forceX && !forceY) || !player.isGhost)))
     {
