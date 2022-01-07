@@ -17,7 +17,7 @@ class MessageBoxCross : public QMessageBox {
     Q_OBJECT
 
 protected:
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(/*QCloseEvent *event*/);
 
 public:
     MessageBoxCross(QWidget *parent = nullptr);

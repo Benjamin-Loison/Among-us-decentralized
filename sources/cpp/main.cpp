@@ -180,4 +180,5 @@ QString toString(InGameGUI inGameGUI)
         case IN_GAME_GUI_VENT:
             return "IN_GAME_GUI_VENT";
     }
+    return "";
 }
