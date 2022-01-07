@@ -10,18 +10,18 @@ CONFIG(debug, debug|release) {
 TRANSLATIONS = AmongUsDecentralizedFR.ts
 RC_ICONS += assets/logo.ico
 
-QMAKE_CXXFLAGS += -I./includes/ui -I./includes/tasks -I./includes
+QMAKE_CXXFLAGS += -I./sources/includes/ui -I./sources/includes/tasks -I./sources/includes
 unix:OBJECTS_DIR = ./objects
 
 SOURCES += \
-    src/tasks/*.cpp \
-    src/ui/*.cpp \
-    src/*.cpp
+    sources/src/tasks/*.cpp \
+    sources/src/ui/*.cpp \
+    sources/src/*.cpp
 
 HEADERS += \
-    includes/tasks/*.h \
-    includes/ui/*.h \
-    includes/*.h
+    sources/includes/tasks/*.h \
+    sources/includes/ui/*.h \
+    sources/includes/*.h
 
 # Source: https://stackoverflow.com/questions/19066593/copy-a-file-to-build-directory-after-compiling-project-with-qt
 win32 {
