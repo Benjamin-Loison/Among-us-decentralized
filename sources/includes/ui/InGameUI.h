@@ -64,6 +64,7 @@ class InGameUI : public QLabel
         QPainter* killButtonPainter;
         qint64 lastKillTime;
         bool initialized;
+        bool isPolus;
 
     public:
         QVector<Room> rooms;
@@ -73,7 +74,7 @@ class InGameUI : public QLabel
         QLabel *qLabel;
         MeetingUI *meetingWidget; // may be merged with qLabel
         MeetingResultsUI *meetingResultsWidget;
-        void initialize(QString nickname);
+        void initialize(QString nickname, bool Polus);
         void initDisplay();
         void initDoorsAndRooms();
         qint64 currTimer();

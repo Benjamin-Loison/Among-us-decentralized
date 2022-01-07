@@ -7,6 +7,8 @@
 
 #define X_SPAWN 5500
 #define Y_SPAWN 1100
+#define X_SPAWN_POLUS 3500
+#define Y_SPAWN_POLUS 3000
 
 class Player {
 public:
@@ -23,7 +25,7 @@ public:
     QColor color1, color2;
 
     Player();
-    Player(QString nickname);
+    Player(QString nickname, bool Polus);
     QPixmap* playerPixmap;
     QPixmap* flippedPixmap;
     QPixmap* deadPixmap; // no flippedDead ?

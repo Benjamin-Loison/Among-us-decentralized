@@ -66,8 +66,12 @@ int main(int argc, char *argv[])
     }
     QSettings settings("settings.ini", QSettings::IniFormat);
     QString peerAddress = settings.value("peerAddress").toString();
+
+    bool isPolus;
+    
     if(runClient)
     {
+
         QString newPeerAddress = getText(QObject::tr("Peer address"), QObject::tr("A peer address"), isDefaultServerPortInUse ? QString::number(DEFAULT_SERVER_PORT) : peerAddress);
         if(isAPositiveInteger(newPeerAddress))
             newPeerAddress = "127.0.0.1:" + newPeerAddress; // localhost binds to ::1
@@ -78,6 +82,9 @@ int main(int argc, char *argv[])
             settings.sync();
         }
         peerAddress = newPeerAddress;
+    }else{
+        // If not client ask for the map to play on
+        isPolus = getBool(QObject::tr("Map choice"), QObject::tr("Do you want to play on the Polus map ?"));
     }
 
     // les nouveaux se connectent aux anciens
@@ -144,7 +151,7 @@ int main(int argc, char *argv[])
     if(runClient)
         sendToAll("nickname " + nickname);
 
-    inGameUI->initialize(nickname);
+    inGameUI->initialize(nickname, isPolus);
     inGameUI->resize(640, 480);
     inGameUI->showMaximized();
 

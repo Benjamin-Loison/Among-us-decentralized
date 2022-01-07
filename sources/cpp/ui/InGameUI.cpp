@@ -27,9 +27,10 @@ InGameUI::InGameUI(QLabel* parent) : QLabel(parent), everyoneReady(false), lastU
     // couldn't put all not necessary stuff in initialize not to delay user input ?
 }
 
-void InGameUI::initialize(QString nickname)
+void InGameUI::initialize(QString nickname, bool Polus)
 {
-    currPlayer = Player(nickname);
+    isPolus = Polus;
+    currPlayer = Player(nickname, isPolus);
     windowPixmap = new QPixmap(size());
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &InGameUI::redraw);
@@ -62,9 +63,15 @@ bool InGameUI::isCollision(quint16 x, quint16 y)
 
 void InGameUI::initDisplay()
 {
-    backgroundPixmap = getQPixmap("mapCrop.png"); // "The Skeld"
-    collisionPixmap = getQPixmap("mapCropCollision.png");
-    collisionImage = collisionPixmap->toImage(); // what difference between QPixmap and QImage ?
+    if(!isPolus){
+        backgroundPixmap = getQPixmap("mapCrop.png"); // "The Skeld"
+        collisionPixmap = getQPixmap("mapCropCollision.png");
+        collisionImage = collisionPixmap->toImage(); // what difference between QPixmap and QImage ?
+    }else{
+        backgroundPixmap = getQPixmap("polus.png"); // "The Skeld"
+        collisionPixmap = getQPixmap("polusCollisionMask.png");
+        collisionImage = collisionPixmap->toImage(); // what difference between QPixmap and QImage ?
+    }
     QPixmap* killButtonPixmap = getQPixmap("killButton.png");
     killButtonImage = killButtonPixmap->toImage();
     QPixmap* reportButtonPixmap = getQPixmap("reportButton.png");
@@ -1271,7 +1278,7 @@ quint8 InGameUI::getPlayersNumber()
 
 void InGameUI::spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname)
 {
-    otherPlayers[peerAddress] = Player(otherPlayerNickname);
+    otherPlayers[peerAddress] = Player(otherPlayerNickname, this->isPolus);
 }
 
 void InGameUI::setFacingLeftPlayer(QString peerAddress)

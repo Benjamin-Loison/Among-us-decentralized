@@ -12,9 +12,7 @@ const QColor colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
                              {QColor(244, 244, 86), QColor(194, 134, 34)}};
                              // should add skins and a limit of 15 players (source: https://fr.wikipedia.org/wiki/Among_Us)
 
-Player::Player(QString nickname):
-    x(X_SPAWN),
-    y(Y_SPAWN),
+Player::Player(QString nickname, bool Polus):
     bodyX(-1),
     bodyY(-1),
     nickname(nickname),
@@ -27,6 +25,13 @@ Player::Player(QString nickname):
     isInvisible(false),
     numberOfEmergenciesRequested(0)
 {
+    if(!Polus){
+        x = X_SPAWN;
+        y = Y_SPAWN;
+    }else{
+        x = X_SPAWN_POLUS;
+        y = Y_SPAWN_POLUS;
+    }
     quint8 playersNumber = inGameUI->getPlayersNumber();
     color1 = colors[playersNumber][0];
     color2 = colors[playersNumber][1];
