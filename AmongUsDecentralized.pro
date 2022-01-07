@@ -7,7 +7,7 @@ CONFIG(debug, debug|release) {
     QMAKE_LFLAGS += --coverage
 }
 
-TRANSLATIONS = AmongUsDecentralizedFR.ts
+TRANSLATIONS = assets/AmongUsDecentralizedFR.ts
 RC_ICONS += assets/logo.ico
 
 QMAKE_CXXFLAGS += -I./sources/includes/ui -I./sources/includes/tasks -I./sources/includes
