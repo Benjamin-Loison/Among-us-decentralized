@@ -1,8 +1,8 @@
 # Among us decentralized
 
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/Benjamin-Loison/Among-us-decentralized?branch=main&svg=true)](https://ci.appveyor.com/project/Benjamin-Loison/Among-us-decentralized)
-[![Mac](https://github.com/Benjamin-Loison/Among-us-decentralized/actions/workflows/mac.yml/badge.svg)](https://github.com/Benjamin-Loison/Among-us-decentralized/actions/workflows/mac.yml)
 [![Linux](https://github.com/Benjamin-Loison/Among-us-decentralized/actions/workflows/linux.yml/badge.svg)](https://github.com/Benjamin-Loison/Among-us-decentralized/actions/workflows/linux.yml)
+[![Mac](https://github.com/Benjamin-Loison/Among-us-decentralized/actions/workflows/mac.yml/badge.svg)](https://github.com/Benjamin-Loison/Among-us-decentralized/actions/workflows/mac.yml)
 
 Language: C++  
 Graphics library: Qt
