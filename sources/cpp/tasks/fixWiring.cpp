@@ -7,8 +7,8 @@
 #include <QtMath>
 #include <QPainterPath>
 #include "fixWiring.h"
-#include "main.h"
-#include "qPlus.h"
+#include "../main.h"
+#include "../qPlus.h"
 
 // à quoi bon utiliser un enum si juste 4 defines aurait fait la bijection sans warning du compilo u_u
 quint8 links[COLORS_NUMBER] = {COLOR_UNDEFINED, COLOR_UNDEFINED, COLOR_UNDEFINED, COLOR_UNDEFINED};

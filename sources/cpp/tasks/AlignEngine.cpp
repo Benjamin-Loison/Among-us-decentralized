@@ -10,8 +10,8 @@
 #include <QString>
 #include <QtDebug>
 #include "AlignEngine.h"
-#include "main.h"
-#include "qPlus.h"
+#include "../main.h"
+#include "../qPlus.h"
 
 QPixmap* AlignEngineBackgroundPixmap = nullptr;
 QPixmap* currAlignEnginePixmap = nullptr;

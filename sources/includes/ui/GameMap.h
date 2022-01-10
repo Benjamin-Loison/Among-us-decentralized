@@ -3,7 +3,7 @@
 
 #include <QLabel>
 #include <QPixmap>
-#include "Task.h"
+#include "../tasks/Task.h"
 #include "InGameUI.h"
 
 class InGameUI;

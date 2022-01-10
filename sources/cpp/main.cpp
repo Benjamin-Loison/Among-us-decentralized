@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QPainter>
 #include "main.h"
-#include "InGameUI.h"
+#include "ui/InGameUI.h"
 #include <QtGlobal>
 
 InGameUI* inGameUI;
