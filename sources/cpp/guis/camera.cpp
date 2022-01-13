@@ -1,4 +1,4 @@
-#include "main.h"
+#include "../main.h"
 
 // 2640, 1760
 // SPAWN 5500, 1100
@@ -41,13 +41,13 @@ QLabel* getCamera()
     return qLabel;
 }
 
-void replaceCameraPixmap(QPixmap* pixmap) {
-    /*if(currAsteroidsLabel)
+/*void replaceCameraPixmap(QPixmap* pixmap) {
+    if(currAsteroidsLabel)
         currAsteroidsLabel->setPixmap(*pixmap);
     if(currAsteroidsPixmap)
         delete currAsteroidsPixmap;
-    currAsteroidsPixmap = pixmap;*/
-}
+    currAsteroidsPixmap = pixmap;
+}*/
 
 void redrawCamera()
 {

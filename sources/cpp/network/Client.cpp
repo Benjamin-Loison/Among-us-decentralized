@@ -1,6 +1,6 @@
 #include "Client.h"
 #include "Server.h"
-#include "main.h"
+#include "../main.h"
 using namespace std;
 
 Client::Client(QString peerAddress) : socket(new QTcpSocket(this)), isConnected(false), messageSize(0)

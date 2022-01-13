@@ -299,7 +299,7 @@ QVector<Player *> InGameUI::getOtherPlayersByDistance() {
 
 bool InGameUI::isNearEmergencyButton()
 {
-    return !currPlayer.isGhost && (distanceToEmergencyButton() < EMERGENCY_RANGE_SQUARED) && currPlayer.numberOfEmergenciesRequested < MAX_EMERGENCY_PER_PLAYER;
+    return !currPlayer.isGhost && (uint(distanceToEmergencyButton()) < uint(EMERGENCY_RANGE_SQUARED)) && uint(currPlayer.numberOfEmergenciesRequested) < uint(MAX_EMERGENCY_PER_PLAYER);
 }
 
 quint64 InGameUI::distanceToEmergencyButton()
@@ -694,7 +694,7 @@ void InGameUI::setImpostor(QString nickname)
     player->isImpostor = true;
 }
 
-void InGameUI::onEverybodyReadySub(bool threadSafe)
+void InGameUI::onEverybodyReadySub(/*bool threadSafe*/)
 {
     //if(!threadSafe && waitingAnswersNumber > 0) return;
     /*while(waitingAnswersNumber > 0) // should do this but it's not working... the problem is that we have to wait network but we are in the network thread
@@ -762,7 +762,7 @@ void InGameUI::resetAllPlayers()
     if(currPlayer.isGhost) currPlayer.showBody = false;
 }
 
-void InGameUI::onEverybodyReady(bool threadSafe)
+void InGameUI::onEverybodyReady(/*bool threadSafe*/)
 {
     everyoneReady = true;
     privateRandom = randomHex(512);
@@ -774,7 +774,7 @@ void InGameUI::onEverybodyReady(bool threadSafe)
     gameLongTasks = crewmates * longTasks;
     gameShortTasks = crewmates * shortTasks;
     //if(threadSafe)
-        onEverybodyReadySub(threadSafe);
+        onEverybodyReadySub(/*threadSafe*/);
     //else
     //    needEverybodyReadyCall = true;
 }
@@ -1291,8 +1291,8 @@ void InGameUI::movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp)
     Player* player = &otherPlayers[peerAddress];
     if(tp)
         player->playerFacingLeft = false;
-    else if(x != player->x) // otherwise if just change vertically not logical
-        player->playerFacingLeft = x < player->x;
+    else if(uint(x) != uint(player->x)) // otherwise if just change vertically not logical
+        player->playerFacingLeft = uint(x) < uint(player->x);
     player->x = x;
     player->y = y;
 }
@@ -1303,11 +1303,11 @@ void InGameUI::hidePlayerBodyIfDead(QString peerAddress)
     if(player->isGhost) player->showBody = false; // could almost make a function also to treat currPlayer
 }
 
-void InGameUI::checkEverybodyReady(bool threadSafe)
+void InGameUI::checkEverybodyReady(/*bool threadSafe*/)
 {
     if(!currPlayer.isReady) return;
     if(all_of(otherPlayers.begin(), otherPlayers.end(), [](Player player){return player.isReady;}))
-        onEverybodyReady(threadSafe);
+        onEverybodyReady(/*threadSafe*/);
     /*QList<QString> peerAddresses = otherPlayers.keys();
     for(QString peerAddress : peerAddresses)
     {
@@ -1319,12 +1319,12 @@ void InGameUI::checkEverybodyReady(bool threadSafe)
     }*/
 }
 
-void InGameUI::setPlayerReady(QString peerAddress, bool threadSafe)
+void InGameUI::setPlayerReady(QString peerAddress)
 {
     Player* player = &otherPlayers[peerAddress];
     player->isReady = true;
-    //if(!threadSafe)
-        checkEverybodyReady(/*threadSafe*/);
+    //if(!threadSafe) (Argument Threadsafe retiré)
+    checkEverybodyReady(/*threadSafe*/);
 }
 
 QPixmap* InGameUI::getBackgroundPixmap() {

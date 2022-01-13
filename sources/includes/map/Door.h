@@ -2,8 +2,8 @@
 #define DOORS_H
 
 #include <QtGlobal>
-#include "InGameUI.h"
-#include "Player.h"
+#include "../ui/InGameUI.h"
+#include "../map/Player.h"
 #include <QRect>
 
 /**

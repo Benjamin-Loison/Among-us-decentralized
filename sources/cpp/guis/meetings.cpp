@@ -1,6 +1,6 @@
 #include "meetings.h"
-#include "Server.h"
-#include "main.h"
+#include "../network/Server.h"
+#include "../main.h"
 
 MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reportingPlayer): QWidget(parent), skipVotes(0), votedPlayer(nullptr), voted(false) {
     waitingVotes = inGameUI->getAlivePlayersNumber();

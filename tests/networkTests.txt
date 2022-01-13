@@ -97,7 +97,7 @@ Works
 WAN with port forwarding:
 
 Assume B1 has access to a remote computer which has his port 10821 being opened
-Note: this case was tested on both Linux and Windows
+Note: this case was tested on both Linux and Windows (on Windows it seems that there is C:\Windows\System32\OpenSSH\ssh.exe installed with the OS)
 
 B1 starts
 B1 runs: ssh -R 10821:localhost:10821 lemnoslife.com

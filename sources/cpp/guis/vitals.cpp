@@ -1,4 +1,4 @@
-#include "main.h"
+#include "../main.h"
 
 #define VITALS_X 5820
 #define VITALS_Y 2480

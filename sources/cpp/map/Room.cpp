@@ -1,7 +1,7 @@
 #include <QtGlobal>
-#include "main.h"
+#include "../main.h"
 #include "Room.h"
-#include "Server.h"
+#include "../network/Server.h"
 
 Room::Room():
     roomName(""),

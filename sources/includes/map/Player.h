@@ -1,5 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
+
 #include <QPixmap>
 // should be 3 below
 #define MINIMAL_NUMBER_OF_PLAYERS 1

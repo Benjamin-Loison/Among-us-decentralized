@@ -14,17 +14,17 @@
 #include <QElapsedTimer>
 #include <QPushButton>
 #include "Door.h"
-#include "fixWiring.h"
+#include "../tasks/fixWiring.h"
 #include "GameMap.h"
-#include "meetings.h"
-#include "Player.h"
-#include "qPlus.h"
-#include "Room.h"
-#include "Task.h"
-#include "Vents.h"
+#include "../guis/meetings.h"
+#include "../map/Player.h"
+#include "../qPlus.h"
+#include "../map/Room.h"
+#include "../tasks/Task.h"
+#include "../map/Vents.h"
 #include <QThread>
-#include "EnterIDCode.h"
-#include "AlignEngine.h"
+#include "../tasks/EnterIDCode.h"
+#include "../tasks/AlignEngine.h"
 
 #define EMERGENCY_BUTTON_X 4830
 #define EMERGENCY_BUTTON_Y 1045
@@ -104,10 +104,10 @@ class InGameUI : public QLabel
         void spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname);
         void movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp = false);
         void setFacingLeftPlayer(QString peerAddress);
-        void onEverybodyReady(bool threadSafe);
-        void onEverybodyReadySub(bool threadSafe);
-        void checkEverybodyReady(bool threadSafe = false);
-        void setPlayerReady(QString peerAddress, bool threadSafe = false);
+        void onEverybodyReady(/*bool threadSafe*/);
+        void onEverybodyReadySub(/*bool threadSafe*/);
+        void checkEverybodyReady(/*bool threadSafe = false*/);
+        void setPlayerReady(QString peerAddress/*, bool threadSafe = false*/);
         void unreadyTeleportEveryone();
         void checkEndOfTheGame();
         void taskFinished(TaskTime taskTime);

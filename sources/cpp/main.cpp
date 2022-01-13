@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QPainter>
 #include "main.h"
-#include "InGameUI.h"
+#include "ui/InGameUI.h"
 #include <QtGlobal>
 
 InGameUI* inGameUI;
@@ -187,4 +187,5 @@ QString toString(InGameGUI inGameGUI)
         case IN_GAME_GUI_VENT:
             return "IN_GAME_GUI_VENT";
     }
+    return "";
 }

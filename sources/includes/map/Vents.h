@@ -10,8 +10,8 @@
 #include <QPair>
 #include <QtDebug>
 #include <QMouseEvent>
-#include "main.h"
-#include "qPlus.h"
+#include "../main.h"
+#include "../qPlus.h"
 
 #define PIXMAP_SIZE_X 500
 #define PIXMAP_SIZE_Y 500

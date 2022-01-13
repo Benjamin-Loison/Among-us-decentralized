@@ -1,6 +1,6 @@
 #include "Door.h"
-#include "main.h"
-#include "qPlus.h"
+#include "../main.h"
+#include "../qPlus.h"
 #include <QRect>
 
 const int DOOR_CLOSURE_DURATION_SECS = 10;

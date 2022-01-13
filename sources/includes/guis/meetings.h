@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QVector>
-#include "Player.h"
+#include "../map/Player.h"
 #include <QMap>
 #include <QGridLayout>
 #include <QLabel>

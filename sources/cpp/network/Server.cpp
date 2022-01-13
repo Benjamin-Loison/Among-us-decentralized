@@ -1,7 +1,6 @@
 #include "Server.h"
 #include <QTcpServer>
-#include "main.h"
-#include <WorkerThread.h>
+#include "../main.h"
 using namespace std;
 
 // should use IPv6 by default
@@ -145,9 +144,7 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
     }
     else if(messagePart == "ready")
     {
-        inGameUI->setPlayerReady(socketString, true); // second argument is useless because this function is only called here
-        //WorkerThread* workerThread = new WorkerThread();
-        //workerThread->start();
+        inGameUI->setPlayerReady(socketString/*, true*/); // second argument is useless because this function is only called here
     }
     else if(messagePart.startsWith("Report "))
     {
@@ -170,7 +167,7 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
             qWarning() << "Received invalid door sabotage message:" << roomIdString << "is not an unsigned integer";
             return;
         }
-        if(iRoom >= inGameUI->rooms.size()) {
+        if(uint(iRoom) >= uint(inGameUI->rooms.size())) {
             qWarning() << "Received invalid door sabotage message:" << iRoom << "is not a valid room ID, there are" << inGameUI->rooms.size() << "rooms";
             return;
         }

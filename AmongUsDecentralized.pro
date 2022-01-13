@@ -10,17 +10,22 @@ CONFIG(debug, debug|release) {
 TRANSLATIONS = assets/AmongUsDecentralizedFR.ts
 RC_ICONS += assets/logo.ico
 
-QMAKE_CXXFLAGS += -I./sources/includes/ui -I./sources/includes/tasks -I./sources/includes
+QMAKE_CXXFLAGS += -I./sources/includes/guis -I./sources/includes/map -I./sources/includes/network -I./sources/includes/tasks -I./sources/includes/ui -I./sources/includes
 unix:OBJECTS_DIR = build/objects
 MOC_DIR = build/moc
 
-
 SOURCES += \
+    sources/cpp/guis/*.cpp \
+    sources/cpp/map/*.cpp \
+    sources/cpp/network/*.cpp \
     sources/cpp/tasks/*.cpp \
     sources/cpp/ui/*.cpp \
     sources/cpp/*.cpp
 
 HEADERS += \
+    sources/includes/guis/*.h \
+    sources/includes/map/*.h \
+    sources/includes/network/*.h \
     sources/includes/tasks/*.h \
     sources/includes/ui/*.h \
     sources/includes/*.h
@@ -31,13 +36,6 @@ win32 {
     DESTDIR_WIN = $${OUT_PWD}
     PWD_WIN ~= s,/,\\,g
     DESTDIR_WIN ~= s,/,\\,g
-    copydata.commands = $(COPY_DIR) $$PWD_WIN\\assets $$DESTDIR_WIN\\assets
-}
-macx {
-    copydata.commands =
-}
-linux {
-    copydata.commands = $(COPY_DIR) $$PWD/assets $$OUT_PWD
 }
 first.depends = $(first) copydata
 export(first.depends)

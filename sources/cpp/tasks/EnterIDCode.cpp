@@ -10,8 +10,8 @@
 #include <QString>
 #include <QtDebug>
 #include "EnterIDCode.h"
-#include "main.h"
-#include "qPlus.h"
+#include "../main.h"
+#include "../qPlus.h"
 
 quint8 code[DIGIT_NUMBER] = {DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED};
 quint8 answer[DIGIT_NUMBER] = {DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED,DIGIT_UNDEFINED};
