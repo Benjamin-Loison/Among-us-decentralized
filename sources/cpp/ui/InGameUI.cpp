@@ -396,13 +396,15 @@ bool InGameUI::killPlayer(Player &p) {
  * @param player
  * @param painter A QPainter that will be used for painting. A fresh one will be used if this is nullptr.
  */
-void InGameUI::displayPlayer(const Player &player, QPainter *painter, bool showGhost, quint16 forceX, quint16 forceY, quint64 time)
+void InGameUI::displayPlayer(Player &player, QPainter *painter, bool showGhost, quint16 forceX, quint16 forceY, quint64 time)
 {
-
 	if (player.isMoving && player.startMoveAt == 0) {
 		player.startMoveAt = time;
+		player.isMoving = false;
 	}
-
+	else if (time - player.startMoveAt > 1) {
+		player.startMoveAt = 0;
+	}
 
     // Only ghosts see ghosts
     if(player.isInvisible || (showGhost && ((!currPlayer.isGhost && !forceX && !forceY) || !player.isGhost)))
@@ -539,7 +541,7 @@ void InGameUI::redraw()
             Player* player = players[playersIndex];
             //qInfo() << "winner:" << player->nickname << middleX << middleY << qSize.width() << qSize.height();
             for(bool showGhost : {false, true})
-                displayPlayer(*player, &painter, showGhost, (quint16)((2*middleX + player->playerPixmap->width() * (2*playersIndex - playersSize + 1))/2), middleY + player->playerPixmap->height()/2);
+                displayPlayer(*player, &painter, showGhost, (quint16)((2*middleX + player->playerPixmap->width() * (2*playersIndex - playersSize + 1))/2), middleY + player->playerPixmap->height()/2, now);
         }
         painter.drawImage(qWidth - 130, qHeight - 130, playAgainButtonImage);
 

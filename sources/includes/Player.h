@@ -20,8 +20,10 @@ public:
     bool showBody;
     bool isReady;
     bool isInvisible; // could make an enum to be cleaner
+	bool isMoving;
     quint8 numberOfEmergenciesRequested;
     QColor color1, color2;
+	quint64 startMoveAt;
 
     Player();
     Player(QString nickname);
@@ -31,10 +33,12 @@ public:
     QPixmap* ghostPixmap;
     QPixmap* flippedGhostPixmap;
     QPixmap* iconOnMapPixmap;
+	QPixmap* walkAnimation[ANIMATION_SIZE*2];
 
     QString getSendPositionMessage();
     void sendPosition();
     void moveTo(int x, int y);
+	QPixmap* getAnimationFrame(bool flipped, quint64 time);
 };
 
 #endif

@@ -25,7 +25,9 @@ Player::Player(QString nickname):
     showBody(false),
     isReady(false),
     isInvisible(false),
-    numberOfEmergenciesRequested(0)
+	isMoving(false),
+    numberOfEmergenciesRequested(0),
+	startMoveAt(0)
 {
     quint8 playersNumber = inGameUI->getPlayersNumber();
     color1 = colors[playersNumber][0];
@@ -40,11 +42,10 @@ Player::Player(QString nickname):
     *iconOnMapPixmap = colorPixmap(*iconOnMapPixmap, color1, color2);
     flippedPixmap = new QPixmap(playerPixmap->transformed(QTransform().scale(-1,1)));
     flippedGhostPixmap = new QPixmap(ghostPixmap->transformed(QTransform().scale(-1,1)));
-	bool isMoving = false;
-	quint64 startMoveAt = 0;
-	walkAnimation[ANIMATION_SIZE*2];
+	char filename[100];
 	for (int i = 0; i < ANIMATION_SIZE; i++) {
-		walkAnimation[i] = getQPixmap(sprintf("Walk%04d.png", i));
+		sprintf(filename, "Walk%04d.png", i);
+		walkAnimation[i] = getQPixmap(filename);
 		walkAnimation[ANIMATION_SIZE+i] = new QPixmap(playerPixmap->transformed(QTransform().scale(-1, 1)));
 	}
 }
@@ -73,7 +74,7 @@ void Player::moveTo(int x, int y) {
         sendPosition();
 }
 
-void Player::getAnimationFrame(bool flipped, quint64 time) {
+QPixmap* Player::getAnimationFrame(bool flipped, quint64 time) {
 	int offset = flipped ? 1 : 0;
 	if (!this->isMoving) {
 		return this->walkAnimation[offset*ANIMATION_SIZE];

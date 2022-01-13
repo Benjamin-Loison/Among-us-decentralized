@@ -78,7 +78,7 @@ class InGameUI : public QLabel
         void initDoorsAndRooms();
         qint64 currTimer();
         void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
-        void displayPlayer(const Player &player, QPainter *painter = nullptr, bool showGhost = false, quint16 forceX = 0, quint16 forceY = 0);
+        void displayPlayer(Player &player, QPainter *painter = nullptr, bool showGhost = false, quint16 forceX = 0, quint16 forceY = 0, quint64 time = 0);
         bool performMovement(qint64 elapsed, int dirVert, int dirHoriz);
         void setCenterBorderLimit(int x, int y, QPainter* painter = nullptr, QSize s = QSize(), quint16 offsetX = 0, quint16 offsetY = 0, quint16 sx = 0, quint16 sy = 0);
         bool isCollision(quint16 x, quint16 y);
