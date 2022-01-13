@@ -24,6 +24,7 @@ public:
     bool isInvisible; // could make an enum to be cleaner
     quint8 numberOfEmergenciesRequested;
     QColor color1, color2;
+    bool isPolus;
 
     Player();
     Player(QString nickname, bool Polus);

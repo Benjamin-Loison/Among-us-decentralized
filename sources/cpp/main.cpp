@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
     QSettings settings("settings.ini", QSettings::IniFormat);
     QString peerAddress = settings.value("peerAddress").toString();
 
-    bool isPolus;
+    bool isPolus = false;
     
     if(runClient)
     {
@@ -85,6 +85,11 @@ int main(int argc, char *argv[])
     }else{
         // If not client ask for the map to play on
         isPolus = getBool(QObject::tr("Map choice"), QObject::tr("Do you want to play on the Polus map ?"));
+        if(!isPolus){
+            qInfo() << "polus:" << "false";
+        }else{
+            qInfo() << "polus:" << "true";
+        }
     }
 
     // les nouveaux se connectent aux anciens
@@ -119,6 +124,12 @@ int main(int argc, char *argv[])
 
         if(!runClient)
             break;
+
+        qInfo("Asking for polus...");
+        QString polusStr = askAll("polus"); // or should more precisely ask all nicknames at each nickname test ? but this assume to wait the maximum ping of someone ?
+        qInfo("Received polus: %s", polusStr.toStdString().c_str());
+
+        isPolus = polusStr.toStdString()=="true";
 
         qInfo("Waiting for nicknames...");
         QString nicknamesStr = askAll("nicknames"); // or should more precisely ask all nicknames at each nickname test ? but this assume to wait the maximum ping of someone ?

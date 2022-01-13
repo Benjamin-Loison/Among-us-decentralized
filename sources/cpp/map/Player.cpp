@@ -25,6 +25,7 @@ Player::Player(QString nickname, bool Polus):
     isInvisible(false),
     numberOfEmergenciesRequested(0)
 {
+    this->isPolus = Polus;
     if(!Polus){
         x = X_SPAWN;
         y = Y_SPAWN;

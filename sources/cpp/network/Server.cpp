@@ -235,6 +235,11 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
             parts.sort(); /// order matters
             res += messagePart + "|" + parts.join(',');
         }
+        else if(messagePart == "polus")
+        {
+            QString polusBool = inGameUI->currPlayer.isPolus ? "true" : "false";
+            res += polusBool;
+        }
         else if(messagePart.startsWith("nickname "))
         {
             // What difference QList/QVector ?
