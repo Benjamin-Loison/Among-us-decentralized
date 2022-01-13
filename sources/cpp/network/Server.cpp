@@ -238,7 +238,7 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
         else if(messagePart == "polus")
         {
             QString polusBool = inGameUI->currPlayer.isPolus ? "true" : "false";
-            res += polusBool;
+            res += messagePart + "|" + polusBool;
         }
         else if(messagePart.startsWith("nickname "))
         {
