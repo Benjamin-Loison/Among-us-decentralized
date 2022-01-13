@@ -68,7 +68,7 @@ void GameMap::redraw() {
     if(!isPolus){
         topLeftCorner= QPoint(playerPosMinimap.x() - iconSize.width()/2, playerPosMinimap.y() - iconSize.height());
     }else{
-        topLeftCorner= QPoint(playerPosMinimap.x() - iconSize.width()/2 + 30, playerPosMinimap.y() - iconSize.height());
+        topLeftCorner= QPoint(playerPosMinimap.x() - iconSize.width()/2, playerPosMinimap.y() - iconSize.height()/2);
     }
     painter->drawPixmap(topLeftCorner, *ui->currPlayer.iconOnMapPixmap);
 
