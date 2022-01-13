@@ -85,8 +85,8 @@ QPixmap* Player::getAnimationFrame(bool flipped, quint64 time) {
 	if (!this->isMoving) {
 		return this->walkAnimation[offset*ANIMATION_SIZE];
 	} else {
-		int frameNumber = ((time-this->startMoveAt) / 1000) % ANIMATION_SIZE;
-		return this->walkAnimation[frameNumber + offset*ANIMATION_SIZE];
+		int frameNumber = ((time-this->startMoveAt) / (1000/20)) % (ANIMATION_SIZE-1);
+		this->isMoving = false;
+		return this->walkAnimation[frameNumber +1 + offset*ANIMATION_SIZE];
 	}
-	this->isMoving = false;
 }
