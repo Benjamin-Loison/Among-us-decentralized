@@ -14,17 +14,17 @@
 #include <QElapsedTimer>
 #include <QPushButton>
 #include "Door.h"
-#include "fixWiring.h"
+#include "../tasks/fixWiring.h"
 #include "GameMap.h"
-#include "meetings.h"
-#include "Player.h"
-#include "qPlus.h"
-#include "Room.h"
-#include "Task.h"
-#include "Vents.h"
+#include "../guis/meetings.h"
+#include "../map/Player.h"
+#include "../qPlus.h"
+#include "../map/Room.h"
+#include "../tasks/Task.h"
+#include "../map/Vents.h"
 #include <QThread>
-#include "EnterIDCode.h"
-#include "AlignEngine.h"
+#include "../tasks/EnterIDCode.h"
+#include "../tasks/AlignEngine.h"
 
 #define EMERGENCY_BUTTON_X 4830
 #define EMERGENCY_BUTTON_Y 1045
@@ -64,6 +64,7 @@ class InGameUI : public QLabel
         QPainter* killButtonPainter;
         qint64 lastKillTime;
         bool initialized;
+        bool isPolus;
 
     public:
         QVector<Room> rooms;
@@ -73,12 +74,12 @@ class InGameUI : public QLabel
         QLabel *qLabel;
         MeetingUI *meetingWidget; // may be merged with qLabel
         MeetingResultsUI *meetingResultsWidget;
-        void initialize(QString nickname);
+        void initialize(QString nickname, bool Polus);
         void initDisplay();
         void initDoorsAndRooms();
         qint64 currTimer();
         void displayAt(QPixmap *pixmap, int centerx, int centery, QPainter* painter);
-        void displayPlayer(Player &player, QPainter *painter = nullptr, bool showGhost = false, quint16 forceX = 0, quint16 forceY = 0, quint64 time = 0);
+        void displayPlayer(const Player &player, QPainter *painter = nullptr, bool showGhost = false, quint16 forceX = 0, quint16 forceY = 0);
         bool performMovement(qint64 elapsed, int dirVert, int dirHoriz);
         void setCenterBorderLimit(int x, int y, QPainter* painter = nullptr, QSize s = QSize(), quint16 offsetX = 0, quint16 offsetY = 0, quint16 sx = 0, quint16 sy = 0);
         bool isCollision(quint16 x, quint16 y);
@@ -130,7 +131,7 @@ class InGameUI : public QLabel
         bool isWinScreen();
         QList<Player*> getAllPlayers();
         void teleportAllPlayers();
-        void displayPlayers(QPainter* painter, quint64 time);
+        void displayPlayers(QPainter* painter);
         void displayDoors(QPainter* painter);
         void setLayoutQLabel();
         InGameUI(QLabel* parent = 0);

@@ -11,7 +11,6 @@
 #define X_SPAWN_POLUS 3500
 #define Y_SPAWN_POLUS 3000
 
-#define ANIMATION_SIZE 13
 class Player {
 public:
     int x, y;
@@ -23,10 +22,8 @@ public:
     bool showBody;
     bool isReady;
     bool isInvisible; // could make an enum to be cleaner
-	bool isMoving;
     quint8 numberOfEmergenciesRequested;
     QColor color1, color2;
-	quint64 startMoveAt;
     bool isPolus;
 
     Player();
@@ -37,12 +34,10 @@ public:
     QPixmap* ghostPixmap;
     QPixmap* flippedGhostPixmap;
     QPixmap* iconOnMapPixmap;
-	QPixmap* walkAnimation[ANIMATION_SIZE*2];
 
     QString getSendPositionMessage();
     void sendPosition();
     void moveTo(int x, int y);
-	QPixmap* getAnimationFrame(bool flipped, quint64 time);
 };
 
 #endif
