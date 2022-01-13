@@ -11,6 +11,12 @@ QMap<TaskType, QList<QPoint>> taskLocations{
     {TASK_ENTER_ID_CODE, {QPoint(2645, 1820)}},
     {TASK_ALIGN_ENGINE, {QPoint(1550,3600)}}
     };
+QMap<TaskType, QList<QPoint>> taskLocationsPolus{
+    {TASK_ASTEROIDS, {QPoint(1413, 1650)}},
+    {TASK_FIX_WIRING, {QPoint(2610, 3400), QPoint(9231,2860), QPoint(6012,5890)}},
+    {TASK_ENTER_ID_CODE, {QPoint(3090, 4480)}},
+    {TASK_ALIGN_ENGINE, {QPoint(573,5410)}}
+    };
 
 quint8 commonTasks = /*1*/2, longTasks = /*1*/1, shortTasks = /*2*/1;
 
@@ -74,7 +80,7 @@ TaskTime getTaskTimeNeeded(QVector<Task> tasks)
     return TASK_SHORT;
 }
 
-Task pickRandomTask(QRandomGenerator* qRandomGenerator, TaskTime taskTime)
+Task pickRandomTask(QRandomGenerator* qRandomGenerator, TaskTime taskTime, bool Polus)
 {
     QVector<Task> tasks;
     QVector<TaskType> taskTypes;
@@ -83,8 +89,13 @@ Task pickRandomTask(QRandomGenerator* qRandomGenerator, TaskTime taskTime)
         if(taskTimes[taskTypeKey] == taskTime)
             taskTypes.push_back(taskTypeKey);
     for(TaskType taskType : taskTypes)
-        for(QPoint taskTypeLocation : taskLocations[taskType])
-            tasks.push_back(Task(taskType, taskTypeLocation));
+        if(!Polus){
+            for(QPoint taskTypeLocation : taskLocations[taskType])
+                tasks.push_back(Task(taskType, taskTypeLocation));
+        }else{
+            for(QPoint taskTypeLocation : taskLocationsPolus[taskType])
+                tasks.push_back(Task(taskType, taskTypeLocation));
+        }
 
     quint8 tasksSize = tasks.size(),
            randomIndex = qRandomGenerator->bounded(tasksSize);
@@ -99,7 +110,7 @@ QVector<Task*> getTasksAsPointers(QVector<Task> tasks)
     return tasksPointers;
 }
 
-QVector<Task> getRandomTasks(QString privateSaltedWithCommonRandom) // can't only depend on private random, it also have to depends on common random
+QVector<Task> getRandomTasks(QString privateSaltedWithCommonRandom, bool Polus) // can't only depend on private random, it also have to depends on common random
 {
     bool ok;
     privateSaltedWithCommonRandom = privateSaltedWithCommonRandom.toUpper();
@@ -112,7 +123,7 @@ QVector<Task> getRandomTasks(QString privateSaltedWithCommonRandom) // can't onl
     while(!doTasksFitRequirements(tasks))
     {
         TaskTime taskTimeNeeded = getTaskTimeNeeded(tasks);
-        const Task randomTask = pickRandomTask(&qRandomGenerator, taskTimeNeeded);
+        const Task randomTask = pickRandomTask(&qRandomGenerator, taskTimeNeeded, Polus);
         if(!tasks.contains(randomTask))
             tasks.push_back(randomTask);
     }

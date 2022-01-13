@@ -3,7 +3,7 @@
 
 #include <QLabel>
 #include <QPixmap>
-#include "Task.h"
+#include "../tasks/Task.h"
 #include "InGameUI.h"
 
 class InGameUI;
@@ -16,7 +16,7 @@ private:
     QPoint toMinimapPoint(const QPoint &mapPoint);
 
 public:
-    GameMap(InGameUI* ui);
+    GameMap(InGameUI* ui, bool Polus);
     void redraw();
     void onLeftOrDoubleClick(QMouseEvent *event);
 };

@@ -16,7 +16,7 @@ public:
     bool operator ==(Task const a) const;
 };
 
-QVector<Task> getRandomTasks(QString privateSaltedWithCommonRandom);
+QVector<Task> getRandomTasks(QString privateSaltedWithCommonRandom, bool Polus);
 QVector<Task*> getTasksAsPointers(QVector<Task> tasks);
 QString taskTimeToString(TaskTime taskTime);
 TaskTime getTaskTime(QString taskTimeStr);

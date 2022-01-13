@@ -7,9 +7,9 @@
 #include <QVector>
 #include <QtMath>
 #include "asteroids.h"
-#include "main.h"
-#include "qPlus.h"
-#include "InGameUI.h"
+#include "../main.h"
+#include "../qPlus.h"
+#include "../ui/InGameUI.h"
 const double ASTEROID_VELOCITY_SEC = 200; // 200 pixels per second
 const int TARGET_ASTEROID_COUNT = 10;
 const int ASTEROID_SPAWN_INTERVAL_MS = 1000;

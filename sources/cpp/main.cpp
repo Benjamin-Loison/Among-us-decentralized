@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QPainter>
 #include "main.h"
-#include "InGameUI.h"
+#include "ui/InGameUI.h"
 #include <QtGlobal>
 
 InGameUI* inGameUI;
@@ -66,8 +66,12 @@ int main(int argc, char *argv[])
     }
     QSettings settings("settings.ini", QSettings::IniFormat);
     QString peerAddress = settings.value("peerAddress").toString();
+
+    bool isPolus = false;
+    
     if(runClient)
     {
+
         QString newPeerAddress = getText(QObject::tr("Peer address"), QObject::tr("A peer address"), isDefaultServerPortInUse ? QString::number(DEFAULT_SERVER_PORT) : peerAddress);
         if(isAPositiveInteger(newPeerAddress))
             newPeerAddress = "127.0.0.1:" + newPeerAddress; // localhost binds to ::1
@@ -78,6 +82,14 @@ int main(int argc, char *argv[])
             settings.sync();
         }
         peerAddress = newPeerAddress;
+    }else{
+        // If not client ask for the map to play on
+        isPolus = getBool(QObject::tr("Map choice"), QObject::tr("Do you want to play on the Polus map ?"));
+        if(!isPolus){
+            qInfo() << "polus:" << "false";
+        }else{
+            qInfo() << "polus:" << "true";
+        }
     }
 
     // les nouveaux se connectent aux anciens
@@ -113,6 +125,12 @@ int main(int argc, char *argv[])
         if(!runClient)
             break;
 
+        qInfo("Asking for polus...");
+        QString polusStr = askAll("polus"); // or should more precisely ask all nicknames at each nickname test ? but this assume to wait the maximum ping of someone ?
+        qInfo("Received polus: %s", polusStr.toStdString().c_str());
+
+        isPolus = polusStr.toStdString()=="true";
+
         qInfo("Waiting for nicknames...");
         QString nicknamesStr = askAll("nicknames"); // or should more precisely ask all nicknames at each nickname test ? but this assume to wait the maximum ping of someone ?
         qInfo("Received nicknames: %s", nicknamesStr.toStdString().c_str());
@@ -144,7 +162,7 @@ int main(int argc, char *argv[])
     if(runClient)
         sendToAll("nickname " + nickname);
 
-    inGameUI->initialize(nickname);
+    inGameUI->initialize(nickname, isPolus);
     inGameUI->resize(640, 480);
     inGameUI->showMaximized();
 
