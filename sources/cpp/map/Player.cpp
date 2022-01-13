@@ -50,9 +50,9 @@ Player::Player(QString nickname, bool Polus):
     flippedGhostPixmap = new QPixmap(ghostPixmap->transformed(QTransform().scale(-1,1)));
 	char filename[100];
 	for (int i = 0; i < ANIMATION_SIZE; i++) {
-		sprintf(filename, "Walk%04d.png", i);
+		sprintf(filename, "walk/Walk%04d.png", i);
 		walkAnimation[i] = getQPixmap(filename);
-		walkAnimation[ANIMATION_SIZE+i] = new QPixmap(playerPixmap->transformed(QTransform().scale(-1, 1)));
+		walkAnimation[ANIMATION_SIZE+i] = new QPixmap(walkAnimation[i]->transformed(QTransform().scale(-1, 1)));
 	}
 }
 
@@ -85,7 +85,8 @@ QPixmap* Player::getAnimationFrame(bool flipped, quint64 time) {
 	if (!this->isMoving) {
 		return this->walkAnimation[offset*ANIMATION_SIZE];
 	} else {
-		int frameNumber = 1;  // TODO find a good frame number	
+		int frameNumber = ((time-this->startMoveAt) / 1000) % ANIMATION_SIZE;
 		return this->walkAnimation[frameNumber + offset*ANIMATION_SIZE];
 	}
+	this->isMoving = false;
 }

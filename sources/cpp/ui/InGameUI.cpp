@@ -415,7 +415,6 @@ void InGameUI::displayPlayer(Player &player, QPainter *painter, bool showGhost, 
 {
 	if (player.isMoving && player.startMoveAt == 0) {
 		player.startMoveAt = time;
-		player.isMoving = false;
 	}
 	else if (time - player.startMoveAt > 1) {
 		player.startMoveAt = 0;
@@ -437,9 +436,9 @@ void InGameUI::displayPlayer(Player &player, QPainter *painter, bool showGhost, 
             if(player.isGhost)
                 toDraw = player.deadPixmap;
             else if(player.playerFacingLeft && !forceX && !forceY)
-                toDraw = player.flippedPixmap;
+                toDraw = player.getAnimationFrame(player.playerFacingLeft, time);
             else
-                toDraw = player.playerPixmap;
+                toDraw = player.getAnimationFrame(false, time);
         }
         else {
             if(player.playerFacingLeft && !forceX && !forceY)
@@ -476,7 +475,7 @@ void InGameUI::displayDoors(QPainter* painter)
         door.draw(painter, leftBackground, topBackground);
 }
 
-void InGameUI::displayPlayers(QPainter* painter)
+void InGameUI::displayPlayers(QPainter* painter, quint64 time)
 {
     // Display players with ascending y, then ascending x.
     // Display ghosts above alive players and dead bodies.
@@ -497,7 +496,7 @@ void InGameUI::displayPlayers(QPainter* painter)
               return a->nickname.compare(b->nickname) < 0;
           });
     for (Player* player : players)
-        displayPlayer(*player, painter, false);
+        displayPlayer(*player, painter, false, time=time);
     sort(players.begin(), players.end(), [](const Player *a, const Player *b)
           {
               if (a->y != b->y)
@@ -507,7 +506,7 @@ void InGameUI::displayPlayers(QPainter* painter)
               return a->nickname.compare(b->nickname) < 0;
           });
     for (Player* player : players)
-        displayPlayer(*player, painter, true);
+        displayPlayer(*player, painter, true, time=time);
 }
 
 /**
@@ -551,6 +550,7 @@ void InGameUI::redraw()
         }
 
         quint8 playersSize = players.size();
+		/*
         for(quint8 playersIndex = 0; playersIndex < playersSize; playersIndex++)
         {
             Player* player = players[playersIndex];
@@ -558,6 +558,7 @@ void InGameUI::redraw()
             for(bool showGhost : {false, true})
                 displayPlayer(*player, &painter, showGhost, (quint16)((2*middleX + player->playerPixmap->width() * (2*playersIndex - playersSize + 1))/2), middleY + player->playerPixmap->height()/2, now);
         }
+		*/ // TODO this for loop might be useless
         painter.drawImage(qWidth - 130, qHeight - 130, playAgainButtonImage);
 
         setPixmap(*windowPixmap);

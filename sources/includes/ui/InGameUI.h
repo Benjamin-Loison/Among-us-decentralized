@@ -14,17 +14,17 @@
 #include <QElapsedTimer>
 #include <QPushButton>
 #include "Door.h"
-#include "../tasks/fixWiring.h"
+#include "fixWiring.h"
 #include "GameMap.h"
-#include "../guis/meetings.h"
-#include "../map/Player.h"
-#include "../qPlus.h"
-#include "../map/Room.h"
-#include "../tasks/Task.h"
-#include "../map/Vents.h"
+#include "meetings.h"
+#include "Player.h"
+#include "qPlus.h"
+#include "Room.h"
+#include "Task.h"
+#include "Vents.h"
 #include <QThread>
-#include "../tasks/EnterIDCode.h"
-#include "../tasks/AlignEngine.h"
+#include "EnterIDCode.h"
+#include "AlignEngine.h"
 
 #define EMERGENCY_BUTTON_X 4830
 #define EMERGENCY_BUTTON_Y 1045
@@ -64,7 +64,6 @@ class InGameUI : public QLabel
         QPainter* killButtonPainter;
         qint64 lastKillTime;
         bool initialized;
-        bool isPolus;
 
     public:
         QVector<Room> rooms;
@@ -74,7 +73,7 @@ class InGameUI : public QLabel
         QLabel *qLabel;
         MeetingUI *meetingWidget; // may be merged with qLabel
         MeetingResultsUI *meetingResultsWidget;
-        void initialize(QString nickname, bool Polus);
+        void initialize(QString nickname);
         void initDisplay();
         void initDoorsAndRooms();
         qint64 currTimer();
@@ -131,7 +130,7 @@ class InGameUI : public QLabel
         bool isWinScreen();
         QList<Player*> getAllPlayers();
         void teleportAllPlayers();
-        void displayPlayers(QPainter* painter);
+        void displayPlayers(QPainter* painter, quint64 time);
         void displayDoors(QPainter* painter);
         void setLayoutQLabel();
         InGameUI(QLabel* parent = 0);
