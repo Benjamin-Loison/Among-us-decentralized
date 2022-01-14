@@ -39,6 +39,8 @@ QString getText(QString title, QString label, QString defaultText = "");
 void showWarningMessage(QString title, QString label);
 QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2, QColor color3 = originalColors[2]);
 QPixmap colorImage(QImage tmp, QColor color1, QColor color2, QColor color3 = originalColors[2]);
+QPixmap colorPixmapAnim(const QPixmap& pixmap, QColor color1, QColor color2, QColor color3 = originalColors[2]);
+QPixmap colorImageAnim(QImage tmp, QColor color1, QColor color2, QColor color3 = originalColors[2]);
 bool getBool(QString title, QString label);
 QString randomHex(quint16 length);
 QString SHA512(QString input);

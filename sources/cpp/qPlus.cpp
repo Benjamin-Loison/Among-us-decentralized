@@ -12,6 +12,7 @@
 using namespace std;
 
 QColor originalColors[3] = {QColor(0, 255, 0), QColor(255, 0, 0), QColor(0, 0, 255)};
+QColor originalColorsAnim[3] = {QColor(0, 255, 0), QColor(255, 16, 16), QColor(0, 0, 255)};
 
 QString assetsFolderImages = "assets/images/";
 QString assetsFolderAudio = "assets/audio/";
@@ -85,10 +86,33 @@ QPixmap colorImage(QImage tmp, QColor color1, QColor color2, QColor color3)
             }
     return QPixmap::fromImage(tmp);
 }
+QPixmap colorImageAnim(QImage tmp, QColor color1, QColor color2, QColor color3)
+{
+    QColor colors[3] = {color1, color2, color3};
+
+    for(quint16 y = 0; y < tmp.height(); y++)
+        for(quint16 x = 0; x < tmp.width(); x++)
+            for(quint8 originalColorsIndex = 0; originalColorsIndex < 3; originalColorsIndex++) {
+                // could check if we are iterating to change a color otherwise can pass, reversing loop order would optimize likewise
+                int alpha = tmp.pixelColor(x,y).alpha();
+                QColor newOriginalColor = originalColorsAnim[originalColorsIndex];
+                newOriginalColor.setAlpha(alpha);
+                if(tmp.pixelColor(x, y) == newOriginalColor) {
+                    QColor newColor = colors[originalColorsIndex];
+                    newColor.setAlpha(alpha);
+                    tmp.setPixelColor(x, y, newColor);
+                }
+            }
+    return QPixmap::fromImage(tmp);
+}
 
 QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2, QColor color3) {
     QImage tmp = pixmap.toImage();
     return colorImage(tmp, color1, color2, color3);
+}
+QPixmap colorPixmapAnim(const QPixmap& pixmap, QColor color1, QColor color2, QColor color3) {
+    QImage tmp = pixmap.toImage();
+    return colorImageAnim(tmp, color1, color2, color3);
 }
 
 QPixmap getDisabledButton(const QPixmap &origButton) {

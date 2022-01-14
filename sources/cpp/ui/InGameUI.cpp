@@ -1332,8 +1332,7 @@ void InGameUI::movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp)
         player->playerFacingLeft = false;
     else if(uint(x) != uint(player->x)) // otherwise if just change vertically not logical
         player->playerFacingLeft = uint(x) < uint(player->x);
-    player->x = x;
-    player->y = y;
+	player->moveTo(x, y);
 }
 
 void InGameUI::hidePlayerBodyIfDead(QString peerAddress)

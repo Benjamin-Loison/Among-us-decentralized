@@ -52,6 +52,7 @@ Player::Player(QString nickname, bool Polus):
 	for (int i = 0; i < ANIMATION_SIZE; i++) {
 		sprintf(filename, "walk/Walk%04d.png", i);
 		walkAnimation[i] = getQPixmap(filename);
+		*walkAnimation[i] = colorPixmapAnim(*walkAnimation[i], QColor(0, 255, 0), color1, color2);
 		walkAnimation[ANIMATION_SIZE+i] = new QPixmap(walkAnimation[i]->transformed(QTransform().scale(-1, 1)));
 	}
 }
