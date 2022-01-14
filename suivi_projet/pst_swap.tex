@@ -1,0 +1,62 @@
+\documentclass{beamer}
+
+
+\title{Software Engineering}
+\author{\textsc{Antoine~GRIMOD, Arnaud~DABY-SEESARAM, Gabriel~JEANTET, Zibo~YANG}}
+\date{January 14, 2022}
+
+%lol des barres de rire
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{This Week --- Project swapping}
+    Four enhancements of the initial Among Us project:
+    \begin{itemize}
+        \item Add a map
+        
+        \only<2>{
+            Difficulties:
+            \begin{itemize}
+                \item Manually creating the collision mask was long and tiring task.
+                \item Tasks', vents' and doors' positions were hardcoded. Didn't have the time to modularize it, so used a boolean switch.
+                \item Added a window to choose the map.
+                \item Had to ensure that all players are on the same map, so had to modify the server to propagate the choice made by the first player.
+            \end{itemize}
+        
+        
+        }
+        
+        \item Add animations for players
+        
+        \only<3>{
+            Problems:
+            \begin{itemize}
+                \item Differences with how the frames are made
+                \item Only the player associated with the instance called the proper functions
+            \end{itemize}
+        }
+        
+        \item Add a task (canon)
+        
+        \item Allow people from distinct LANs to play altogether
+        
+        \only<5>{Three possibilities:
+        \begin{itemize}
+            \item Modify the client to manually route the packets
+            \item Write a wrapper in order to display an interface for each peer
+            \item Change the static routes of the computers involved
+        \end{itemize}
+        }
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Zibo Yang}
+Three Different Phases:
+\begin{itemize}
+\item Simple Rust Game Server(successful): learn Rust-lang and use it to implement the early version of game server by following our early specification about communication protocol.
+\item Final Rust Game Server(failed): try to mimic the go-version of minimal-server by rust-lang but eventually failed through long time trials
+\item New Cannon Task(successful): implement an independent simple cannon game and integrate it with the latest version of AmongUsDecentralized game.
+\end{itemize}
+\end{frame}
+\end{document}
