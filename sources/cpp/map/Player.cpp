@@ -12,7 +12,7 @@ const QColor colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
                              {QColor(244, 244, 86), QColor(194, 134, 34)}};
                              // should add skins and a limit of 15 players (source: https://fr.wikipedia.org/wiki/Among_Us)
 
-Player::Player(QString nickname, bool Polus):
+Player::Player(QString nickname, Map map):
     bodyX(-1),
     bodyY(-1),
     nickname(nickname),
@@ -27,14 +27,17 @@ Player::Player(QString nickname, bool Polus):
     numberOfEmergenciesRequested(0),
 	startMoveAt(0)
 {
-    this->isPolus = Polus;
-    if(!Polus){
-        x = X_SPAWN;
-        y = Y_SPAWN;
-    }else{
-        x = X_SPAWN_POLUS;
-        y = Y_SPAWN_POLUS;
-    }
+    this->map = map;
+	switch(map)
+	{
+		case MAP_THE_SKELD:
+			x = X_SPAWN;
+			y = Y_SPAWN;
+			break;
+		default: // MAP_POLUS
+			x = X_SPAWN_POLUS;
+			y = Y_SPAWN_POLUS;
+	}
     quint8 playersNumber = inGameUI->getPlayersNumber();
     color1 = colors[playersNumber][0];
     color2 = colors[playersNumber][1];
@@ -90,4 +93,64 @@ QPixmap* Player::getAnimationFrame(bool flipped, quint64 time) {
 		this->isMoving = false;
 		return this->walkAnimation[frameNumber +1 + offset*ANIMATION_SIZE];
 	}
+}
+
+QVector<Map> getAllMaps()
+{
+	// could initialize this fixed value at the initialization of the program
+	QVector<Map> maps;
+	maps.push_back(MAP_THE_SKELD);
+	maps.push_back(MAP_POLUS);
+	return maps;
+}
+
+QStringList getAllMapsStr()
+{
+	QVector<Map> maps = getAllMaps();
+	QStringList mapsStr;
+	for(Map map : maps)
+		mapsStr.append(getMapName(map));
+	return mapsStr;
+}
+
+QString getCleanMapName(Map map)
+{
+	switch(map)
+    {
+        case MAP_THE_SKELD:
+            return "The Skeld"; // could use macro if change their name later
+        default: // MAP_POLUS
+            return "Polus";
+    }
+}
+
+QStringList getAllCleanMapsStr()
+{
+    QVector<Map> maps = getAllMaps();
+    QStringList mapsStr;
+    for(Map map : maps)
+        mapsStr.append(getCleanMapName(map));
+    return mapsStr;
+}
+
+QString toCamelCase(const QString& s)
+{
+    QStringList parts = s.split(' ', QString::SkipEmptyParts);
+    for(quint8 i = 0; i < parts.size(); ++i)
+        parts[i].replace(0, 1, parts[i][0].toUpper());
+    return parts.join(' ');
+}
+
+QString getMapName(Map map)
+{
+	QString res = getCleanMapName(map);
+	return toCamelCase(res); // assume no map name with triple (or more) parts
+}
+
+Map getMap(QString mapStr)
+{
+	if(mapStr == "The Skeld")
+		return MAP_THE_SKELD;
+	else // "Polus"
+		return MAP_POLUS;
 }

@@ -235,11 +235,11 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
             parts.sort(); /// order matters
             res += messagePart + "|" + parts.join(',');
         }
-        else if(messagePart == "polus")
+        else if(messagePart == "map")
         {
-            QString polusBool = inGameUI->currPlayer.isPolus ? "true" : "false";
-			qInfo() << "currPlayer" << polusBool;
-            res += messagePart + "|" + polusBool;
+            QString mapStr = QString::number(inGameUI->currPlayer.map);
+			qInfo() << "currPlayer" << mapStr;
+            res += messagePart + "|" + mapStr;
         }
         else if(messagePart.startsWith("nickname "))
         {

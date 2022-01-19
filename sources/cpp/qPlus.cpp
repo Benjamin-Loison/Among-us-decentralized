@@ -152,11 +152,17 @@ bool getBool(QString title, QString label)
     msgBox.setWindowTitle(title);
     msgBox.setText(label);
     msgBox.setStandardButtons(QMessageBox ::Yes | QMessageBox::No);
-    int ret = msgBox.exec();
-    return ret == QMessageBox::Yes;
+    int res = msgBox.exec();
+    return res == QMessageBox::Yes;
     /*QMessageBox::StandardButton response = QMessageBox::question(inGameUI, title, label, );
     //qInfo() << "response:" << response;
     return response == QMessageBox::Yes;*/
+}
+
+quint8 getQUInt8(QString title, QString context, QStringList options)
+{
+	QString res = QInputDialog::getItem(inGameUI, title, context, options);
+	return options.indexOf(res);
 }
 
 QString getText(QString title, QString label, QString defaultText)

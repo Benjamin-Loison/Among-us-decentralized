@@ -11,6 +11,13 @@
 #define X_SPAWN_POLUS 3500
 #define Y_SPAWN_POLUS 3000
 
+enum Map{MAP_THE_SKELD, MAP_POLUS};
+
+QString getMapName(Map map);
+Map getMap(QString mapStr);
+QVector<Map> getAllMaps();
+QStringList getAllMapsStr(), getAllCleanMapsStr();
+
 #define ANIMATION_SIZE 13
 class Player {
 public:
@@ -26,11 +33,11 @@ public:
 	bool isMoving;
     quint8 numberOfEmergenciesRequested;
     QColor color1, color2;
-    bool isPolus;
+    Map map;
 	quint64 startMoveAt;
 
     Player();
-    Player(QString nickname, bool Polus);
+    Player(QString nickname, Map map);
     QPixmap* playerPixmap;
     QPixmap* flippedPixmap;
     QPixmap* deadPixmap; // no flippedDead ?

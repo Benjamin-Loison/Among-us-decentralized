@@ -67,11 +67,10 @@ int main(int argc, char *argv[])
     QSettings settings("settings.ini", QSettings::IniFormat);
     QString peerAddress = settings.value("peerAddress").toString();
 
-    bool isPolus = false;
+    Map map;
     
     if(runClient)
     {
-
         QString newPeerAddress = getText(QObject::tr("Peer address"), QObject::tr("A peer address"), isDefaultServerPortInUse ? QString::number(DEFAULT_SERVER_PORT) : peerAddress);
         if(isAPositiveInteger(newPeerAddress))
             newPeerAddress = "127.0.0.1:" + newPeerAddress; // localhost binds to ::1
@@ -82,14 +81,14 @@ int main(int argc, char *argv[])
             settings.sync();
         }
         peerAddress = newPeerAddress;
-    }else{
+    }
+	else
+	{
         // If not client ask for the map to play on
-        isPolus = getBool(QObject::tr("Map choice"), QObject::tr("Do you want to play on the Polus map ?"));
-        if(!isPolus){
-            qInfo() << "polus:" << "false";
-        }else{
-            qInfo() << "polus:" << "true";
-        }
+		QStringList mapsStr = getAllCleanMapsStr();
+        map = getAllMaps()[getQUInt8(QObject::tr("Map choice"), QObject::tr("What map do you want to play on ?"), mapsStr)];
+
+        qInfo() << "map:" << getMapName(map);
     }
 
     // les nouveaux se connectent aux anciens
@@ -125,11 +124,11 @@ int main(int argc, char *argv[])
         if(!runClient)
             break;
 
-        qInfo("Asking for polus...");
-        QString polusStr = askAll("polus"); // or should more precisely ask all nicknames at each nickname test ? but this assume to wait the maximum ping of someone ?
-        qInfo("Received polus: %s", polusStr.toStdString().c_str());
+        qInfo("Asking for map...");
+        QString mapStr = askAll("map"); // or should more precisely ask all nicknames at each nickname test ? but this assume to wait the maximum ping of someone ?
+        qInfo() << "Received map: " << mapStr;
 
-        isPolus = polusStr.toStdString()=="true";
+        map = getMap(mapStr);
 
         qInfo("Waiting for nicknames...");
         QString nicknamesStr = askAll("nicknames"); // or should more precisely ask all nicknames at each nickname test ? but this assume to wait the maximum ping of someone ?
@@ -162,7 +161,7 @@ int main(int argc, char *argv[])
     if(runClient)
         sendToAll("nickname " + nickname);
 
-    inGameUI->initialize(nickname, isPolus);
+    inGameUI->initialize(nickname, map);
     inGameUI->resize(640, 480);
     inGameUI->showMaximized();
 

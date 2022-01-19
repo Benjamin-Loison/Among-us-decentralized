@@ -13,9 +13,9 @@
 #include <QString>
 #include <QElapsedTimer>
 #include <QPushButton>
+#include "GameMap.h"
 #include "Door.h"
 #include "../tasks/fixWiring.h"
-#include "GameMap.h"
 #include "../guis/meetings.h"
 #include "../map/Player.h"
 #include "../qPlus.h"
@@ -65,7 +65,7 @@ class InGameUI : public QLabel
         QPainter* killButtonPainter;
         qint64 lastKillTime;
         bool initialized;
-        bool isPolus;
+        Map map;
 
     public:
         QVector<Room> rooms;
@@ -75,7 +75,7 @@ class InGameUI : public QLabel
         QLabel *qLabel;
         MeetingUI *meetingWidget; // may be merged with qLabel
         MeetingResultsUI *meetingResultsWidget;
-        void initialize(QString nickname, bool Polus);
+        void initialize(QString nickname, Map map);
         void initDisplay();
         void initDoorsAndRooms();
         qint64 currTimer();

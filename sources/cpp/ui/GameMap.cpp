@@ -9,19 +9,15 @@ QPixmap* mapLayoutPixmap = nullptr;
 QPixmap* sabotageDoorsPixmap = nullptr;
 QPixmap* disabledSabotageDoorsPixmap;
 //QPoint lastClick;
-bool isPolus = false;
+//bool isPolus = false;
+Map map;
 
-GameMap::GameMap(InGameUI* ui, bool Polus): ui(ui), currPixmap(nullptr) {
-    isPolus = Polus;
+GameMap::GameMap(InGameUI* ui, Map mapTmp): ui(ui), currPixmap(nullptr) {
+    map = mapTmp;
     if(!taskIconPixmap)
         taskIconPixmap = getQPixmap("task.png");
-    if(!mapLayoutPixmap){
-        if(!Polus){
-            mapLayoutPixmap = getQPixmap("mapLayout.png");
-        }else{
-            mapLayoutPixmap = getQPixmap("polusLayout.png");
-        }
-    }
+    if(!mapLayoutPixmap)
+    	mapLayoutPixmap = getQPixmap(getMapName(map) + "Layout.png");
     if(!sabotageDoorsPixmap) {
         sabotageDoorsPixmap = getQPixmap("sabotage_Doors.png");
         disabledSabotageDoorsPixmap = new QPixmap(getDisabledButton(*sabotageDoorsPixmap));
@@ -55,21 +51,30 @@ void GameMap::redraw() {
     newPixmap->fill(QColor(0, 0, 0, 0));
     QPainter* painter = new QPainter(newPixmap);
     // Map layout
-    if(!isPolus){
-        painter->drawPixmap(0, 0, *mapLayoutPixmap);
-    }else{
-        painter->drawPixmap(23, 10, *mapLayoutPixmap);
-    }
+	int x = 0,
+		y = 0;
+	switch(map)
+	{
+		case MAP_POLUS:
+			x = 23;
+			y = 10;
+		default:;
+	}
+	painter->drawPixmap(x, y, *mapLayoutPixmap);
 
     // Player icon
     QPoint playerPosMinimap = toMinimapPoint(QPoint(ui->currPlayer.x, ui->currPlayer.y));
     QSize iconSize = ui->currPlayer.iconOnMapPixmap->size();
     QPoint topLeftCorner;
-    if(!isPolus){
-        topLeftCorner= QPoint(playerPosMinimap.x() - iconSize.width()/2, playerPosMinimap.y() - iconSize.height());
-    }else{
-        topLeftCorner= QPoint(playerPosMinimap.x() - iconSize.width()/2, playerPosMinimap.y() - iconSize.height()/2);
-    }
+	switch(map)
+	{
+		case MAP_THE_SKELD:
+			y = playerPosMinimap.y() - iconSize.height();
+			break;
+		default: // MAP_POLUS
+			y = playerPosMinimap.y() - iconSize.height()/2;
+	}
+    topLeftCorner= QPoint(playerPosMinimap.x() - iconSize.width()/2, y);
     painter->drawPixmap(topLeftCorner, *ui->currPlayer.iconOnMapPixmap);
 
     // Tasks

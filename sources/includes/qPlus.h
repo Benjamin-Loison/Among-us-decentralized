@@ -51,5 +51,6 @@ bool isTCPPortInUse(quint16 port);
 void drawCenteredText(QPainter* painter, quint16 x, quint16 y, QString text);
 double ptToPx(double pt);
 double pxToPt(double px);
+quint8 getQUInt8(QString title, QString context, QStringList options);
 
 #endif

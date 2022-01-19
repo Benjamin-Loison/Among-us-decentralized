@@ -27,10 +27,10 @@ InGameUI::InGameUI(QLabel* parent) : QLabel(parent), everyoneReady(false), lastU
     // couldn't put all not necessary stuff in initialize not to delay user input ?
 }
 
-void InGameUI::initialize(QString nickname, bool Polus)
+void InGameUI::initialize(QString nickname, Map mapTmp)
 {
-    isPolus = Polus;
-    currPlayer = Player(nickname, isPolus);
+    map = mapTmp;
+    currPlayer = Player(nickname, mapTmp);
     windowPixmap = new QPixmap(size());
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &InGameUI::redraw);
@@ -63,15 +63,11 @@ bool InGameUI::isCollision(quint16 x, quint16 y)
 
 void InGameUI::initDisplay()
 {
-    if(!isPolus){
-    	backgroundPixmap = getQPixmap("mapCrop.png"); // "The Skeld"
-    	collisionPixmap = getQPixmap("mapCropCollision.png");
-    	collisionImage = collisionPixmap->toImage(); // what difference between QPixmap and QImage ?
-    }else{
-        backgroundPixmap = getQPixmap("polus.png"); // "The Skeld"
-        collisionPixmap = getQPixmap("polusCollisionMask.png");
-        collisionImage = collisionPixmap->toImage(); // what difference between QPixmap and QImage ?
-    }
+	QString mapName = getMapName(map);
+	qInfo() << "mapName: " << mapName;
+    backgroundPixmap = getQPixmap(mapName + "Crop.png");
+    collisionPixmap = getQPixmap(mapName + "Collision.png");
+    collisionImage = collisionPixmap->toImage(); // what difference between QPixmap and QImage ?
     QPixmap* killButtonPixmap = getQPixmap("killButton.png");
     killButtonImage = killButtonPixmap->toImage();
     QPixmap* reportButtonPixmap = getQPixmap("reportButton.png");
@@ -93,44 +89,47 @@ void InGameUI::initDisplay()
 }
 
 void InGameUI::initDoorsAndRooms() {
-    if(!isPolus){
-    	doors = {
-        	Door(2307, 824, true), // Upper Engine
-        	Door(1798, 1525, false),
-        	Door(3799, 823, true), // Cafeteria
-        	Door(4718, 2040, false),
-        	Door(5875, 823, true),
-        	Door(3199, 1223, false), // MedBay
-        	Door(2296, 1990, true), // Security
-        	Door(1798, 2755, false), // Lower Engine
-        	Door(2307, 3122, true),
-        	Door(3129, 3556, false), // Electrical
-        	Door(4001, 3634, true), // Storage
-        	Door(4718, 2682, false),
-        	Door(5153, 3220, true)
-    	};
-    	rooms = {
-        	Room(tr("Upper Engine"), 0, QPoint(1900, 1100), {&doors[0], &doors[1]}),
-        	Room(tr("MedBay"), 1, QPoint(3350, 1800), {&doors[5]}),
-        	Room(tr("Cafeteria"), 2, QPoint(4850, 1050), {&doors[2], &doors[3], &doors[4]}),
-        	Room(tr("Weapons"), 3, QPoint(6650, 950), {}),
-        	Room(tr("Reactor"), 4, QPoint(1150, 2200), {}),
-        	Room(tr("Security"), 5, QPoint(2600, 2150), {&doors[6]}),
-        	Room(tr("Admin"), 6, QPoint(5800, 2700), {}),
-        	Room(tr("O2"), 7, QPoint(6100, 1900), {}),
-        	Room(tr("Navigation"), 8, QPoint(8050, 2100), {}),
-        	Room(tr("Lower Engine"), 9, QPoint(1900, 3300), {&doors[7], &doors[8]}),
-        	Room(tr("Electrical"), 10, QPoint(3500, 3000), {&doors[9]}),
-        	Room(tr("Storage"), 11, QPoint(4600, 3550), {&doors[10], &doors[11], &doors[12]}),
-        	Room(tr("Communications"), 12, QPoint(5700, 4050), {}),
-        	Room(tr("Shields"), 13, QPoint(6650, 3500), {})
-    	};
-    }else{
-        doors = {
-            Door(1587, 3990, false), // Upper Engine
-        };
-        rooms = {
-        };
+	switch(map)
+	{
+		case MAP_THE_SKELD:
+    		doors = {
+        		Door(2307, 824, true), // Upper Engine
+        		Door(1798, 1525, false),
+        		Door(3799, 823, true), // Cafeteria
+        		Door(4718, 2040, false),
+        		Door(5875, 823, true),
+        		Door(3199, 1223, false), // MedBay
+        		Door(2296, 1990, true), // Security
+        		Door(1798, 2755, false), // Lower Engine
+        		Door(2307, 3122, true),
+        		Door(3129, 3556, false), // Electrical
+        		Door(4001, 3634, true), // Storage
+        		Door(4718, 2682, false),
+        		Door(5153, 3220, true)
+    		};
+    		rooms = {
+        		Room(tr("Upper Engine"), 0, QPoint(1900, 1100), {&doors[0], &doors[1]}),
+        		Room(tr("MedBay"), 1, QPoint(3350, 1800), {&doors[5]}),
+        		Room(tr("Cafeteria"), 2, QPoint(4850, 1050), {&doors[2], &doors[3], &doors[4]}),
+        		Room(tr("Weapons"), 3, QPoint(6650, 950), {}),
+        		Room(tr("Reactor"), 4, QPoint(1150, 2200), {}),
+        		Room(tr("Security"), 5, QPoint(2600, 2150), {&doors[6]}),
+        		Room(tr("Admin"), 6, QPoint(5800, 2700), {}),
+        		Room(tr("O2"), 7, QPoint(6100, 1900), {}),
+        		Room(tr("Navigation"), 8, QPoint(8050, 2100), {}),
+        		Room(tr("Lower Engine"), 9, QPoint(1900, 3300), {&doors[7], &doors[8]}),
+        		Room(tr("Electrical"), 10, QPoint(3500, 3000), {&doors[9]}),
+        		Room(tr("Storage"), 11, QPoint(4600, 3550), {&doors[10], &doors[11], &doors[12]}),
+        		Room(tr("Communications"), 12, QPoint(5700, 4050), {}),
+        		Room(tr("Shields"), 13, QPoint(6650, 3500), {})
+    		};
+			break;
+		default: // MAP_POLUS
+        	doors = {
+            	Door(1587, 3990, false), // Upper Engine
+        	};
+        	rooms = {
+        	};
     }
 }
 
@@ -725,7 +724,7 @@ void InGameUI::onEverybodyReadySub(/*bool threadSafe*/)
         QCoreApplication::processEvents();
         QThread::msleep(1);
     }*/
-    tasks = getTasksAsPointers(getRandomTasks(privateRandom,  isPolus)); // should be salted with common random
+    tasks = getTasksAsPointers(getRandomTasks(privateRandom, map)); // should be salted with common random
 
     if(isFirstToRun) // temporary
     {
@@ -760,17 +759,21 @@ QList<Player*> InGameUI::getAllPlayers()
 void InGameUI::teleportAllPlayers()
 {
     QList<QString> peerAddresses = otherPlayers.keys();
-    if(!isPolus){
-        currPlayer.x = X_SPAWN;
-        currPlayer.y = Y_SPAWN;
-    	for(QString peerAddress : peerAddresses)
-        	movePlayer(peerAddress, X_SPAWN, Y_SPAWN, true);
-    }else{
-        currPlayer.x = X_SPAWN_POLUS;
-        currPlayer.y = Y_SPAWN_POLUS;
-        for(QString peerAddress : peerAddresses)
-            movePlayer(peerAddress, X_SPAWN_POLUS, Y_SPAWN_POLUS, true);
-    }
+	quint32 x, y;
+	switch(map)
+	{
+		case MAP_THE_SKELD:
+			x = X_SPAWN;
+			y = Y_SPAWN;
+			break;
+		case MAP_POLUS:
+			x = X_SPAWN_POLUS;
+			y = Y_SPAWN_POLUS;
+	}
+    currPlayer.x = x;
+    currPlayer.y = y;
+    for(QString peerAddress : peerAddresses)
+        movePlayer(peerAddress, x, y, true);
     currPlayer.playerFacingLeft = false;
 }
 
@@ -1051,7 +1054,7 @@ void InGameUI::onClickKill() {
 void InGameUI::openMap() {
     if(gameMap || currentInGameGUI != IN_GAME_GUI_NONE || !everyoneReady)
         return;
-    gameMap = new GameMap(this, isPolus);
+    gameMap = new GameMap(this, map);
     currHLayout = makeCenteredLayout(gameMap);
     setLayout(currHLayout);
     currentInGameGUI = IN_GAME_GUI_MAP;
@@ -1301,7 +1304,7 @@ quint8 InGameUI::getPlayersNumber()
 
 void InGameUI::spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname)
 {
-    otherPlayers[peerAddress] = Player(otherPlayerNickname, this->isPolus);
+    otherPlayers[peerAddress] = Player(otherPlayerNickname, this->map);
 }
 
 void InGameUI::setFacingLeftPlayer(QString peerAddress)
