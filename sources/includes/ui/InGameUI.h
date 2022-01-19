@@ -25,8 +25,6 @@
 #include <QThread>
 #include "../tasks/EnterIDCode.h"
 #include "../tasks/AlignEngine.h"
-#include <QPair>
-#include "../tasks/cannon/mywidget.h"
 
 
 #define EMERGENCY_BUTTON_X 4830
@@ -138,12 +136,10 @@ class InGameUI : public QLabel
         void displayDoors(QPainter* painter);
         void setLayoutQLabel();
         InGameUI(QLabel* parent = 0);
-        MyWidget *cannonWidget;
 
     public slots:
         void redraw();
         void onReadyClicked();
-        void closeCannon();
 
     protected:
         void keyPressEvent(QKeyEvent *event);

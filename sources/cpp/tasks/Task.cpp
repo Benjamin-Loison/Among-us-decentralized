@@ -4,23 +4,21 @@
 #include <QRandomGenerator>
 using namespace std;
 
-QMap<TaskType, TaskTime> taskTimes{{TASK_ASTEROIDS, TASK_SHORT}, {TASK_FIX_WIRING, TASK_COMMON}, {TASK_ENTER_ID_CODE, TASK_COMMON},{TASK_ALIGN_ENGINE,TASK_LONG},{TASK_CANNON, TASK_COMMON}};
+QMap<TaskType, TaskTime> taskTimes{{TASK_ASTEROIDS, TASK_SHORT}, {TASK_FIX_WIRING, TASK_COMMON}, {TASK_ENTER_ID_CODE, TASK_COMMON},{TASK_ALIGN_ENGINE,TASK_LONG}};
 QMap<TaskType, QList<QPoint>> taskLocations{
     {TASK_ASTEROIDS, {QPoint(6653, 900)}},
     {TASK_FIX_WIRING, {QPoint(4060, 360), QPoint(5433,2444), QPoint(7455,2055)}},
     {TASK_ENTER_ID_CODE, {QPoint(2645, 1820)}},
-    {TASK_ALIGN_ENGINE, {QPoint(1550,3600)}},
-    {TASK_CANNON,{QPoint(4397, 2042)}}
+    {TASK_ALIGN_ENGINE, {QPoint(1550,3600)}}
     };
 QMap<TaskType, QList<QPoint>> taskLocationsPolus{
     {TASK_ASTEROIDS, {QPoint(1413, 1650)}},
     {TASK_FIX_WIRING, {QPoint(2610, 3400), QPoint(9231,2860), QPoint(6012,5890)}},
     {TASK_ENTER_ID_CODE, {QPoint(3090, 4480)}},
-    {TASK_ALIGN_ENGINE, {QPoint(573,5410)}},
-    {TASK_CANNON,{QPoint(4397, 2042)}}
+    {TASK_ALIGN_ENGINE, {QPoint(573,5410)}}
     };
 
-quint8 commonTasks = /*1*/3, longTasks = /*1*/1, shortTasks = /*2*/1;
+quint8 commonTasks = /*1*/2, longTasks = /*1*/1, shortTasks = /*2*/1;
 
 Task::Task():
 taskType(TASK_FIX_WIRING),
@@ -92,8 +90,8 @@ Task pickRandomTask(QRandomGenerator* qRandomGenerator, TaskTime taskTime, bool 
             taskTypes.push_back(taskTypeKey);
     for(TaskType taskType : taskTypes)
         if(!Polus){
-        for(QPoint taskTypeLocation : taskLocations[taskType])
-            tasks.push_back(Task(taskType, taskTypeLocation));
+        	for(QPoint taskTypeLocation : taskLocations[taskType])
+            	tasks.push_back(Task(taskType, taskTypeLocation));
         }else{
             for(QPoint taskTypeLocation : taskLocationsPolus[taskType])
                 tasks.push_back(Task(taskType, taskTypeLocation));
