@@ -31,8 +31,8 @@ Player::Player(QString nickname, Map map):
 	switch(map)
 	{
 		case MAP_THE_SKELD:
-			x = X_SPAWN;
-			y = Y_SPAWN;
+			x = X_SPAWN_THE_SKELD;
+			y = Y_SPAWN_THE_SKELD;
 			break;
 		default: // MAP_POLUS
 			x = X_SPAWN_POLUS;
@@ -136,9 +136,10 @@ QStringList getAllCleanMapsStr()
 QString toCamelCase(const QString& s)
 {
     QStringList parts = s.split(' ', QString::SkipEmptyParts);
-    for(quint8 i = 0; i < parts.size(); ++i)
+	parts[0].replace(0, 1, parts[0][0].toLower());
+    for(quint8 i = 1; i < parts.size(); i++)
         parts[i].replace(0, 1, parts[i][0].toUpper());
-    return parts.join(' ');
+    return parts.join("");
 }
 
 QString getMapName(Map map)

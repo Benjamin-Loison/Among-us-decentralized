@@ -54,7 +54,9 @@ double distance(quint16 x0, quint16 y0, quint16 x1, quint16 y1)
 
 QPixmap* getQPixmap(QString filePath)
 {
-    return new QPixmap(assetsFolderImages + filePath);
+	filePath = assetsFolderImages + filePath;
+	//qInfo() << "filePath:" << filePath;
+    return new QPixmap(filePath);
 }
 
 QPixmap* getQPixmap(quint16 width, quint16 height)
@@ -151,9 +153,10 @@ bool getBool(QString title, QString label)
     MessageBoxCross msgBox(inGameUI);
     msgBox.setWindowTitle(title);
     msgBox.setText(label);
-    msgBox.setStandardButtons(QMessageBox ::Yes | QMessageBox::No);
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     int res = msgBox.exec();
     return res == QMessageBox::Yes;
+	// should manage if user clicked on X (still not the case on 01/20/22)
     /*QMessageBox::StandardButton response = QMessageBox::question(inGameUI, title, label, );
     //qInfo() << "response:" << response;
     return response == QMessageBox::Yes;*/
@@ -161,7 +164,10 @@ bool getBool(QString title, QString label)
 
 quint8 getQUInt8(QString title, QString context, QStringList options)
 {
-	QString res = QInputDialog::getItem(inGameUI, title, context, options);
+	bool ok;
+	QString res = QInputDialog::getItem(inGameUI, title, context, options, 0, true, &ok);
+	if(!ok)
+		exit(0);
 	return options.indexOf(res);
 }
 

@@ -64,8 +64,8 @@ bool InGameUI::isCollision(quint16 x, quint16 y)
 void InGameUI::initDisplay()
 {
 	QString mapName = getMapName(map);
-	qInfo() << "mapName: " << mapName;
-    backgroundPixmap = getQPixmap(mapName + "Crop.png");
+	qInfo() << "mapName:" << mapName;
+    backgroundPixmap = getQPixmap(mapName + "Map.png");
     collisionPixmap = getQPixmap(mapName + "Collision.png");
     collisionImage = collisionPixmap->toImage(); // what difference between QPixmap and QImage ?
     QPixmap* killButtonPixmap = getQPixmap("killButton.png");
@@ -763,8 +763,8 @@ void InGameUI::teleportAllPlayers()
 	switch(map)
 	{
 		case MAP_THE_SKELD:
-			x = X_SPAWN;
-			y = Y_SPAWN;
+			x = X_SPAWN_THE_SKELD;
+			y = Y_SPAWN_THE_SKELD;
 			break;
 		case MAP_POLUS:
 			x = X_SPAWN_POLUS;

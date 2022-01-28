@@ -11,18 +11,21 @@ QMap<Map, QMap<TaskType, QList<QPoint>>> taskLocations{
 		MAP_THE_SKELD,
 		{
 			{TASK_ASTEROIDS, {QPoint(6653, 900)}},
-    		{TASK_FIX_WIRING, {QPoint(4060, 360), QPoint(5433,2444), QPoint(7455,2055)}},
-    		{TASK_ENTER_ID_CODE, {QPoint(2645, 1820)}},
-    		{TASK_ALIGN_ENGINE, {QPoint(1550,3600)}}
+   			{TASK_FIX_WIRING, {QPoint(4060, 360), QPoint(5433,2444), QPoint(7455,2055)}},
+   			{TASK_ENTER_ID_CODE, {QPoint(2645, 1820)}},
+   			{TASK_ALIGN_ENGINE, {QPoint(1550,3600)}}
+		}
+	},
+	{
+		MAP_POLUS,
+		{
+			{TASK_ASTEROIDS, {QPoint(1413, 1650)}},
+   			{TASK_FIX_WIRING, {QPoint(2610, 3400), QPoint(9231,2860), QPoint(6012,5890)}},
+   			{TASK_ENTER_ID_CODE, {QPoint(3090, 4480)}},
+   			{TASK_ALIGN_ENGINE, {QPoint(573,5410)}}
 		}
 	}
 };
-QMap<TaskType, QList<QPoint>> taskLocationsPolus{
-    {TASK_ASTEROIDS, {QPoint(1413, 1650)}},
-    {TASK_FIX_WIRING, {QPoint(2610, 3400), QPoint(9231,2860), QPoint(6012,5890)}},
-    {TASK_ENTER_ID_CODE, {QPoint(3090, 4480)}},
-    {TASK_ALIGN_ENGINE, {QPoint(573,5410)}}
-    };
 
 quint8 commonTasks = /*1*/2, longTasks = /*1*/1, shortTasks = /*2*/1;
 
