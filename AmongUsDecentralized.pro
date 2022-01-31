@@ -10,25 +10,25 @@ CONFIG(debug, debug|release) {
 TRANSLATIONS = assets/AmongUsDecentralizedFR.ts
 RC_ICONS += assets/logo.ico
 
-QMAKE_CXXFLAGS += -I./sources/includes/guis -I./sources/includes/map -I./sources/includes/network -I./sources/includes/tasks -I./sources/includes/ui -I./sources/includes
+QMAKE_CXXFLAGS += -I./sources/guis -I./sources/map -I./sources/network -I./sources/tasks -I./sources/ui -I./sources
 unix:OBJECTS_DIR = build/objects
 MOC_DIR = build/moc
 
 SOURCES += \
-    sources/cpp/guis/*.cpp \
-    sources/cpp/map/*.cpp \
-    sources/cpp/network/*.cpp \
-    sources/cpp/tasks/*.cpp \
-    sources/cpp/ui/*.cpp \
-    sources/cpp/*.cpp
+    sources/guis/*.cpp \
+    sources/map/*.cpp \
+    sources/network/*.cpp \
+    sources/tasks/*.cpp \
+    sources/ui/*.cpp \
+    sources/*.cpp
 
 HEADERS += \
-    sources/includes/guis/*.h \
-    sources/includes/map/*.h \
-    sources/includes/network/*.h \
-    sources/includes/tasks/*.h \
-    sources/includes/ui/*.h \
-    sources/includes/*.h
+    sources/guis/*.h \
+    sources/map/*.h \
+    sources/network/*.h \
+    sources/tasks/*.h \
+    sources/ui/*.h \
+    sources/*.h
 
 # Source: https://stackoverflow.com/questions/19066593/copy-a-file-to-build-directory-after-compiling-project-with-qt
 win32 {
