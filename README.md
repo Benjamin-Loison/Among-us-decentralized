@@ -75,7 +75,7 @@ To use multiplayer it is assumed that each player has his server port open.<!-- 
 <!-- Pour utiliser le multijoueur il est supposé qu'au moins un joueur ait son port ouvert ou qu'à l'aide de l'UPnP se soit possible de l'ouvrir. -->
 <!-- avec l'IPv6 les ports sont ouverts par défaut ?! -->
 
-Using folders and dispatch code from the InGameUI would be nice
+Dispatching code from the InGameUI would be nice
 
 <!-- making tasks not reshape the window would be nice -->
 <!------------
