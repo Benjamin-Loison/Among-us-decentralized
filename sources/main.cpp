@@ -8,8 +8,9 @@
 #include "ui/InGameUI.h"
 #include <QtGlobal>
 
-//#include <stdio.h>
-//#include <signal.h>
+#ifdef __linux__
+	#include <signal.h>
+#endif
 
 InGameUI* inGameUI;
 InGameGUI currentInGameGUI = IN_GAME_GUI_NONE;
@@ -112,7 +113,6 @@ int main(int argc, char *argv[])
         qInfo() << "remotePort:" << remotePort;
         QString command = "ssh -N -R " + QString::number(remotePort) + ":localhost:" + QString::number(serverPort) + " anonymous@lemnoslife.com";
 
-        //system(command.toStdString().c_str());
         QStringList arguments;
         arguments << "-N" << "-R" << QString::number(remotePort) + ":localhost:" + QString::number(serverPort) << "anonymous@lemnoslife.com";
 
@@ -201,22 +201,13 @@ int main(int argc, char *argv[])
     if(!useInternetOpenPort)
     {
         qInfo() << "kill ssh program";
-        //kill(processId, SIGTERM);
         #ifdef _WIN32
             const auto explorer = OpenProcess(PROCESS_TERMINATE, false, processId);
             TerminateProcess(explorer, 1);
             CloseHandle(explorer);
+		#elif __linux__
+			kill(processId, SIGTERM);
         #endif
-        //myProcess->write("exit\n");
-        /*myProcess->kill();
-        myProcess->terminate();
-        myProcess->close();*/
-        /*QStringList arguments;
-        arguments << "";
-
-        QProcess* myProcess = new QProcess(inGameUI);
-        myProcess->start("ssh", arguments);*/
-        //myProcess->waitForFinished();
     }
 
     return res;

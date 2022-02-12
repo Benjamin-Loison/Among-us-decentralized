@@ -135,7 +135,7 @@ QStringList getAllCleanMapsStr()
 
 QString toCamelCase(const QString& s)
 {
-    QStringList parts = s.split(' ', 0x1); // cf https://doc.qt.io/qt-5/qt.html#SplitBehaviorFlags-enum, not using enum because is in Qt or QString from a version to the other
+    QStringList parts = s.split(' ');
 	parts[0].replace(0, 1, parts[0][0].toLower());
     for(quint8 i = 1; i < parts.size(); i++)
         parts[i].replace(0, 1, parts[i][0].toUpper());
