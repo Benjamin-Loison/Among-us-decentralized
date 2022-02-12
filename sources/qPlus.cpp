@@ -188,7 +188,7 @@ void showWarningMessage(QString title, QString label) {
 }
 
 void showMessage(QString title, QString label) {
-    QMessageBox mb = QMessageBox(QMessageBox::Icon::Information, title, label);
+    QMessageBox mb(QMessageBox::Icon::Information, title, label);
     mb.setTextInteractionFlags(Qt::TextSelectableByMouse);
     mb.exec();
 }
