@@ -71,7 +71,7 @@ Adding OGG support would be nice (why have switch to SoundEffect which doesn't s
 
 Pour utiliser le multijoueur il est supposé que lorsque vous vous connectez à un autre joueur son port est ouvert.-->
 
-To use multiplayer it is assumed that each player has his server port open.<!-- ou qu'à l'aide de l'UPnp se soit possible de l'ouvrir. -->
+<!--To use multiplayer it is assumed that each player has his server port open.--><!-- ou qu'à l'aide de l'UPnp se soit possible de l'ouvrir. -->
 <!-- Pour utiliser le multijoueur il est supposé qu'au moins un joueur ait son port ouvert ou qu'à l'aide de l'UPnP se soit possible de l'ouvrir. -->
 <!-- avec l'IPv6 les ports sont ouverts par défaut ?! -->
 
