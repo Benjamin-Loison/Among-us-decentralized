@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 
         QString remotePortStr = QString::number(remotePort);
         QStringList arguments;
-        arguments << "-N" << "-R" << remotePortStr + ":localhost:" + QString::number(serverPort) << "anonymous@" DOMAIN_NAME;
+        arguments << "-o" << "StrictHostKeyChecking=no" << "-N" << "-R" << remotePortStr + ":localhost:" + QString::number(serverPort) << "anonymous@" DOMAIN_NAME;
 
         QProcess* myProcess = new QProcess(inGameUI);
         myProcess->start("ssh", arguments);
