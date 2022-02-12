@@ -365,7 +365,7 @@ QList<QTcpSocket*> getPeers()
 
 QString addressToString(QHostAddress address)
 {
-    return address.toString().replace("::ffff:", "").replace("0.0.0.0", myAddress/*"127.0.0.1"*/);
+    return address.toString().replace("::ffff:", "").replace("0.0.0.0", myAddress/*"127.0.0.1"*/).replace("127.0.0.1", useInternetOpenPort ? DOMAIN_NAME : "127.0.0.1");
 }
 
 QString addressPortToString(QHostAddress address, quint16 port)

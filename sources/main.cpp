@@ -18,6 +18,7 @@ Server* server;
 QList<Client*> clients;
 QString myAddress;
 bool isFirstToRun = false;
+bool useInternetOpenPort;
 QTranslator translator;
 quint16 remotePort = DEFAULT_SERVER_PORT;
 
@@ -97,7 +98,7 @@ int main(int argc, char *argv[])
     }
 
     // could give a shot to UPnP
-    bool useInternetOpenPort = getBool(QObject::tr("Autoconfiguration"), runClient ? QObject::tr("Is your port %1 opened to others or are you the last to join the game ?").arg(QString::number(serverPort)) : QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
+    useInternetOpenPort = getBool(QObject::tr("Autoconfiguration"), runClient ? QObject::tr("Is your port %1 opened to others or are you the last to join the game ?").arg(QString::number(serverPort)) : QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
     QProcess* myProcess;
     qint64 processId;
     if(!useInternetOpenPort)
@@ -113,16 +114,15 @@ int main(int argc, char *argv[])
         remotePort = 10000 + QRandomGenerator::global()->bounded(50000);
         qInfo() << "remotePort:" << remotePort;
 
-        QString domainName = "lemnoslife.com",
-                remotePortStr = QString::number(remotePort);
+        QString remotePortStr = QString::number(remotePort);
         QStringList arguments;
-        arguments << "-N" << "-R" << remotePortStr + ":localhost:" + QString::number(serverPort) << "anonymous@" + domainName;
+        arguments << "-N" << "-R" << remotePortStr + ":localhost:" + QString::number(serverPort) << "anonymous@" DOMAIN_NAME;
 
         QProcess* myProcess = new QProcess(inGameUI);
         myProcess->start("ssh", arguments);
         processId = myProcess->processId();
         qInfo() << "ssh program" << processId;
-        showMessage(QObject::tr("IP and port to share to peers"), "Share to the peers connecting to you: " + domainName + ":" + remotePortStr);
+        showMessage(QObject::tr("IP and port to share to peers"), "Share to the peers connecting to you: " DOMAIN_NAME ":" + remotePortStr);
         // could add an icon to copy-paste
     }
 
