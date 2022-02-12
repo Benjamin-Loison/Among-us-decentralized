@@ -98,10 +98,10 @@ int main(int argc, char *argv[])
     }
 
     // could give a shot to UPnP
-    useInternetOpenPort = getBool(QObject::tr("Autoconfiguration"), runClient ? QObject::tr("Is your port %1 opened to others or are you the last to join the game ?").arg(QString::number(serverPort)) : QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
+    useInternetOpenPort = !getBool(QObject::tr("Autoconfiguration"), runClient ? QObject::tr("Is your port %1 opened to others or are you the last to join the game ?").arg(QString::number(serverPort)) : QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
     QProcess* myProcess;
     qint64 processId;
-    if(!useInternetOpenPort)
+    if(useInternetOpenPort)
     {
         // used https://askubuntu.com/a/50000/1560657 and https://askubuntu.com/a/583153/1560657 for server configuration
         // this aim is that anybody can use a VPS open port to the internet in order to host his server part in the P2P network
