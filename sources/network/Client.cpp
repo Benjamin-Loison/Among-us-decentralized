@@ -144,10 +144,10 @@ void Client::socketError(QAbstractSocket::SocketError error) // not used
 void discoverClient(QString peerAddress)
 {
     if(!peerAddress.contains(':'))
-        peerAddress += ':' + QString::number(remotePort);
+        peerAddress += ':' + QString::number(DEFAULT_SERVER_PORT);
     Client* client = new Client(peerAddress);
     clients.push_back(client);
     QStringList peerAddressParts = peerAddress.split(':');
     peersPorts[client->socket] = peerAddressParts.last().toUInt();
-    client->sendToServer("YourAddress " + socketWithoutPortToString(client->socket) + NETWORK_SEPARATOR + "discovering " + serverSocketToString().split(':').last());
+    client->sendToServer("YourAddress " + socketWithoutPortToString(client->socket) + NETWORK_SEPARATOR + "discovering " + QString::number(remotePort)/*serverSocketToString().split(':').last()*/);
 }
