@@ -8,6 +8,9 @@
 #include "ui/InGameUI.h"
 #include <QtGlobal>
 
+//#include <stdio.h>
+//#include <signal.h>
+
 InGameUI* inGameUI;
 InGameGUI currentInGameGUI = IN_GAME_GUI_NONE;
 Server* server;
@@ -91,6 +94,34 @@ int main(int argc, char *argv[])
         qInfo() << "map:" << getMapName(map);
     }
 
+    // could give a shot to UPnP
+    bool useInternetOpenPort = getBool(QObject::tr("Autoconfiguration"), runClient ? QObject::tr("Is your port %1 opened to others or are you the last to join the game ?").arg(QString::number(serverPort)) : QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
+    QProcess* myProcess;
+    qint64 processId;
+    if(!useInternetOpenPort)
+    {
+        // used https://askubuntu.com/a/50000/1560657 and https://askubuntu.com/a/583153/1560657 for server configuration
+        // this aim is that anybody can use a VPS open port to the internet in order to host his server part in the P2P network
+        // because not root no access to ports < 1024 and other ports require password for interaction
+        // any shell access is disabled
+        // could add restrictions on server side like restrict for a given IP 5 ports etc
+        // hope that by using a random port nobody will use be using it
+        // what if someone try to take a port already used by AUD ?
+        // the password is just used to avoid massive SSH bots to try to do some bad behavior automatically (like using all ports)
+        quint16 remotePort = 10000 + QRandomGenerator::global()->bounded(50000);
+        qInfo() << "remotePort:" << remotePort;
+        QString command = "ssh -N -R " + QString::number(remotePort) + ":localhost:" + QString::number(serverPort) + " anonymous@lemnoslife.com";
+
+        //system(command.toStdString().c_str());
+        QStringList arguments;
+        arguments << "-N" << "-R" << QString::number(remotePort) + ":localhost:" + QString::number(serverPort) << "anonymous@lemnoslife.com";
+
+        QProcess* myProcess = new QProcess(inGameUI);
+        myProcess->start("ssh", arguments);
+        processId = myProcess->processId();
+        qInfo() << "ssh program" << processId;
+    }
+
     // les nouveaux se connectent aux anciens
     // disons que l'on cherche à découvrir tout le monde (dans le cas précis de ce jeu)
     // j'ai préféré l'approche on attend un certain temps fixé que attendre un certain nombre fixé car quelqu'un pourrait faire croire que certains participants (qu'il a généré) représentent les autres
@@ -165,7 +196,30 @@ int main(int argc, char *argv[])
     inGameUI->resize(640, 480);
     inGameUI->showMaximized();
 
-    return app.exec();
+    int res = app.exec();
+
+    if(!useInternetOpenPort)
+    {
+        qInfo() << "kill ssh program";
+        //kill(processId, SIGTERM);
+        #ifdef _WIN32
+            const auto explorer = OpenProcess(PROCESS_TERMINATE, false, processId);
+            TerminateProcess(explorer, 1);
+            CloseHandle(explorer);
+        #endif
+        //myProcess->write("exit\n");
+        /*myProcess->kill();
+        myProcess->terminate();
+        myProcess->close();*/
+        /*QStringList arguments;
+        arguments << "";
+
+        QProcess* myProcess = new QProcess(inGameUI);
+        myProcess->start("ssh", arguments);*/
+        //myProcess->waitForFinished();
+    }
+
+    return res;
 }
 
 QString toString(InGameGUI inGameGUI)
