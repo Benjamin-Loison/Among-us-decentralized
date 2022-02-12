@@ -1,8 +1,8 @@
 #include "InGameUI.h"
-#include "main.h"
-#include "asteroids.h"
-#include "camera.h"
-#include "vitals.h"
+#include "../main.h"
+#include "../tasks/asteroids.h"
+#include "../guis/camera.h"
+#include "../guis/vitals.h"
 #include <QPushButton>
 #include <algorithm>
 using namespace std;

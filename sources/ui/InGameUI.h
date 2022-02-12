@@ -14,7 +14,7 @@
 #include <QElapsedTimer>
 #include <QPushButton>
 #include "GameMap.h"
-#include "Door.h"
+#include "../map/Door.h"
 #include "../tasks/fixWiring.h"
 #include "../guis/meetings.h"
 #include "../map/Player.h"

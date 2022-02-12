@@ -1,6 +1,6 @@
 #include "GameMap.h"
-#include "qPlus.h"
-#include "Server.h"
+#include "../qPlus.h"
+#include "../network/Server.h"
 #include <QPixmap>
 #include <QPoint>
 

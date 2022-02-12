@@ -135,7 +135,7 @@ QStringList getAllCleanMapsStr()
 
 QString toCamelCase(const QString& s)
 {
-    QStringList parts = s.split(' ', QString::SkipEmptyParts);
+    QStringList parts = s.split(' ', /*QString*/Qt::SkipEmptyParts);
 	parts[0].replace(0, 1, parts[0][0].toLower());
     for(quint8 i = 1; i < parts.size(); i++)
         parts[i].replace(0, 1, parts[i][0].toUpper());

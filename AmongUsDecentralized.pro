@@ -10,25 +10,48 @@ CONFIG(debug, debug|release) {
 TRANSLATIONS = assets/AmongUsDecentralizedFR.ts
 RC_ICONS += assets/logo.ico
 
-QMAKE_CXXFLAGS += -I./sources/guis -I./sources/map -I./sources/network -I./sources/tasks -I./sources/ui -I./sources
 unix:OBJECTS_DIR = build/objects
 MOC_DIR = build/moc
 
-SOURCES += \
-    sources/guis/*.cpp \
-    sources/map/*.cpp \
-    sources/network/*.cpp \
-    sources/tasks/*.cpp \
-    sources/ui/*.cpp \
-    sources/*.cpp
-
 HEADERS += \
-    sources/guis/*.h \
-    sources/map/*.h \
-    sources/network/*.h \
-    sources/tasks/*.h \
-    sources/ui/*.h \
-    sources/*.h
+    sources/guis/camera.h \
+    sources/guis/meetings.h \
+    sources/guis/vitals.h \
+    sources/main.h \
+    sources/map/Door.h \
+    sources/map/Player.h \
+    sources/map/Room.h \
+    sources/map/Vents.h \
+    sources/network/Client.h \
+    sources/network/Server.h \
+    sources/qPlus.h \
+    sources/tasks/AlignEngine.h \
+    sources/tasks/EnterIDCode.h \
+    sources/tasks/Task.h \
+    sources/tasks/asteroids.h \
+    sources/tasks/fixWiring.h \
+    sources/ui/GameMap.h \
+    sources/ui/InGameUI.h
+
+SOURCES += \
+    sources/guis/camera.cpp \
+    sources/guis/meetings.cpp \
+    sources/guis/vitals.cpp \
+    sources/main.cpp \
+    sources/map/Door.cpp \
+    sources/map/Player.cpp \
+    sources/map/Room.cpp \
+    sources/map/Vents.cpp \
+    sources/network/Client.cpp \
+    sources/network/Server.cpp \
+    sources/qPlus.cpp \
+    sources/tasks/AlignEngine.cpp \
+    sources/tasks/EnterIDCode.cpp \
+    sources/tasks/Task.cpp \
+    sources/tasks/asteroids.cpp \
+    sources/tasks/fixWiring.cpp \
+    sources/ui/GameMap.cpp \
+    sources/ui/InGameUI.cpp
 
 # Source: https://stackoverflow.com/questions/19066593/copy-a-file-to-build-directory-after-compiling-project-with-qt
 win32 {
