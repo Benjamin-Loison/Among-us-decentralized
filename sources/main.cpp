@@ -111,7 +111,6 @@ int main(int argc, char *argv[])
         // the password is just used to avoid massive SSH bots to try to do some bad behavior automatically (like using all ports)
         quint16 remotePort = 10000 + QRandomGenerator::global()->bounded(50000);
         qInfo() << "remotePort:" << remotePort;
-        QString command = "ssh -N -R " + QString::number(remotePort) + ":localhost:" + QString::number(serverPort) + " anonymous@lemnoslife.com";
 
         QStringList arguments;
         arguments << "-N" << "-R" << QString::number(remotePort) + ":localhost:" + QString::number(serverPort) << "anonymous@lemnoslife.com";
