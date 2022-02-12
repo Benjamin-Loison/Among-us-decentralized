@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        QImageReader::setAllocationLimit(256);
+        QImageReader::setAllocationLimit(512);
     #endif
 
     QString locale = QLocale::system().name().section('_', 0, 0),

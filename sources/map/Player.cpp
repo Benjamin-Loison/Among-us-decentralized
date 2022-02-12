@@ -150,6 +150,8 @@ QString getMapName(Map map)
 
 Map getMap(QString mapStr)
 {
+    if(isAPositiveInteger(mapStr))
+       return getAllMaps()[mapStr.toUInt()];
 	if(mapStr == "The Skeld")
 		return MAP_THE_SKELD;
 	else // "Polus"
