@@ -13,6 +13,7 @@ extern QList<Client*> clients;
 extern Server* server;
 extern QString myAddress;
 extern bool isFirstToRun;
+extern quint16 remotePort;
 QString toString(InGameGUI inGameGUI);
 
 #endif

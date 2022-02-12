@@ -19,6 +19,7 @@ QList<Client*> clients;
 QString myAddress;
 bool isFirstToRun = false;
 QTranslator translator;
+quint16 remotePort = DEFAULT_SERVER_PORT;
 
 int main(int argc, char *argv[])
 {
@@ -109,7 +110,7 @@ int main(int argc, char *argv[])
         // hope that by using a random port nobody will use be using it
         // what if someone try to take a port already used by AUD ?
         // the password is just used to avoid massive SSH bots to try to do some bad behavior automatically (like using all ports)
-        quint16 remotePort = 10000 + QRandomGenerator::global()->bounded(50000);
+        remotePort = 10000 + QRandomGenerator::global()->bounded(50000);
         qInfo() << "remotePort:" << remotePort;
 
         QString domainName = "lemnoslife.com",
