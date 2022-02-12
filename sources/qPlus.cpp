@@ -187,6 +187,12 @@ void showWarningMessage(QString title, QString label) {
     QMessageBox(QMessageBox::Icon::Warning, title, label).exec();
 }
 
+void showMessage(QString title, QString label) {
+    QMessageBox mb = QMessageBox(QMessageBox::Icon::Information, title, label);
+    mb.setTextInteractionFlags(Qt::TextSelectableByMouse);
+    mb.exec();
+}
+
 void msleepWithEvents(quint32 ms)
 {
     qint64 endTime = QDateTime::currentMSecsSinceEpoch() + ms;

@@ -112,13 +112,17 @@ int main(int argc, char *argv[])
         quint16 remotePort = 10000 + QRandomGenerator::global()->bounded(50000);
         qInfo() << "remotePort:" << remotePort;
 
+        QString domainName = "lemnoslife.com",
+                remotePortStr = QString::number(remotePort);
         QStringList arguments;
-        arguments << "-N" << "-R" << QString::number(remotePort) + ":localhost:" + QString::number(serverPort) << "anonymous@lemnoslife.com";
+        arguments << "-N" << "-R" << remotePortStr + ":localhost:" + QString::number(serverPort) << "anonymous@" + domainName;
 
         QProcess* myProcess = new QProcess(inGameUI);
         myProcess->start("ssh", arguments);
         processId = myProcess->processId();
         qInfo() << "ssh program" << processId;
+        showMessage(QObject::tr("IP and port to share to peers"), "Share to the peers connecting to you: " + domainName + ":" + remotePortStr);
+        // could add an icon to copy-paste
     }
 
     // les nouveaux se connectent aux anciens

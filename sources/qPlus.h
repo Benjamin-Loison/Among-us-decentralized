@@ -37,6 +37,7 @@ void msleepWithEvents(quint32 ms);
 void sleepWithEvents(quint16 s);
 QString getText(QString title, QString label, QString defaultText = "");
 void showWarningMessage(QString title, QString label);
+void showMessage(QString title, QString label);
 QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2, QColor color3 = originalColors[2]);
 QPixmap colorImage(QImage tmp, QColor color1, QColor color2, QColor color3 = originalColors[2]);
 QPixmap colorPixmapAnim(const QPixmap& pixmap, QColor color1, QColor color2, QColor color3 = originalColors[2]);
