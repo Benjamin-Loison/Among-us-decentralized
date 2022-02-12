@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     }
 
     // could give a shot to UPnP
-    useInternetOpenPort = !getBool(QObject::tr("Autoconfiguration"), runClient ? QObject::tr("Is your port %1 opened to others or are you the last to join the game ?").arg(QString::number(serverPort)) : QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
+    useInternetOpenPort = !getBool(QObject::tr("Autoconfiguration"), QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
     QProcess* myProcess;
     qint64 processId;
     if(useInternetOpenPort)
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
         myProcess->start("ssh", arguments);
         processId = myProcess->processId();
         qInfo() << "ssh program" << processId;
-        showMessage(QObject::tr("IP and port to share to peers"), "Share to the peers connecting to you: " DOMAIN_NAME ":" + remotePortStr);
+        showMessage(QObject::tr("IP and port to share to peers"), "Share to peers connecting to you: " DOMAIN_NAME ":" + remotePortStr);
         // could add an icon to copy-paste
     }
 

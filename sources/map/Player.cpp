@@ -37,10 +37,10 @@ Player::Player(QString nickname, Map map):
 		default: // MAP_POLUS
 			x = X_SPAWN_POLUS;
 			y = Y_SPAWN_POLUS;
-	}
-    quint8 playersNumber = inGameUI->getPlayersNumber();
-    color1 = colors[playersNumber][0];
-    color2 = colors[playersNumber][1];
+    }
+    playerId = inGameUI->getPlayersNumber();
+    color1 = colors[playerId][0];
+    color2 = colors[playerId][1];
     playerPixmap = getQPixmap("player.png");
     deadPixmap = getQPixmap("corpse.png");
     ghostPixmap = getQPixmap("ghost.png");

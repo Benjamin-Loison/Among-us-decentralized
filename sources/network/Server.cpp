@@ -217,23 +217,28 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
         }
         else if(messagePart == "nicknames")
         {
-            QStringList parts;
-            parts.append(serverSocketToString() + " " + inGameUI->currPlayer.nickname);
+            QMap<quint8, QString> sortedParts;
+            Player* currPlayer = &inGameUI->currPlayer;
+            sortedParts[currPlayer->playerId] = serverSocketToString() + " " + currPlayer->nickname;
             QList<QTcpSocket*> peers = getPeers();
             for(QTcpSocket* peer : peers)
             {
-                if(peer == socket) continue;
+                if(peer == socket)
+                    continue;
 
-                QString address = socketToString(peer),
-                        nickname = inGameUI->otherPlayers[address].nickname;
+                QString address = socketToString(peer);
+                Player* player = &inGameUI->otherPlayers[address];
+                QString nickname = player->nickname;
                 QStringList addressParts = address.split(':');
                 addressParts.removeLast();
                 addressParts.append(QString::number(peersPorts[peer]));
                 address = addressParts.join(':'); // could make a function for this purpose - is the same thing used elsewhere ?
-                parts.append(address + " " + nickname);
+                sortedParts[player->playerId] = address + " " + nickname;
             }
-            parts.sort(); /// order matters
-            res += messagePart + "|" + parts.join(',');
+
+            /// order matters - yes and especially a logical for the game one
+            // QMap already sorted values by key
+            res += messagePart + "|" + sortedParts.values().join(",");
         }
         else if(messagePart == "map")
         {
