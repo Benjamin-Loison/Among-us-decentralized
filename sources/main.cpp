@@ -75,8 +75,6 @@ int main(int argc, char *argv[])
     QSettings settings("settings.ini", QSettings::IniFormat);
     QString peerAddress = settings.value("peerAddress").toString();
 
-    Map map;
-    
     if(runClient)
     {
         QString newPeerAddress = getText(QObject::tr("Peer address"), QObject::tr("A peer address"), isDefaultServerPortInUse ? QString::number(DEFAULT_SERVER_PORT) : peerAddress);
@@ -94,14 +92,14 @@ int main(int argc, char *argv[])
 	{
         // If not client ask for the map to play on
 		QStringList mapsStr = getAllCleanMapsStr();
-        map = getAllMaps()[getQUInt8(QObject::tr("Map choice"), QObject::tr("What map do you want to play on ?"), mapsStr)];
+        inGameUI->map = getAllMaps()[getQUInt8(QObject::tr("Map choice"), QObject::tr("What map do you want to play on ?"), mapsStr)];
 
-        qInfo() << "map:" << getMapName(map);
+        qInfo() << "map:" << getMapName(inGameUI->map);
     }
 
     // could give a shot to UPnP
 	// btw if everybody is using autoconfiguration then using a remote machine with open ports to the internet is useless since could just redirect packets in a localhost manner on this remote machine
-    useInternetOpenPort = !getBool(QObject::tr("Autoconfiguration"), QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
+    useInternetOpenPort = peerAddress.startsWith(DOMAIN_NAME) && !getBool(QObject::tr("Autoconfiguration"), QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
     QProcess* myProcess;
     qint64 processId;
     if(useInternetOpenPort)
@@ -167,7 +165,7 @@ int main(int argc, char *argv[])
         QString mapStr = askAll("map"); // should askAll map and nicknames at the same time
         qInfo() << "Received map: " << mapStr;
 
-        map = getMap(mapStr);
+        inGameUI->map = getMap(mapStr);
 
         qInfo("Waiting for nicknames...");
         QString nicknamesStr = askAll("nicknames"); // or should more precisely ask all nicknames at each nickname test ? but this assume to wait the maximum ping of someone ?
@@ -189,24 +187,25 @@ int main(int argc, char *argv[])
         settings.setValue("nickname", QVariant(nickname));
         settings.sync();
     }
+
     if(runClient)
+    {
         for(QString nicknameStr : nicknames)
         {
             QString peerAddress = nicknameStr.section(' ', 0, 0);
             QString nickname = nicknameStr.section(' ', 1);
             inGameUI->spawnOtherPlayer(peerAddress, nickname);
         }
-
-    if(runClient)
         sendToAll("nickname " + nickname);
+    }
 
-    inGameUI->initialize(nickname, map);
+    inGameUI->initialize(nickname);
     inGameUI->resize(640, 480);
     inGameUI->showMaximized();
 
     int res = app.exec();
 
-    if(!useInternetOpenPort)
+    if(useInternetOpenPort)
     {
         qInfo() << "kill ssh program";
         #ifdef _WIN32

@@ -27,10 +27,9 @@ InGameUI::InGameUI(QLabel* parent) : QLabel(parent), everyoneReady(false), lastU
     // couldn't put all not necessary stuff in initialize not to delay user input ?
 }
 
-void InGameUI::initialize(QString nickname, Map mapTmp)
+void InGameUI::initialize(QString nickname)
 {
-    map = mapTmp;
-    currPlayer = Player(nickname, mapTmp);
+    currPlayer = Player(nickname);
     windowPixmap = new QPixmap(size());
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &InGameUI::redraw);
@@ -1290,7 +1289,7 @@ quint8 InGameUI::getPlayersNumber()
 
 void InGameUI::spawnOtherPlayer(QString peerAddress, QString otherPlayerNickname)
 {
-    otherPlayers[peerAddress] = Player(otherPlayerNickname, this->map);
+    otherPlayers[peerAddress] = Player(otherPlayerNickname);
 }
 
 void InGameUI::setFacingLeftPlayer(QString peerAddress)
@@ -1305,7 +1304,7 @@ void InGameUI::movePlayer(QString peerAddress, quint32 x, quint32 y, bool tp)
         player->playerFacingLeft = false;
     else if(uint(x) != uint(player->x)) // otherwise if just change vertically not logical
         player->playerFacingLeft = uint(x) < uint(player->x);
-	player->moveTo(x, y);
+    player->moveTo(x, y);
 }
 
 void InGameUI::hidePlayerBodyIfDead(QString peerAddress)

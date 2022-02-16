@@ -55,7 +55,7 @@ double distance(quint16 x0, quint16 y0, quint16 x1, quint16 y1)
 QPixmap* getQPixmap(QString filePath)
 {
 	filePath = assetsFolderImages + filePath;
-	//qInfo() << "filePath:" << filePath;
+    //qInfo() << "filePath:" << filePath;
     return new QPixmap(filePath);
 }
 

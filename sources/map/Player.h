@@ -29,12 +29,11 @@ public:
 	bool isMoving;
     quint8 numberOfEmergenciesRequested;
     QColor color1, color2;
-    Map map;
 	quint64 startMoveAt;
     quint8 playerId;
 
     Player();
-    Player(QString nickname, Map map);
+    Player(QString nickname);
     QPixmap* playerPixmap;
     QPixmap* flippedPixmap;
     QPixmap* deadPixmap; // no flippedDead ?
