@@ -98,6 +98,7 @@ int main(int argc, char *argv[])
     }
 
     // could give a shot to UPnP
+	// btw if everybody is using autoconfiguration then using a remote machine with open ports to the internet is useless since could just redirect packets in a localhost manner on this remote machine
     useInternetOpenPort = !getBool(QObject::tr("Autoconfiguration"), QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
     QProcess* myProcess;
     qint64 processId;

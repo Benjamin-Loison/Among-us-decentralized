@@ -44,16 +44,16 @@ enum VentsID{
     FINAL_VENT,
     };
 
-VentsID VentNear(QPoint position),
+VentsID ventNear(QPoint position),
         onMouseEventVent(VentsID vent, QMouseEvent* mouseEvent);
 
 bool isThereAnyVentNear();
 
-QLabel* EnterVent(VentsID vent);
+QLabel* enterVent(VentsID vent);
 
-QPoint PosOfVent(VentsID vent);
+QPoint posOfVent(VentsID vent);
 
 void drawArrow(QPainter* painter, QPoint pos, qint16 angle, QImage image),
-     ExitVent();
+     exitVent();
 
 #endif

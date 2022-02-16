@@ -877,6 +877,7 @@ quint8 InGameUI::getAliveImpostorsNumber()
 }
 
 void InGameUI::unreadyTeleportEveryone() {
+	closeTask(); // maybe make a function containing both would be interesting
     closeMap();
     for(Player* player : getAllPlayers())
         player->isReady = false;
@@ -947,18 +948,19 @@ void InGameUI::closeTask() {
         return;
     switch(currentInGameGUI) {
         case IN_GAME_GUI_FIX_WIRING:
-        onCloseFixWiring();
-        break;
+        	onCloseFixWiring();
+        	break;
         case IN_GAME_GUI_ASTEROIDS:
-        onCloseAsteroids();
-        break;
+        	onCloseAsteroids();
+        	break;
         case IN_GAME_GUI_ENTER_ID_CODE :
-        onCloseEnterIDCode();
-        break;
+        	onCloseEnterIDCode();
+        	break;
         case IN_GAME_GUI_ALIGN_ENGINE:
-        onCloseAlignEngine();
-        break;
-        default:;
+        	onCloseAlignEngine();
+        	break;
+        default:
+			;
     }
     currentTask = nullptr;
     currentInGameGUI = IN_GAME_GUI_NONE;
@@ -976,12 +978,12 @@ void InGameUI::onClickUse() {
     }
 
     if((isThereAnyVentNear())&& (current_vent==NULL_VENT)){
-        current_vent = VentNear(QPoint(currPlayer.x, currPlayer.y));
-        QPoint new_pos = PosOfVent(current_vent);
+        current_vent = ventNear(QPoint(currPlayer.x, currPlayer.y));
+        QPoint new_pos = posOfVent(current_vent);
         currPlayer.x = new_pos.x();
         currPlayer.y = new_pos.y();
         currentInGameGUI = IN_GAME_GUI_VENT;
-        qLabel = EnterVent(current_vent);
+        qLabel = enterVent(current_vent);
 
         setLayoutQLabel();
         return;
@@ -1084,10 +1086,7 @@ void InGameUI::closeMap() {
 }
 
 void InGameUI::triggerMeeting(Player* reportedPlayer) {
-    if(reportedPlayer)
-        sendToAll("Report " + reportedPlayer->nickname);
-    else
-        sendToAll("Emergency meeting");
+    sendToAll(reportedPlayer ? "Report " + reportedPlayer->nickname : "Emergency meeting");
     openMeetingUI(reportedPlayer, &currPlayer);
 }
 
@@ -1105,7 +1104,7 @@ void InGameUI::openMeetingUI(Player* reportedPlayer, Player* reportingPlayer) {
     if(currentInGameGUI == IN_GAME_GUI_VITALS)
         closeVitals();
     if(currentInGameGUI == IN_GAME_GUI_VENT){
-        ExitVent();
+        exitVent();
         current_vent = NULL_VENT;
         currentInGameGUI = IN_GAME_GUI_NONE;
         delete currHLayout;
@@ -1156,17 +1155,17 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
                 closeVitals();
             else if (qLabel == nullptr && currentInGameGUI == IN_GAME_GUI_NONE)
                 onClickUse();
-            else if(qLabel){
-                if (currentInGameGUI == IN_GAME_GUI_VENT){    
-                ExitVent();
-                current_vent = NULL_VENT;
-                currentInGameGUI = IN_GAME_GUI_NONE;
-                delete currHLayout;
-                delete qLabel;
-                qLabel = nullptr;
+            else if(qLabel) {
+                if (currentInGameGUI == IN_GAME_GUI_VENT) {    
+                	exitVent();
+                	current_vent = NULL_VENT;
+                	currentInGameGUI = IN_GAME_GUI_NONE;
+                	delete currHLayout;
+                	delete qLabel;
+                	qLabel = nullptr;
                 }
-
-                else closeTask();
+                else
+					closeTask();
             }
                 
         }
@@ -1182,7 +1181,7 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
     case Qt::Key_M:
         if(currentInGameGUI == IN_GAME_GUI_NONE)
             openMap();
-        else// if(gameMap)
+        else
             closeMap();
         break;
     default:;
@@ -1254,17 +1253,17 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
             else if (currentInGameGUI == IN_GAME_GUI_VENT){
                 VentsID new_vent = onMouseEventVent(current_vent ,mouseEvent);
                 if (new_vent!=NULL_VENT){
-                    ExitVent();
+                    exitVent();
                     current_vent = new_vent;
                     currentInGameGUI = IN_GAME_GUI_NONE;
                     delete currHLayout;
                     delete qLabel;
                     qLabel = nullptr;
-                    QPoint new_pos = PosOfVent(new_vent);
+                    QPoint new_pos = posOfVent(new_vent);
                     currPlayer.x = new_pos.x();
                     currPlayer.y = new_pos.y();
                     currentInGameGUI = IN_GAME_GUI_VENT;
-                    qLabel = EnterVent(new_vent);
+                    qLabel = enterVent(new_vent);
                     setLayoutQLabel();
                 }
             }
