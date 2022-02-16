@@ -123,17 +123,17 @@ int main(int argc, char *argv[])
         myProcess->start("ssh", arguments);
         processId = myProcess->processId();
         qInfo() << "ssh program" << processId;
-        showMessage(QObject::tr("IP and port to share to peers"), "Share to peers connecting to you: " DOMAIN_NAME ":" + remotePortStr);
+        //showMessage(QObject::tr("IP and port to share to peers"), "Share to peers connecting to you: " DOMAIN_NAME ":" + remotePortStr);
         // could add an icon to copy-paste
     }
 
-    // les nouveaux se connectent aux anciens
-    // disons que l'on cherche à découvrir tout le monde (dans le cas précis de ce jeu)
-    // j'ai préféré l'approche on attend un certain temps fixé que attendre un certain nombre fixé car quelqu'un pourrait faire croire que certains participants (qu'il a généré) représentent les autres
-    // disons que l'on exécute un message contenant de l'information seulement lorsque la majorité l'approuve (dans le cas précis de ce jeu sinon résultat d'impossibilité de FLP)
-    // on fait l'hypothèse que les gens laissent du temps s'écouler entre les actions réseaux lorsque cela est nécessaire
-    // ou par rapport à la ligne précédente, faisons un modèle où chaque participant envoie aux autres juste ses actions (donc confiance entière envers les autres)
-    // exemple pratique: jeu où les joueurs participent avec des arbitres vérifiant que personne ne triche
+	// the new ones connect to the old ones
+    // let's say that we try to discover everyone (in the specific case of this game)
+    // I preferred the "wait for a certain time" approach to the "wait for a certain number" approach because someone could make it look like some of the participants (that he generated) represent the others
+	// let's say that we execute a message containing information only when the majority approves it (in the precise case of this game, otherwise result of impossibility of FLP)
+	// it is assumed that people allow time to elapse between network actions when necessary
+	// or in relation to the previous line, let's make a model where each participant sends to the others just his actions (thus full confidence in the others)
+	// practical example: game where players participate with referees checking that no one cheats
     // waiting a given time and not waiting all to answers and take majority is better I think (likewise if one doesn't cooperate it's not a problem)
     if(runServer)
     {
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
             break;
 
         qInfo("Asking for map...");
-        QString mapStr = askAll("map"); // or should more precisely ask all nicknames at each nickname test ? but this assume to wait the maximum ping of someone ?
+        QString mapStr = askAll("map"); // should askAll map and nicknames at the same time
         qInfo() << "Received map: " << mapStr;
 
         map = getMap(mapStr);

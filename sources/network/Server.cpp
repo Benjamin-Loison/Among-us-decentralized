@@ -34,31 +34,31 @@ void Server::newConnection()
 
 void Server::dataReceived()
 {
-    // 1 : on reçoit un paquet (ou un sous-paquet) d'un des clients
+    // 1: we receive a packet (or a sub-packet) from one of the clients
 
-    // On détermine quel client envoie le message (recherche du QTcpSocket du client)
+    // We determine which client sends the message (search for the client's QTcpSocket)
     qInfo("dataReceived begin");
     QTcpSocket* socket = qobject_cast<QTcpSocket*>(sender());
-    if(socket == 0) // Si par hasard on n'a pas trouvé le client à l'origine du signal, on arrête la méthode
+    if(socket == 0) // If by chance we haven't found the client at the origin of the signal, we stop the method
         return;
 
-    // Si tout va bien, on continue : on récupère le message
+    // If all goes well, we continue: we retrieve the message
     QDataStream in(socket);
 
     //qInfo("dataReceived"); // not executed even if message sent...
-    if(messageSize == 0) // Si on ne connaît pas encore la taille du message, on essaie de la récupérer
+    if(messageSize == 0) // If we don't know the size of the message yet, we try to get it
     {
-        if(socket->bytesAvailable() < (int)sizeof(quint16)) // On n'a pas reçu la taille du message en entier
+        if(socket->bytesAvailable() < (int)sizeof(quint16)) // We did not receive the full size of the message
              return;
 
-        in >> messageSize; // Si on a reçu la taille du message en entier, on la récupère
+        in >> messageSize; // If we have received the entire size of the message, we retrieve it
     }
 
-    // Si on connaît la taille du message, on vérifie si on a reçu le message en entier
-    if (socket->bytesAvailable() < messageSize) // Si on n'a pas encore tout reçu, on arrête la méthode
+    // If we know the size of the message, we check if we have received the whole message
+    if (socket->bytesAvailable() < messageSize) // If we haven't received everything yet, we stop the method
         return;
 
-    // Si ces lignes s'exécutent, c'est qu'on a reçu tout le message : on peut le récupérer !
+    // If these lines are executed, it means that we have received the whole message: we can recover it
     QString message;
     in >> message;
     qInfo() << "server received from" << socketToString(socket) << ":" << message; // not logging Position and keep logged all network stuff
@@ -67,7 +67,7 @@ void Server::dataReceived()
     //message = processMessage(message);
     sendToSocket(socket, message);
 
-    // 2 : remise de la taille du message à 0 pour permettre la réception des futurs messages
+    // 2: reset the message size to 0 to allow the reception of future messages
     messageSize = 0;
     if(socket->bytesAvailable() > 0)
     {
@@ -113,9 +113,7 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
             player->privateRandomHashed = messagePart;
             inGameUI->waitingAnswersNumber--;
             /*if(needEverybodyReadyCall)
-            {
-                inGameUI->onEverybodyReadySub(false);
-            }*/
+                inGameUI->onEverybodyReadySub(false);*/
         }
     }
     else if(messagePart.startsWith("finished "))
@@ -130,9 +128,7 @@ void processMessageCommon(QTcpSocket* socket, QString messagePart)
         const int prefixSize = QString("Kill ").size();
         QString nickname = messagePart.mid(prefixSize);
         if(nickname == inGameUI->currPlayer.nickname)
-        {
             inGameUI->closeTask();
-        }
         Player* player = inGameUI->getPlayer(nickname);
         inGameUI->killPlayer(*player);
         inGameUI->checkEndOfTheGame();
@@ -198,7 +194,6 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
             {
                 QStringList fullAddresses;
                 for(QTcpSocket* currentSocket : peers)
-                {
                     if(currentSocket != socket)
                     {
                         quint16 currentPort = peersPorts[currentSocket];
@@ -209,7 +204,6 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
                         peerFullAddress = parts.join(':');
                         fullAddresses.push_back(peerFullAddress);
                     }
-                }
                 res += "peers " + fullAddresses.join(' ');
             }
             res = "YourAddress " + socketWithoutPortToString(socket) + (res != "" ? NETWORK_SEPARATOR + res : "");
@@ -236,7 +230,7 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
                 sortedParts[player->playerId] = address + " " + nickname;
             }
 
-            /// order matters - yes and especially a logical for the game one
+            /// order matters especially a logical for the game one
             // QMap already sorted values by key
             res += messagePart + "|" + sortedParts.values().join(",");
         }
@@ -268,10 +262,10 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
 
 void Server::clientDisconnected()
 {
-    // On détermine quel client se déconnecte
+    // We determine which client disconnects
     qInfo("clientDisconnected");
     QTcpSocket* socket = qobject_cast<QTcpSocket*>(sender());
-    if(socket == 0) // Si par hasard on n'a pas trouvé le client à l'origine du signal, on arrête la méthode
+    if(socket == 0) // If by chance we haven't found the client at the origin of the signal, we stop the method
         return;
 
     clients.removeOne(socket);
@@ -287,7 +281,7 @@ void sendToSocket(QTcpSocket* socket, QString messageToSend)
     QByteArray paquet;
     QDataStream out(&paquet, QIODevice::WriteOnly);
 
-    // On prépare le paquet à envoyer
+    // We prepare the packet to be sent
 
     out << (quint16)0;
     out << messageToSend;
@@ -300,7 +294,7 @@ void sendToSocket(QTcpSocket* socket, QString messageToSend)
     out << (quint16)(size - sizeof(quint16));
     //qInfo() << "size:" << size << "device:" << device;
 
-    if(socket->write(paquet) == -1) // On envoie le paquet
+    if(socket->write(paquet) == -1) // We send the packet
         qInfo("socket write error");
     if(!socket->waitForBytesWritten())
         qInfo("wait for bytes error");

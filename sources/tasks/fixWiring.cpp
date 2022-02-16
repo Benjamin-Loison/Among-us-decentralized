@@ -10,7 +10,7 @@
 #include "../main.h"
 #include "../qPlus.h"
 
-// à quoi bon utiliser un enum si juste 4 defines aurait fait la bijection sans warning du compilo u_u
+// why use an enum if just 4 defines would have made the bijection without compilator warning
 quint8 links[COLORS_NUMBER] = {COLOR_UNDEFINED, COLOR_UNDEFINED, COLOR_UNDEFINED, COLOR_UNDEFINED};
 WiringColor lefts[COLORS_NUMBER],
             rights[COLORS_NUMBER] = {Red, Blue, Yellow, Magenta};
@@ -226,13 +226,10 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
         }
         else if(link == COLOR_FIXING)
             fillFixWire(painter, nodesIndex, mouseY, mouseX);
-        else if(!isFixing)
+        else if(!isFixing && isNearNode)
         {
-            if(isNearNode)
-            {
-                links[nodesIndex] = COLOR_FIXING;
-                nodesIndex--;
-            }
+            links[nodesIndex] = COLOR_FIXING;
+            nodesIndex--;
         }
     }
 
@@ -248,7 +245,8 @@ void onMouseEventFixWiring(QMouseEvent* mouseEvent)
     for(qint8 nodesIndex = 0; nodesIndex < COLORS_NUMBER; nodesIndex++)
     {
         quint8 link = links[nodesIndex];
-        if(link >= COLORS_NUMBER) {
+        if(link >= COLORS_NUMBER)
+		{
             everythingMatch = false;
             break;
         }

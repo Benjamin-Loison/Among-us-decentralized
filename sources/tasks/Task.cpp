@@ -36,7 +36,7 @@ finished(false) {}
 
 Task::Task(TaskType taskType, QPoint location):
 taskType(taskType),
-//taskTime(taskTimes[taskType]), // order seems to depend here for compilor weird
+//taskTime(taskTimes[taskType]), // order seems to depend here for compilator weird
 location(location),
 finished(false) {}
 

@@ -9,7 +9,6 @@ QPixmap* mapLayoutPixmap = nullptr;
 QPixmap* sabotageDoorsPixmap = nullptr;
 QPixmap* disabledSabotageDoorsPixmap;
 //QPoint lastClick;
-//bool isPolus = false;
 Map map;
 
 GameMap::GameMap(InGameUI* ui, Map mapTmp): ui(ui), currPixmap(nullptr) {

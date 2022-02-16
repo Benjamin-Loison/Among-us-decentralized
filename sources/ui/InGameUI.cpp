@@ -581,11 +581,8 @@ void InGameUI::redraw()
                 if (!performMovement(elapsed, dirVert, -1))
                     performMovement(elapsed, dirVert, 1);
             }
-            else
-            {
-                if (!performMovement(elapsed, -1, dirHoriz))
-                    performMovement(elapsed, 1, dirHoriz);
-            }
+            else if (!performMovement(elapsed, -1, dirHoriz))
+                performMovement(elapsed, 1, dirHoriz);
         }
     }
 
@@ -1268,20 +1265,17 @@ void InGameUI::mousePressOrDoubleClick(QMouseEvent *mouseEvent) {
                 }
             }
         }
-        else if(isWinScreen())
+        else if(isWinScreen() && isBottomRight)
         {
-            if(isBottomRight)
+            // could almost bypass waiting first ready phase - I thought to do a ready like on the win screen before the real ready but clicking on play again button to switch to first ready interface is better
+            for(Player* player : getAllPlayers())
             {
-                // could almost bypass waiting first ready phase - I thought to do a ready like on the win screen before the real ready but clicking on play again button to switch to first ready interface is better
-                for(Player* player : getAllPlayers())
-                {
-                    player->isImpostor = false;
-                    player->isGhost = false;
-                    player->showBody = false;
-                    player->numberOfEmergenciesRequested = 0;
-                }
-                currentInGameGUI = IN_GAME_GUI_NONE;
+                player->isImpostor = false;
+                player->isGhost = false;
+                player->showBody = false;
+                player->numberOfEmergenciesRequested = 0;
             }
+            currentInGameGUI = IN_GAME_GUI_NONE;
         }
     }
 }
@@ -1334,20 +1328,18 @@ void InGameUI::checkEverybodyReady(/*bool threadSafe*/)
         onEverybodyReady(/*threadSafe*/);
     /*QList<QString> peerAddresses = otherPlayers.keys();
     for(QString peerAddress : peerAddresses)
-    {
         if(!otherPlayers[peerAddress].isReady)
         {
             //qInfo() << peerAddress << peerAddressesSize;
             return;
-        }
-    }*/
+        }*/
 }
 
 void InGameUI::setPlayerReady(QString peerAddress)
 {
     Player* player = &otherPlayers[peerAddress];
     player->isReady = true;
-    //if(!threadSafe) (Argument Threadsafe retiré)
+    //if(!threadSafe) (Threadsafe argument removed)
     checkEverybodyReady(/*threadSafe*/);
 }
 

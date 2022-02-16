@@ -10,7 +10,7 @@ MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reporting
     titleLabel = new QLabel("<b>" + tr("Who is the Impostor ?") + "</b>");
     layout->addWidget(titleLabel, 0, 0, 1, -1);
     if(reportedPlayer)
-        reportedPlayerLabel = new QLabel(QString(tr("%1's body was found by %2")).arg(reportedPlayer->nickname).arg(reportingPlayer->nickname)); /// should display who activate the meeting
+        reportedPlayerLabel = new QLabel(QString(tr("%1's body was found by %2")).arg(reportedPlayer->nickname).arg(reportingPlayer->nickname)); /// should display who activate the meeting, can't .arg on tr result ?
     else
         reportedPlayerLabel = new QLabel(QString(tr("Emergency meeting requested by %1")).arg(reportingPlayer->nickname)); // No dead body reported
     layout->addWidget(reportedPlayerLabel, 1, 0, 1, -1);
@@ -46,10 +46,6 @@ MeetingUI::MeetingUI(InGameUI* parent, Player* reportedPlayer, Player* reporting
 void MeetingUI::voteFor(Player* player) {
     if(voted)
         return; // should never happen
-    /*if(!player)
-        qDebug() << "Skipped vote";
-    else
-        qDebug() << "Voted for" << player->nickname;*/
     votedPlayer = player;
     voted = true;
     for(QPushButton* button : playerButtons)
@@ -124,22 +120,16 @@ MeetingResultsUI::MeetingResultsUI(InGameUI *parent, QMap<QString, quint8> votes
         if(nicknameMostVoted != "" && !exAequo) {
             whoToKill = parent->getPlayer(nicknameMostVoted);
             verdictText = tr("%1 got the most votes and was killed.").arg(nicknameMostVoted) + "<br>";
-            if(whoToKill->isImpostor) {
-                verdictText += tr("He was an Impostor.") + "<br>";
+			verdictText += (whoToKill->isImpostor ? tr("He was an Impostor.") : tr("He was not an Impostor.")) + "<br>"; // can't make the ternary within the tr otherwise translation detection doesn't work well, does it ?
+            if(whoToKill->isImpostor)
                 nbImpostors--;
-            }
-            else
-                verdictText += tr("He was not an Impostor.") + "<br>";
         }
         else {
             whoToKill = nullptr;
             verdictText = tr("A tie occurred. No player was killed.") + "<br>";
         }
     }
-    if(nbImpostors <= 1)
-        verdictText += tr("%1 Impostor left.").arg(nbImpostors);
-    else
-        verdictText += tr("%1 Impostors left.").arg(nbImpostors);
+    verdictText += nbImpostors <= 1 ? tr("%1 Impostor left.").arg(nbImpostors) : tr("%1 Impostors left.").arg(nbImpostors);
     verdictLabel = new QLabel(verdictText);
     verdictLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(verdictLabel, iPlayer+2, 0, 1, -1);
@@ -154,12 +144,8 @@ MeetingResultsUI::MeetingResultsUI(InGameUI *parent, QMap<QString, quint8> votes
 }
 
 void MeetingResultsUI::updateProceedButton() {
-    if(!proceedButton->isEnabled()) {
-        if(proceedsLeft == 1)
-            proceedButton->setText(tr("Waiting for one other player..."));
-        else
-            proceedButton->setText(tr("Waiting for %1 other players...").arg(proceedsLeft));
-    }
+    if(!proceedButton->isEnabled())
+        proceedButton->setText(proceedsLeft == 1 ? tr("Waiting for one other player...") : tr("Waiting for %1 other players...").arg(proceedsLeft));
 }
 
 void MeetingResultsUI::onProceed() {

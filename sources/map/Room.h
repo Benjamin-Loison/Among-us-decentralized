@@ -9,6 +9,7 @@
 class Door;
 
 const int DOOR_SABOTAGE_COOLDOWN_SECS = 30;
+#define DOOR_SABOTAGE_COOLDOWN_MSECS DOOR_SABOTAGE_COOLDOWN_SECS*1000
 
 struct Room {
     QString roomName;

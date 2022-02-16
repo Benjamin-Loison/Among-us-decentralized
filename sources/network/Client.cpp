@@ -10,7 +10,7 @@ Client::Client(QString peerAddress) : socket(new QTcpSocket(this)), isConnected(
     connect(socket, SIGNAL(disconnected()), this, SLOT(deconnecte()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
 
-    socket->abort(); // On désactive les connexions précédentes s'il y en a
+    socket->abort(); // Disable previous connections if there are any
     QStringList peerAddressParts = peerAddress.split(':');
     peerAddress = peerAddressParts[0];
     quint16 serverPort = peerAddressParts[1].toUInt();
@@ -41,12 +41,12 @@ void Client::sendToServer(QString messageToSend) // not very useful in theory...
     sendToSocket(socket, messageToSend);
 }
 
-// On a reçu un paquet (ou un sous-paquet)
+// We received a packet (or a sub-packet)
 void Client::dataReceived()
 {
-    /* Même principe que lorsque le serveur reçoit un paquet :
-    On essaie de récupérer la taille du message
-    Une fois qu'on l'a, on attend d'avoir reçu le message entier (en se basant sur la taille annoncée messageSize)*/
+    /* Same principle as when the server receives a packet:
+    We try to retrieve the size of the message
+    Once we have it, we wait until we receive the whole message (based on the announced messageSize)*/
 
     qInfo("Client::dataReceived begin"); // no bug at this level
     QDataStream in(socket);
@@ -61,7 +61,7 @@ void Client::dataReceived()
     if(socket->bytesAvailable() < messageSize)
         return;
 
-    // Si on arrive jusqu'à cette ligne, on peut récupérer le message entier
+    // If we get to this line, we can recover the whole message
     QString receivedMessage;
     in >> receivedMessage;
 
@@ -82,7 +82,7 @@ void Client::dataReceived()
     else*/
         processMessageClient(receivedMessage);
 
-    // On remet la taille du message à 0 pour pouvoir recevoir de futurs messages
+    // We reset the message size to 0 to be able to receive future messages
     messageSize = 0;
     //qInfo() << "bytesAvailable:" << socket->bytesAvailable();
     if(socket->bytesAvailable() > 0)

@@ -85,7 +85,7 @@ qreal getAngle(VentsID vent1, VentsID vent2 ){
     return angle;
 }
 
-void drawArrow(QPainter* painter/*, QPoint pos*/, qint16 angle, QImage image){
+void drawArrow(QPainter* painter, qint16 angle, QImage image){
     painter->save();    
     painter->translate(ARROW_VENT_START_X,ARROW_VENT_START_Y);
     painter->translate(ARROW_VENT_ANCHOR_X,ARROW_VENT_ANCHOR_Y);
@@ -117,7 +117,7 @@ QLabel* enterVent(VentsID vent){
     QVector<VentsID> linkedvents = ventsLink.value(vent);
     for (VentsID linkedvent : linkedvents){
         qreal angle = getAngle(vent, linkedvent);
-        drawArrow(painter/*, ventsPositions.value(vent)*/, angle, ventArrow->toImage());
+        drawArrow(painter, angle, ventArrow->toImage());
     }
 
     delete painter;

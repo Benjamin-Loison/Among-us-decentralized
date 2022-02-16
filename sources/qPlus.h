@@ -42,6 +42,7 @@ QPixmap colorPixmap(const QPixmap& pixmap, QColor color1, QColor color2, QColor 
 QPixmap colorImage(QImage tmp, QColor color1, QColor color2, QColor color3 = originalColors[2]);
 QPixmap colorPixmapAnim(const QPixmap& pixmap, QColor color1, QColor color2, QColor color3 = originalColors[2]);
 QPixmap colorImageAnim(QImage tmp, QColor color1, QColor color2, QColor color3 = originalColors[2]);
+// in terms of code the two Anim functions are very similar to the original ones
 bool getBool(QString title, QString label);
 QString randomHex(quint16 length);
 QString SHA512(QString input);

@@ -95,7 +95,6 @@ QPixmap colorImageAnim(QImage tmp, QColor color1, QColor color2, QColor color3)
     for(quint16 y = 0; y < tmp.height(); y++)
         for(quint16 x = 0; x < tmp.width(); x++)
             for(quint8 originalColorsIndex = 0; originalColorsIndex < 3; originalColorsIndex++) {
-                // could check if we are iterating to change a color otherwise can pass, reversing loop order would optimize likewise
                 int alpha = tmp.pixelColor(x,y).alpha();
                 QColor newOriginalColor = originalColorsAnim[originalColorsIndex];
                 newOriginalColor.setAlpha(alpha);
