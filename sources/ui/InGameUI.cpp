@@ -14,7 +14,7 @@ const int REPORT_RANGE_SQUARED = qPow(200, 2);
 const int EMERGENCY_RANGE_SQUARED = qPow(250, 2);
 const int KILL_COOLDOWN_SEC = 45;
 const int MAX_EMERGENCY_PER_PLAYER = 1;
-
+bool showAddress = false;
 
 enum VentsID current_vent = NULL_VENT;
 
@@ -619,16 +619,16 @@ void InGameUI::redraw()
         //painter.setPen(oldPen);
     }
 
-    // For debugging purposes: show current location - should make a boolean to choose whether or not to display location
-    /*QRect textRect(qWidth - 1, 0, 1, fontSizePt);
-    QRect boundingRect;
-    painter.setPen(Qt::white);
-    painter.drawText(textRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y), &boundingRect);
-    boundingRect.setLeft(qWidth - 1 - boundingRect.width());
-    boundingRect.setRight(qWidth - 1);
-    painter.fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
-    painter.drawText(boundingRect, Qt::TextDontClip | Qt::AlignRight, QString("Location: %1, %2").arg(currPlayer.x).arg(currPlayer.y));
-	*/
+	if(showAddress)
+	{
+    	QRect textRect(qWidth - 1, 0, 1, fontSizePt);
+    	QRect boundingRect;
+    	painter.setPen(Qt::white);
+    	painter.drawText(textRect, Qt::TextDontClip | Qt::AlignRight, tr("Your address: %1").arg(serverAddress + (remotePort == DEFAULT_SERVER_PORT ? "" : ":" + QString::number(remotePort))), &boundingRect); // if multiple could write on several lines
+    	boundingRect.setLeft(qWidth - 1 - boundingRect.width());
+    	boundingRect.setRight(qWidth - 1);
+    	painter.fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
+	}
     
     // Game buttons
     if(everyoneReady)
@@ -1137,6 +1137,9 @@ void InGameUI::keyPressEvent(QKeyEvent *key) {
     case Qt::Key_Right:
         isPressed[keycode] = true;
         break;
+	case Qt::Key_N:
+		showAddress = !showAddress;
+		break;
     case Qt::Key_F11:
         if(inGameUI->isFullScreen())
             inGameUI->showMaximized(); // doesn't resume on whole screen :'(

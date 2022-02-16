@@ -13,7 +13,8 @@ enum InGameGUI{IN_GAME_GUI_NONE, IN_GAME_GUI_FIX_WIRING, IN_GAME_GUI_ASTEROIDS,I
 extern InGameGUI currentInGameGUI;
 extern QList<Client*> clients;
 extern Server* server;
-extern QString myAddress;
+extern QString myAddress,
+	           serverAddress;
 extern bool isFirstToRun,
             useInternetOpenPort;
 extern quint16 remotePort;

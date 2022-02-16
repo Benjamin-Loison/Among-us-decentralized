@@ -20,6 +20,7 @@ QString myAddress;
 bool isFirstToRun = false;
 bool useInternetOpenPort;
 QTranslator translator;
+QString serverAddress = "localhost";
 quint16 remotePort = DEFAULT_SERVER_PORT;
 
 int main(int argc, char *argv[])
@@ -41,6 +42,7 @@ int main(int argc, char *argv[])
     if(allAddressesSize > 2) // could check more precisely if not just having an IPv6
     {
         qInfo("My IPs:");
+		serverAddress = addressToString(allAddresses[2]);
         for(quint32 allAddressesIndex = /*0*/2; allAddressesIndex < allAddressesSize; allAddressesIndex++)
         {
             QHostAddress address = allAddresses[allAddressesIndex];
@@ -112,6 +114,7 @@ int main(int argc, char *argv[])
         // hope that by using a random port nobody will use be using it
         // what if someone try to take a port already used by AUD ?
         // the password is just used to avoid massive SSH bots to try to do some bad behavior automatically (like using all ports)
+		serverAddress = DOMAIN_NAME;
         remotePort = 10000 + QRandomGenerator::global()->bounded(50000);
         qInfo() << "remotePort:" << remotePort;
 
