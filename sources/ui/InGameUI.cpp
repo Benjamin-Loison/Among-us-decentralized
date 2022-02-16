@@ -756,21 +756,11 @@ QList<Player*> InGameUI::getAllPlayers()
 void InGameUI::teleportAllPlayers()
 {
     QList<QString> peerAddresses = otherPlayers.keys();
-	quint32 x, y;
-	switch(map)
-	{
-		case MAP_THE_SKELD:
-			x = X_SPAWN_THE_SKELD;
-			y = Y_SPAWN_THE_SKELD;
-			break;
-		case MAP_POLUS:
-			x = X_SPAWN_POLUS;
-			y = Y_SPAWN_POLUS;
-	}
-    currPlayer.x = x;
-    currPlayer.y = y;
+	QPair<quint16, quint16> xy = SPAWNS[map]; // maybe using QPoint from Qt would be more appropriate
+    currPlayer.x = xy.first;
+    currPlayer.y = xy.second;
     for(QString peerAddress : peerAddresses)
-        movePlayer(peerAddress, x, y, true);
+        movePlayer(peerAddress, currPlayer.x, currPlayer.y, true);
     currPlayer.playerFacingLeft = false;
 }
 

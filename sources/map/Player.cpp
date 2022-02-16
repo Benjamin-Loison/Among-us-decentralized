@@ -3,6 +3,12 @@
 #include "../main.h"
 #include "../network/Server.h"
 
+QVector<QPair<quint16, quint16>> SPAWNS =
+{
+	qMakePair(5500, 1100),
+	qMakePair(3500, 3000)
+};
+
 const QColor colors[7][2] = {{QColor(192, 201, 216), QColor(120, 135, 174)},
                              {QColor(20, 156, 20), QColor(8, 99, 64)},
                              {QColor(17, 43, 192), QColor(8, 19, 131)},
@@ -28,16 +34,9 @@ Player::Player(QString nickname, Map map):
 	startMoveAt(0)
 {
     this->map = map;
-	switch(map)
-	{
-		case MAP_THE_SKELD:
-			x = X_SPAWN_THE_SKELD;
-			y = Y_SPAWN_THE_SKELD;
-			break;
-		default: // MAP_POLUS
-			x = X_SPAWN_POLUS;
-			y = Y_SPAWN_POLUS;
-    }
+	QPair<quint16, quint16> xy = SPAWNS[map];
+	x = xy.first;
+	y = xy.second;
     playerId = inGameUI->getPlayersNumber();
     color1 = colors[playerId][0];
     color2 = colors[playerId][1];

@@ -6,12 +6,8 @@
 #define MINIMAL_NUMBER_OF_PLAYERS 1
 #define IMPOSTOR_NUMBER 1
 
-#define X_SPAWN_THE_SKELD 5500
-#define Y_SPAWN_THE_SKELD 1100
-#define X_SPAWN_POLUS 3500
-#define Y_SPAWN_POLUS 3000
-
 enum Map{MAP_THE_SKELD, MAP_POLUS};
+extern QVector<QPair<quint16, quint16>> SPAWNS;
 
 QString getMapName(Map map);
 Map getMap(QString mapStr);

@@ -245,7 +245,8 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
             // What difference QList/QVector ?
             QString otherPlayerNickname = messagePart.replace("nickname ", "");
             inGameUI->spawnOtherPlayer(socketToString(socket), otherPlayerNickname); // could almost save players one per client/server and loop through this and not the list stored in InGameUI
-            if(inGameUI->currPlayer.x != X_SPAWN_THE_SKELD || inGameUI->currPlayer.y != Y_SPAWN_THE_SKELD) /// TODO: make it depend on the map
+			QPair<quint16, quint16> xy = SPAWNS[inGameUI->currPlayer.map];
+            if(inGameUI->currPlayer.x != xy.first || inGameUI->currPlayer.y != xy.second)
             {
                 res = inGameUI->currPlayer.getSendPositionMessage();
                 if(inGameUI->currPlayer.playerFacingLeft)
