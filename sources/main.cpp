@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 
     // could give a shot to UPnP
 	// btw if everybody is using autoconfiguration then using a remote machine with open ports to the internet is useless since could just redirect packets in a localhost manner on this remote machine
-    useInternetOpenPort = peerAddress.startsWith(DOMAIN_NAME) && !getBool(QObject::tr("Autoconfiguration"), QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
+	useInternetOpenPort = peerAddress.startsWith(DOMAIN_NAME) && !getBool(QObject::tr("Autoconfiguration"), QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
     QProcess* myProcess;
     qint64 processId;
     if(useInternetOpenPort)
@@ -112,6 +112,7 @@ int main(int argc, char *argv[])
         // hope that by using a random port nobody will use be using it
         // what if someone try to take a port already used by AUD ?
         // the password is just used to avoid massive SSH bots to try to do some bad behavior automatically (like using all ports)
+		// could force showAddress to true if isFirstToRun but that would be not very appreciated for accustomed people who don't need that
 		serverAddress = DOMAIN_NAME;
         remotePort = 10000 + QRandomGenerator::global()->bounded(50000);
         qInfo() << "remotePort:" << remotePort;
