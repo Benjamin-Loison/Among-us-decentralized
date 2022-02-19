@@ -7,7 +7,7 @@ CONFIG(debug, debug|release) {
     QMAKE_LFLAGS += --coverage
 }
 
-TRANSLATIONS = assets/AmongUsDecentralizedFR.ts
+TRANSLATIONS = assets/AmongUsDecentralizedFR.ts assets/AmongUsDecentralizedEN.ts
 RC_ICONS += assets/logo.ico
 
 unix:OBJECTS_DIR = build/objects
@@ -64,3 +64,6 @@ first.depends = $(first) copydata
 export(first.depends)
 export(copydata.commands)
 QMAKE_EXTRA_TARGETS += first copydata
+
+DISTFILES += \
+    assets/AmongUsDecentralizedEN.ts

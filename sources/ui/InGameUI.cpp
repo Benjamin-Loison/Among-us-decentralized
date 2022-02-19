@@ -619,14 +619,31 @@ void InGameUI::redraw()
     }
 
 	if(showAddress)
-	{
-    	QRect textRect(qWidth - 1, 0, 1, fontSizePt);
-    	QRect boundingRect;
-    	painter.setPen(Qt::white);
-    	painter.drawText(textRect, Qt::TextDontClip | Qt::AlignRight, tr("Your address: %1").arg(serverAddress + (remotePort == DEFAULT_SERVER_PORT ? "" : ":" + QString::number(remotePort))), &boundingRect); // if multiple could write on several lines
-    	boundingRect.setLeft(qWidth - 1 - boundingRect.width());
-    	boundingRect.setRight(qWidth - 1);
-    	painter.fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
+    {
+        QStringList lines;
+        if(useInternetOpenPort)
+            lines.append(DOMAIN_NAME + (remotePort == DEFAULT_SERVER_PORT ? "" : ":" + QString::number(remotePort)));
+        else
+        {
+            QList<QHostAddress> allAddresses = QNetworkInterface::allAddresses();
+            for(QHostAddress address : allAddresses)
+                if(address.protocol() != QAbstractSocket::IPv6Protocol && address.isGlobal() && !address.isLinkLocal() && !address.isLoopback())
+                    lines.append(addressToString(address) + (remotePort == DEFAULT_SERVER_PORT ? "" : ":" + QString::number(remotePort)));
+        }
+        lines.prepend(tr("Your address(es):", "", lines.size())); // if do so how to cleanly have singular and plural in English, need ts then ?
+        // why warning in Qt Linguist "Translation does not contain the necessary %n/%Ln place marker."
+        for(quint8 linesIndex = 0; linesIndex < lines.size(); linesIndex++)
+        {
+            quint8 height = 1.6 * fontSizePt;
+            QRect textRect(qWidth - 1, height * linesIndex, 1, fontSizePt),
+                  boundingRect;
+            painter.setPen(Qt::white);
+            QString line = lines[linesIndex];
+            painter.drawText(textRect, Qt::TextDontClip | Qt::AlignRight, line, &boundingRect);
+            boundingRect.setLeft(qWidth - 1 - boundingRect.width());
+            boundingRect.setRight(qWidth - 1);
+            painter.fillRect(boundingRect, QBrush(QColor(128, 128, 128, 128)));
+        }
 	}
     
     // Game buttons

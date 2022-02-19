@@ -20,7 +20,6 @@ QString myAddress;
 bool isFirstToRun = false;
 bool useInternetOpenPort;
 QTranslator translator;
-QString serverAddress = "localhost";
 quint16 remotePort = DEFAULT_SERVER_PORT;
 
 int main(int argc, char *argv[])
@@ -37,23 +36,6 @@ int main(int argc, char *argv[])
         qInfo("languageFile couldn't be loaded !");
     app.installTranslator(&translator);
 
-    QList<QHostAddress> allAddresses = QNetworkInterface::allAddresses();
-    quint32 allAddressesSize = allAddresses.size();
-    if(allAddressesSize > 2) // could check more precisely if not just having an IPv6
-    {
-        qInfo("My IPs:");
-		serverAddress = addressToString(allAddresses[2]);
-        for(quint32 allAddressesIndex = /*0*/2; allAddressesIndex < allAddressesSize; allAddressesIndex++)
-        {
-            QHostAddress address = allAddresses[allAddressesIndex];
-            if(address.protocol() != QAbstractSocket::IPv6Protocol)
-                qInfo() << addressToString(address);
-            // for real users only global addresses seem interesting
-            // broadcast global linkLocal loopback multicast siteLocal uniqueLocalUnicast
-            //qInfo() << address.isBroadcast() << address.isGlobal() << address.isLinkLocal() << address.isLoopback() << address.isMulticast() << address.isSiteLocal() << address.isUniqueLocalUnicast();
-        }
-    }
-
     inGameUI = new InGameUI();
     // Uncomment this to see to what type of objects various events are sent
     //app.installEventFilter(new DebugEventFilter);
@@ -62,7 +44,7 @@ int main(int argc, char *argv[])
     if(!isDefaultServerPortInUse) // assume no two servers running at the same time even for development purpose
         isFirstToRun = getBool(QObject::tr("First to run"), QObject::tr("Are you the first to run for this game ?"));
     bool runServer = true, // not required for last player joining the party - could always open it, it doesn't cost a lot and if someone want to use this node it is possible
-         runClient = !isFirstToRun;
+         runClient = !isFirstToRun; // why using another variable just for code flexibility ?
     QString isFirstToRunStr = isFirstToRun ? "true" : "false";
     qInfo() << "isFirstToRun:" << isFirstToRunStr; // clicking on exit button is like choosing no...
     quint16 serverPort = DEFAULT_SERVER_PORT + (isDefaultServerPortInUse ? 1 : 0); // guess not running strictly more than two servers
@@ -73,10 +55,10 @@ int main(int argc, char *argv[])
         qInfo("serverPort: %hu", serverPort);
     }
     QSettings settings("settings.ini", QSettings::IniFormat);
-    QString peerAddress = settings.value("peerAddress").toString();
-
+    QString peerAddress;
     if(runClient)
     {
+        peerAddress = settings.value("peerAddress").toString();
         QString newPeerAddress = getText(QObject::tr("Peer address"), QObject::tr("A peer address"), isDefaultServerPortInUse ? QString::number(DEFAULT_SERVER_PORT) : peerAddress);
         if(isAPositiveInteger(newPeerAddress))
             newPeerAddress = "127.0.0.1:" + newPeerAddress; // localhost binds to ::1
@@ -99,7 +81,7 @@ int main(int argc, char *argv[])
 
     // could give a shot to UPnP
 	// btw if everybody is using autoconfiguration then using a remote machine with open ports to the internet is useless since could just redirect packets in a localhost manner on this remote machine
-	useInternetOpenPort = peerAddress.startsWith(DOMAIN_NAME) && !getBool(QObject::tr("Autoconfiguration"), QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
+    useInternetOpenPort = (runClient && peerAddress.startsWith(DOMAIN_NAME)) || !getBool(QObject::tr("Autoconfiguration"), QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
     QProcess* myProcess;
     qint64 processId;
     if(useInternetOpenPort)
@@ -112,8 +94,7 @@ int main(int argc, char *argv[])
         // hope that by using a random port nobody will use be using it
         // what if someone try to take a port already used by AUD ?
         // the password is just used to avoid massive SSH bots to try to do some bad behavior automatically (like using all ports)
-		// could force showAddress to true if isFirstToRun but that would be not very appreciated for accustomed people who don't need that
-		serverAddress = DOMAIN_NAME;
+        // could force showAddress to true if isFirstToRun but that would be not very appreciated for accustomed people who don't need that
         remotePort = 10000 + QRandomGenerator::global()->bounded(50000);
         qInfo() << "remotePort:" << remotePort;
 
