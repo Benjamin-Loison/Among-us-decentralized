@@ -83,7 +83,6 @@ int main(int argc, char *argv[])
     // could give a shot to UPnP
 	// btw if everybody is using autoconfiguration then using a remote machine with open ports to the internet is useless since could just redirect packets in a localhost manner on this remote machine
     useInternetOpenPort = (runClient && peerAddress.startsWith(DOMAIN_NAME)) || !getBool(QObject::tr("Autoconfiguration"), QObject::tr("Is your port %1 opened to others ?").arg(QString::number(serverPort)));
-    QProcess* myProcess;
     qint64 processId;
     if(useInternetOpenPort)
     {
@@ -107,7 +106,7 @@ int main(int argc, char *argv[])
         myProcess->start("ssh", arguments);
         processId = myProcess->processId();
         qInfo() << "ssh program" << processId;
-        //showMessage(QObject::tr("IP and port to share to peers"), "Share to peers connecting to you: " DOMAIN_NAME ":" + remotePortStr);
+        //showMessage(QObject::tr("IP and port to share to peers"), "Share to peers connecting to you: " DOMAIN_NAME ':' + remotePortStr);
         // could add an icon to copy-paste
     }
 
@@ -153,7 +152,7 @@ int main(int argc, char *argv[])
         qInfo("Waiting for nicknames...");
         QString nicknamesStr = askAll("nicknames"); // or should more precisely ask all nicknames at each nickname test ? but this assume to wait the maximum ping of someone ?
         qInfo("Received nicknames: %s", nicknamesStr.toStdString().c_str());
-        nicknames = nicknamesStr.split(",");
+        nicknames = nicknamesStr.split(',');
         QStringList realNicknames;
         for(QString nicknameStr : nicknames)
         {
@@ -161,7 +160,7 @@ int main(int argc, char *argv[])
             realNicknames.push_back(nickname);
         }
         if(realNicknames.contains(nickname))
-            showWarningMessage(QObject::tr("Nickname"), QObject::tr("This nickname is already used!"));
+            showWarningMessage(QObject::tr("Nickname"), QObject::tr("This nickname is already used !"));
         else
             break;
     }

@@ -66,7 +66,7 @@ Player::Player(): x(0), y(0), nickname(""), playerFacingLeft(false), playerPixma
 
 QString Player::getSendPositionMessage()
 {
-    return "Position " + QString::number(x) + " " + QString::number(y);
+    return "Position " + QString::number(x) + ' ' + QString::number(y);
 }
 
 void Player::sendPosition()

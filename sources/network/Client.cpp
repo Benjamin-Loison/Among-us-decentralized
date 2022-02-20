@@ -66,7 +66,7 @@ void Client::dataReceived()
     in >> receivedMessage;
 
     // got problem on client side this time (server sent but no client received...)
-    qInfo() << "client received from" << socketToString(socket) << ":" << receivedMessage;
+    qInfo() << "client received from" << socketToString(socket) << ':' << receivedMessage;
     /*if(askingAll)
     {
         QString peerString = socketToString(socket);
@@ -113,7 +113,7 @@ void Client::processMessageClient(QString message)
         if(messagePart.startsWith("peers "))
         {
             QString connected = messagePart.replace("peers ", "");
-            QStringList connectedParts = connected.split(" ");
+            QStringList connectedParts = connected.split(' ');
             for(QString connectedPart : connectedParts)
                 if(all_of(clients.begin(), clients.end(), [&](const Client* client) { return socketToString(client->socket) != connectedPart; }))
                     discoverClient(connectedPart);

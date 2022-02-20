@@ -61,7 +61,7 @@ void Server::dataReceived()
     // If these lines are executed, it means that we have received the whole message: we can recover it
     QString message;
     in >> message;
-    qInfo() << "server received from" << socketToString(socket) << ":" << message; // not logging Position and keep logged all network stuff
+    qInfo() << "server received from" << socketToString(socket) << ':' << message; // not logging Position and keep logged all network stuff
     message = processMessageServer(socket, message);
 
     //message = processMessage(message);
@@ -213,7 +213,7 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
         {
             QMap<quint8, QString> sortedParts;
             Player* currPlayer = &inGameUI->currPlayer;
-            sortedParts[currPlayer->playerId] = serverSocketToString() + " " + currPlayer->nickname;
+            sortedParts[currPlayer->playerId] = serverSocketToString() + ' ' + currPlayer->nickname;
             QList<QTcpSocket*> peers = getPeers();
             for(QTcpSocket* peer : peers)
             {
@@ -227,18 +227,18 @@ QString Server::processMessageServer(QTcpSocket* socket, QString message)
                 addressParts.removeLast();
                 addressParts.append(QString::number(peersPorts[peer]));
                 address = addressParts.join(':'); // could make a function for this purpose - is the same thing used elsewhere ?
-                sortedParts[player->playerId] = address + " " + nickname;
+                sortedParts[player->playerId] = address + ' ' + nickname;
             }
 
             /// order matters especially a logical for the game one
             // QMap already sorted values by key
-            res += messagePart + "|" + sortedParts.values().join(",");
+            res += messagePart + '|' + sortedParts.values().join(',');
         }
         else if(messagePart == "map")
         {
             QString mapStr = QString::number(inGameUI->map);
 			qInfo() << "currPlayer" << mapStr;
-            res += messagePart + "|" + mapStr;
+            res += messagePart + '|' + mapStr;
         }
         else if(messagePart.startsWith("nickname "))
         {
@@ -371,7 +371,7 @@ QString addressToString(QHostAddress address)
 QString addressPortToString(QHostAddress address, quint16 port)
 {
     QString addressStr = addressToString(address);
-    return addressToString(address)/*.replace("::ffff:127.0.0.1", "127.0.0.1")*//*sometimes there is the prefix ::ffff:127.0.0.1*//*not sure about this*/ + ":" + QString::number(port);
+    return addressToString(address)/*.replace("::ffff:127.0.0.1", "127.0.0.1")*//*sometimes there is the prefix ::ffff:127.0.0.1*//*not sure about this*/ + ':' + QString::number(port);
 }
 
 QString serverSocketToString()

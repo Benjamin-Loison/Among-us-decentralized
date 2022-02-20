@@ -19,7 +19,7 @@ bool showAddress = false;
 enum VentsID current_vent = NULL_VENT;
 
 // should make a function to get new player
-InGameUI::InGameUI(QLabel* parent) : QLabel(parent), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), qLabel(nullptr), lastKillTime(0), initialized(false)
+InGameUI::InGameUI(QLabel* parent) : QLabel(parent), everyoneReady(false), lastUpdate(0), readyButtonLayout(nullptr), currentTask(nullptr), gameMap(nullptr), lastKillTime(0), initialized(false), qLabel(nullptr)
 {
     // doing this at the very first window would be nice (when asking nickname etc)
     setWindowIcon(QIcon(assetsFolderImages + "logo.png"));
@@ -164,10 +164,7 @@ void InGameUI::setCenterBorderLimit(int x, int y, QPainter* painter, QSize s, qu
 {
     // should make sure that even if big screen each user see the same map range etc
     if(s == QSize())
-    {
-        //qInfo() << "s" << s;
         s = size();
-    }
     int winWidth = s.width(), winHeight = s.height();
     int backWidth = backgroundPixmap->size().width(), backHeight = backgroundPixmap->size().height();
     if(sx == 0) // a bit overkill to draw everything if most of it is out of the screen
@@ -180,7 +177,6 @@ void InGameUI::setCenterBorderLimit(int x, int y, QPainter* painter, QSize s, qu
         leftBackgroundTmp = (winWidth - backWidth) / 2;
     else
     {
-        //qInfo() << "d" << winWidth << x << backWidth;
         leftBackgroundTmp = winWidth / 2 - x;
         leftBackgroundTmp = max(leftBackgroundTmp, winWidth - backWidth); // clip at right border
         leftBackgroundTmp = min(leftBackgroundTmp, 0);                    // clip at left border
@@ -193,21 +189,17 @@ void InGameUI::setCenterBorderLimit(int x, int y, QPainter* painter, QSize s, qu
         topBackgroundTmp = max(topBackgroundTmp, winHeight - backHeight); // clip at bottom border
         topBackgroundTmp = min(topBackgroundTmp, 0);                      // clip at top border
     }
-    //topBackgroundTmp += offsetX;
-    //leftBackgroundTmp += offsetY;
     if(sx != backWidth)
     {
-        //qInfo() << "b" << offsetX << offsetY << sx << sy;
-        //qInfo() << "c" << leftBackgroundTmp << topBackgroundTmp;
         QRectF target(offsetX, offsetY, sx, sy);
-        QRectF source(-leftBackgroundTmp, -topBackgroundTmp, /*sx*/winWidth, /*sy*/winHeight);
+        QRectF source(-leftBackgroundTmp, -topBackgroundTmp, winWidth, winHeight);
         painter->drawPixmap(target, *backgroundPixmap, source);
     }
     else if(painter)
-        painter->drawPixmap(leftBackgroundTmp, topBackgroundTmp, /*sx, sy,*/ *backgroundPixmap);
+        painter->drawPixmap(leftBackgroundTmp, topBackgroundTmp, *backgroundPixmap);
     else {
         QPainter locPainter(windowPixmap);
-        locPainter.drawPixmap(leftBackgroundTmp, topBackgroundTmp, /*sx, sy,*/ *backgroundPixmap);
+        locPainter.drawPixmap(leftBackgroundTmp, topBackgroundTmp, *backgroundPixmap);
     }
     if(sx == backWidth)
     {
@@ -622,13 +614,13 @@ void InGameUI::redraw()
     {
         QStringList lines;
         if(useInternetOpenPort)
-            lines.append(DOMAIN_NAME + (remotePort == DEFAULT_SERVER_PORT ? "" : ":" + QString::number(remotePort)));
+            lines.append(DOMAIN_NAME + (remotePort == DEFAULT_SERVER_PORT ? "" : ':' + QString::number(remotePort)));
         else
         {
             QList<QHostAddress> allAddresses = QNetworkInterface::allAddresses();
             for(QHostAddress address : allAddresses)
                 if(address.protocol() != QAbstractSocket::IPv6Protocol && address.isGlobal() && !address.isLinkLocal() && !address.isLoopback())
-                    lines.append(addressToString(address) + (remotePort == DEFAULT_SERVER_PORT ? "" : ":" + QString::number(remotePort)));
+                    lines.append(addressToString(address) + (remotePort == DEFAULT_SERVER_PORT ? "" : ':' + QString::number(remotePort)));
         }
         lines.prepend(tr("Your address(es):", "", lines.size())); // if do so how to cleanly have singular and plural in English, need ts then ?
         // why warning in Qt Linguist "Translation does not contain the necessary %n/%Ln place marker."
