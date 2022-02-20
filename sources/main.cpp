@@ -31,7 +31,8 @@ int main(int argc, char *argv[])
 
     QString locale = QLocale::system().name().section('_', 0, 0),
             languageFile = "AmongUsDecentralizedFR";
-    translator.load(QString("qt_") + locale, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    if(!translator.load(QString("qt_") + locale, QLibraryInfo::path(QLibraryInfo::TranslationsPath))) // this is only going to work for Qt installed machines, no ?
+        qInfo("qt locale language file couldn't be loaded !");
     if(!translator.load(languageFile))
         qInfo("languageFile couldn't be loaded !");
     app.installTranslator(&translator);
