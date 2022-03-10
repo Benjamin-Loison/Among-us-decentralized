@@ -28,6 +28,10 @@ int main(int argc, char *argv[])
     #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         QImageReader::setAllocationLimit(512);
     #endif
+	
+    #if __APPLE__
+        QDir::setCurrent("../../../");
+    #endif
 
     QString locale = QLocale::system().name().section('_', 0, 0),
             languageFile = "AmongUsDecentralizedFR";
