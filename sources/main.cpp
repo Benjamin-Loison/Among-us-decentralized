@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     qint64 processId;
     if(useInternetOpenPort)
     {
-        // used https://askubuntu.com/a/50000/1560657 and https://askubuntu.com/a/583153/1560657 for server configuration
+        // used https://askubuntu.com/a/50000 and https://askubuntu.com/a/583153 for server configuration
         // this aim is that anybody can use a VPS open port to the internet in order to host his server part in the P2P network
         // because not root no access to ports < 1024 and other ports require password for interaction
         // any shell access is disabled
